@@ -89,11 +89,10 @@ function Desktop ()
   {
     if (this.ntiles === 0) {return -1;};
     
-    for (i = 0; i < this.size(); i++)
+    for (i = 0; i < this.ntiles(); i++)
     {
       if (this.tiles[i].window_id === window_id)
       {
-        print('hihi');
         this.tiles.splice(i, 1);
         return 0;
       };
@@ -194,7 +193,6 @@ workspace.clientAdded.connect
     var desktop = new Desktop();
     desktop.addTile(tile);
     desktop.removeTile(client.windowId);
-    
     
     
     
