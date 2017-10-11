@@ -85,15 +85,22 @@ function Desktop ()
     return 0;
   };
   
-  this.removeTile = function (window_id)
+  this.removeTile = function (tile_index)
   {
-    if (this.ntiles === 0) {return -1;};
+    if (tile_index > this.ntiles()) {return -1;};
+    this.tiles.splice(tile_index, 1);
+    return 0;
+  };
+  
+  this.removeWindowId = function (window_id)
+  {
+    if (this.ntiles() === 0) {return -1;};
     
     for (i = 0; i < this.ntiles(); i++)
     {
       if (this.tiles[i].window_id === window_id)
       {
-        this.tiles.splice(i, 1);
+        this.removeTile(i);
         return 0;
       };
     };
@@ -106,22 +113,25 @@ function Layer ()
 {
   this.desktops = [];
   this.ndesktops =  function () {return this.desktops.length;};
-  this.size = function ()
-  {
-    return workspace.desktops-this.ndesktops;
-  };
   
   this.addDesktop = function (desktop)
   {
-    if (this.availableSize == 0) {return -1;};
+    if (this.ndesktops() > workspace.desktops) {return -1;};
     this.desktop.push(desktop);
     return 0;
   };
   
-  this.removeTile = function (window_id)
+  this.removeDesktop = function (desktop_index)
+  {
+    if (desktop_index > this.ndesktops()) {return -1;};
+    this.desktops.splice(desktop_index, 1);
+    return 0;
+  };
+  
+  this.removeWindowId = function (window_id)
   {
     var check = -1;
-    for (i = 0; i < this.ndesktops; i++)
+    for (i = 0; i < this.ndesktops(); i++)
     {
       check = this.desktops[i].removeTile(window_id);
       if (check === 0) {break;};
@@ -130,12 +140,12 @@ function Layer ()
   };
   
   //returns the first desktop that has enough space
-  this.availableDesktopId = function (size)
+  this.availableDesktop = function (size)
   {
     desktop = -1;
-    for (i = 0; i < this.ndesktops; i++)
+    for (i = 0; i < this.ndesktops(); i++)
     {
-      if (this.desktops[i].availableSize() > size)
+      if (this.desktops[i].size() > size)
       {
         desktop = i;
         break;
@@ -190,10 +200,15 @@ workspace.clientAdded.connect
     
     var tile = new Tile(client.windowId, 0.5);
     
+    print('-----')
     var desktop = new Desktop();
     desktop.addTile(tile);
-    desktop.removeTile(client.windowId);
-    
+    desktop.addTile(tile);
+    print(desktop.size());
+    desktop.removeTile(1)
+    print(desktop.size());
+    desktop.removeWindowId(client.windowId);
+    print(desktop.size());
     
     
   }
