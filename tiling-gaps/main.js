@@ -24,9 +24,10 @@ var desk_area =
 };
 
 // the smallest tile, must be either 1, 0.5 or 0.25, defaults to 0.25, so quarters are not needed to be specified
-var smallest_tile =
+var smallest_size =
 {
   kate: 0.5,
+  chromium: 0.5,
 };
 
 // clients that are not tiled
@@ -77,7 +78,8 @@ function Desktop ()
     for (var i = 0; i < this.ntiles(); i++) {sum += this.tiles[i].size;};
     return sum;
   };
-  this.available = function (size)
+  
+  this.findSize = function (size)
   {
     if (1 - this.size() >= size) {return 0;};
     return -1;
@@ -97,16 +99,14 @@ function Desktop ()
     return 0;
   };
   
-  this.removeTileWindowId = function (window_id)
+  this.findTile = function (window_id)
   {
     if (this.ntiles() === 0) {return -1;};
-    
     for (var i = 0; i < this.ntiles(); i++)
     {
       if (this.tiles[i].window_id === window_id)
       {
-        this.removeTile(i);
-        return 0;
+        return i;
       };
     };
     return -1;
@@ -120,11 +120,11 @@ function Layer ()
   this.ndesktops =  function () {return this.desktops.length;};
   this.size = function () {return this.ndesktops() / workspace.desktops;};
   
-  this.availableId = function (size)
+  this.findSize = function (size)
   {
     for (var i = 0; i < this.ndesktops(); i++)
     {
-      if (this.desktops[i].available(size) === 0) {return i;};
+      if (this.desktops[i].findSize(size) !== -1) {return i;};
     };
     return -1;
   };
@@ -145,10 +145,10 @@ function Layer ()
   
   this.addTile = function (tile)
   {
-    var i = this.availableId(tile.size);
-    if (i != -1 )
+    var found = this.findSize(tile.size);
+    if (i !== -1 )
     {
-      this.desktops[i].addTile(tile);
+      this.desktops[found].addTile(tile);
       return 0;
     };
     var desktop = new Desktop();
@@ -157,23 +157,26 @@ function Layer ()
     return 0;
   };
   
-  this.removeTile = function (desktop_index, tile_index)
+  this.removeTile = function (tile_index, desktop_index)
   {
     if (desktop_index >= this.ndesktops()) {return -1;};
-    return this.desktops[desktop_index].removeTile(tile_index);
-  };
-  
-  this.removeTileWindowId = function (window_id)
-  {
-    for (var i = 0; i < this.ndesktops(); i++)
+    if (this.desktops[desktop_index].removeTile(tile_index) === 0)
     {
-      if (this.desktops[i].removeTileWindowId(window_id) === 0)
-      {
-        if (this.desktops[i].size() === 0) {this.removeDesktop(i);};
-        return 0;
-      };
+      if (this.desktops[desktop_index].size() === 0) {this.removeDesktop(i);};
+      return 0;
     };
     return -1;
+  };
+  
+  this.findTile = function (window_id)
+  {
+    var found = -1;
+    for (var i = 0; i < this.ndesktops(); i++)
+    {
+      found = this.desktops[i].findTile(window_id);
+      if (found !== -1) {return {tile_index: found, desktop_index: i};};
+    };
+    return found;
   };
 };
 
@@ -182,13 +185,15 @@ function Layout ()
   this.layers = [];
   this.nlayers = function () {return this.layers.length;};
   
-  this.availableId = function (size)
+  this.findSize = function (size)
   {
+    var found = -1;
     for (var i = 0; i < this.nlayers(); i++)
     {
-      if (this.layers[i].availableId(size) != -1) {return i;};
+      found = this.layers[i].findSize(size);
+      if (found !== -1) {return {desktop_index: found, layer_index: i};};
     };
-    return -1;
+    return found;
   };
   
   this.addLayer = function (layer) 
@@ -217,7 +222,7 @@ function Layout ()
     return -1;
   };
   
-  this.removeDesktop = function (layer_index, desktop_index)
+  this.removeDesktop = function (desktop_index, layer_index)
   {
     if (layer_index >= this.nlayers()) {return -1;};
     return this.layers[layer_index].removeDesktop(desktop_index);
@@ -225,10 +230,10 @@ function Layout ()
   
   this.addTile = function (tile)
   {
-    var i = this.availableId(tile.size);
-    if (i != -1 )
+    var found = this.findSize(tile.size);
+    if (found !== -1 )
     {
-      this.layers[i].addTile(tile);
+      this.layers[found.layer_index].desktops[found.desktop_index].addTile(tile);
       return 0;
     };
     var layer = new Layer();
@@ -236,17 +241,18 @@ function Layout ()
     return this.layers[this.nlayers() - 1].addTile(tile);
   };
   
-  this.removeTile = function (layer_index, desktop_index, tile_index)
+  this.removeTile = function (tile_index, desktop_index, layer_index)
   {
     if (layer_index >= this.nlayers()) {return -1;};
     return this.layers[layer_index].removeTile(desktop_index, tile_index);
   };
   
-  this.removeTileWindowId = function (window_id)
+  this.findTile = function (window_id)
   {
     for (var i = 0; i < this.nlayers(); i++)
     {
-      if (this.layers[i].removeTileWindowId(window_id) === 0) {return 0;};
+      var found = this.layers[i].findTile(window_id);
+      if (found !== -1) {return {tile_index: found.tile_index, desktop_index: found.desktop_index, layer_index: i};};
     };
     return -1;
   };
@@ -263,25 +269,41 @@ var layer2 = new Layer();
 
 var desktop1 = new Desktop();
 var desktop2 = new Desktop();
+var desktop3 = new Desktop();
+var desktop4 = new Desktop();
 
-var tile1 = new Tile(0, 0.25);
-var tile2 = new Tile(1, 0.5);
+var tile1 = new Tile(1, 0.25);
+var tile2 = new Tile(2, 0.5);
+var tile3 = new Tile(3, 0.25);
+var tile4 = new Tile(4, 0.5);
+var tile5 = new Tile(5, 0.25);
+var tile6 = new Tile(6, 0.5);
+var tile7 = new Tile(7, 0.25);
+var tile8 = new Tile(8, 0.5);
 
 print('Adding Tiles to Desktops');
 print(desktop1.addTile(tile1));
 print(desktop1.addTile(tile2));
-print(desktop2.addTile(tile1));
-print(desktop2.addTile(tile2));
+print(desktop2.addTile(tile3));
+print(desktop2.addTile(tile4));
+print(desktop3.addTile(tile5));
+print(desktop3.addTile(tile6));
+print(desktop4.addTile(tile7));
+print(desktop4.addTile(tile8));
 
 print('Adding Desktops to Layers');
 print(layer1.addDesktop(desktop1));
 print(layer1.addDesktop(desktop2));
-print(layer2.addDesktop(desktop1));
-print(layer2.addDesktop(desktop2));
+print(layer2.addDesktop(desktop3));
+print(layer2.addDesktop(desktop4));
 
-print('Adding Layers to Layout')
+print('Adding Layers to Layout');
 print(layout.addLayer(layer1));
 print(layout.addLayer(layer2));
+
+print('Testing Methods');
+print(layout.findTile(2).desktop_index);
+print(layout.findTile(2).layer_index);
 
 // -----
 // Start
