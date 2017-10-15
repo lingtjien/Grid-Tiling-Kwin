@@ -21,6 +21,8 @@ var desk_area =
   y_min: margins.top,
   x_max: workspace.displayWidth-margins.right,
   y_max: workspace.displayHeight-margins.bottom,
+  width: workspace.displayWidth-margins.right-margins.left,
+  height: workspace.displayHeight-margins.bottom-margins.top,
 };
 
 // the smallest tile, must be either 1, 0.5 or 0.25, defaults to 0.25, so quarters are not needed to be specified
@@ -70,6 +72,14 @@ function Tile (window_id, size)
 
 function Desktop ()
 {
+  this.divider = 
+  {
+    hl: 0.5, //horizontal left
+    hr: 0.5, //horizontal right
+    vt: 0.5, //vertical top
+    vb: 0.5, //vertical bottom
+  };
+  
   this.tiles = [];
   this.ntiles = function () {return this.tiles.length;};
   this.size = function ()
@@ -83,6 +93,11 @@ function Desktop ()
   {
     if (1 - this.size() >= size) {return 0;};
     return -1;
+  };
+  
+  this.renderDesktop = function ()
+  {
+    return RenderTiles(this.tiles, this.ntiles());
   };
   
   this.addTile = function (tile)
@@ -129,6 +144,15 @@ function Layer ()
     return -1;
   };
   
+  this.renderLayer = function ()
+  {
+    for (var i = 0; i < this.ndesktops(); i++)
+    {
+      if (this.desktops[i].renderDesktop() === -1) {return -1};
+    };
+    return 0;
+  };
+  
   this.addDesktop = function (desktop)
   {
     if (this.size() >= 1) {return -1;};
@@ -141,6 +165,12 @@ function Layer ()
     if (desktop_index >= this.ndesktops()) {return -1;};
     this.desktops.splice(desktop_index, 1);
     return 0;
+  };
+  
+  this.renderDesktop = function (desktop_index)
+  {
+    if (desktop_index >= this.ndesktops()) {return -1;};
+    return this.desktops[desktop_index].renderDesktop();
   };
   
   this.addTile = function (tile)
@@ -196,6 +226,15 @@ function Layout ()
     return found;
   };
   
+  this.renderLayout = function ()
+  {
+    for (var i = 0; i < this.nlayers(); i++)
+    {
+      if (this.layers[i].renderLayer() === -1) {return -1;};
+    };
+    return 0;
+  };
+  
   this.addLayer = function (layer) 
   {
     this.layers.push(layer);
@@ -207,6 +246,12 @@ function Layout ()
     if (layer_index >= this.nlayers()) {return -1;};
     this.layers.splice(layer_index, 1);
     return 0;
+  };
+  
+  this.renderLayer = function (layer_index)
+  {
+    if (layer_index >= this.nlayers()) {return -1;};
+    return this.layers[layer_index].renderLayer();
   };
   
   this.addDesktop = function (desktop)
@@ -226,6 +271,12 @@ function Layout ()
   {
     if (layer_index >= this.nlayers()) {return -1;};
     return this.layers[layer_index].removeDesktop(desktop_index);
+  };
+  
+  this.renderDesktop = function (desktop_index, layer_index)
+  {
+    if (layer_index >= this.nlayers()) {return -1;};
+    return this.layers[layer_index].renderDesktop(desktop_index);
   };
   
   this.addTile = function (tile)
@@ -256,6 +307,142 @@ function Layout ()
     };
     return -1;
   };
+};
+
+// ---------
+// Functions
+// ---------
+
+function FindClient (window_id)
+{
+  var clients = workspace.clientList();
+  for (var i = 0; i<clients.length; i++)
+  {
+    if (clients[i].windowId === window_id)
+    {
+      return clients[i];
+    };
+  };
+  return -1;
+};
+
+function RenderTiles (tiles, ntiles)
+{
+  if (ntiles === 0) {return -1;}
+  else if (ntiles === 1)
+  {
+    var width = desk_area.width-2*gap;
+    var height = desk_area.height-2*gap;
+    
+    var client = FindClient(tiles[0].window_id);
+    client.geometry = Qt.rect
+    (
+      Math.floor(gap+desk_area.x_min),
+      Math.floor(gap+desk_area.y_min),
+      Math.floor(width),
+      Math.floor(height)
+    );
+  }
+  else if (ntiles === 2)
+  {
+    var lwidth = (this.divider.vt+this.divider.vb)/2*(desk_area.width-3*gap);
+    var rwidth = (1-(this.divider.vt+this.divider.vb)/2)*(desk_area.width-3*gap);
+    var height = desk_area.height-2*gap;
+    
+    var client = FindClient(tiles[0].window_id);
+    client.geometry = Qt.rect
+    (
+      Math.floor(gap+desk_area.x_min),
+      Math.floor(gap+desk_area.y_min),
+      Math.floor(lwidth),
+      Math.floor(height)
+    );
+    client = FindClient(tiles[1].window_id);
+    client.geometry = Qt.rect
+    (
+      Math.floor(gap+desk_area.x_min+lwidth+gap),
+      Math.floor(gap+desk_area.y_min),
+      Math.floor(rwidth),
+      Math.floor(height)
+    );
+  }
+  else if (ntiles === 3)
+  {
+    var lwidth = (this.divider.vt+this.divider.vb)/2*(desk_area.width-3*gap);
+    var rwidth = (1-(this.divider.vt+this.divider.vb)/2)*(desk_area.width-3*gap);
+    var lheight = desk_area.height-2*gap;
+    var trheight = this.divider.hr*(desk_area.height-3*gap);
+    var brheight = (1-this.divider.hr)*(desk_area.height-3*gap);
+    
+    var client = FindClient(tiles[0].window_id);
+    client.geometry = Qt.rect
+    (
+      Math.floor(gap+desk_area.x_min),
+      Math.floor(gap+desk_area.y_min),
+      Math.floor(lwidth),
+      Math.floor(lheight)
+    );
+    client = FindClient(tiles[1].window_id);
+    client.geometry = Qt.rect
+    (
+      Math.floor(gap+desk_area.x_min+lwidth+gap),
+      Math.floor(gap+desk_area.y_min),
+      Math.floor(rwidth),
+      Math.floor(trheight)
+    );
+    client = FindClient(tiles[2].window_id);
+    client.geometry = Qt.rect
+    (
+      Math.floor(gap+desk_area.x_min+lwidth+gap),
+      Math.floor(gap+desk_area.y_min+theight+gap),
+      Math.floor(rwidth),
+      Math.floor(brheight)
+    );
+  } else if (ntiles === 4)
+  {
+    var tlwidth = this.divider.vt*(desk_area.width-3*gap);
+    var blwidth = this.divider.vb*(desk_area.width-3*gap);
+    var trwidth = (1-this.divider.vt)*(desk_area.width-3*gap);
+    var brwidth = (1-this.divider.vb)*(desk_area.width-3*gap);
+    var tlheight = this.divider.hl*(desk_area.height-3*gap);
+    var blheight = (1-this.divider.hl)*(desk_area.height-3*gap);
+    var trheight = this.divider.hr*(desk_area.height-3*gap);
+    var brheight = (1-this.divider.hr)*(desk_area.height-3*gap);
+    
+    var client = FindClient(tiles[0].window_id);
+    client.geometry = Qt.rect
+    (
+      Math.floor(gap+desk_area.x_min),
+      Math.floor(gap+desk_area.y_min),
+      Math.floor(tlwidth),
+      Math.floor(tlheight)
+    );
+    client = FindClient(tiles[1].window_id);
+    client.geometry = Qt.rect
+    (
+      Math.floor(gap+desk_area.x_min+tlwidth+gap),
+      Math.floor(gap+desk_area.y_min),
+      Math.floor(trwidth),
+      Math.floor(trheight)
+    );
+    client = FindClient(tiles[2].window_id);
+    client.geometry = Qt.rect
+    (
+      Math.floor(gap+desk_area.x_min+tlwidth+gap),
+      Math.floor(gap+desk_area.y_min+trheight+gap),
+      Math.floor(brwidth),
+      Math.floor(brheight)
+    );
+    client = FindClient(tiles[3].window_id);
+    client.geometry = Qt.rect
+    (
+      Math.floor(gap+desk_area.x_min),
+      Math.floor(gap+desk_area.y_min+tlheight+gap),
+      Math.floor(blwidth),
+      Math.floor(blheight)
+    );
+  } else {return -1;};
+  return 0;
 };
 
 // -------------
