@@ -19,14 +19,12 @@ var desk_area =
 {
   x_min: margins.left,
   y_min: margins.top,
-  x_max: workspace.displayWidth-margins.right,
-  y_max: workspace.displayHeight-margins.bottom,
   width: workspace.displayWidth-margins.right-margins.left,
   height: workspace.displayHeight-margins.bottom-margins.top,
 };
 
 // the smallest tile, must be either 1, 0.5 or 0.25, defaults to 0.25, so quarters are not needed to be specified
-var smallest_size =
+var minimum_tile_type =
 {
   kate: 0.5,
   chromium: 0.5,
@@ -40,6 +38,7 @@ var ignored_clients =
   "krunner",
   "ksmserver",
   "lattedock",
+  "latte-dock",
   "pinentry",
   "Plasma",
   "plasma",
@@ -64,45 +63,40 @@ var ignored_captions =
 // Class Definitions
 // -----------------
 
-function Tile (window_id, size)
+function Tile (window_id, type)
 {
   this.window_id = window_id; // must be unique for every window
-  this.size = size; // max 1, which is completely fill one desktop
+  this.type = type; // either 1/0.5/0.25 = fill/half/quarter, the minimum tile type
 };
 
 function Desktop ()
 {
   this.divider = 
   {
-    hl: 0.5, //horizontal left
-    hr: 0.5, //horizontal right
-    vt: 0.5, //vertical top
-    vb: 0.5, //vertical bottom
+    left: 0.5, //horizontal left
+    right: 0.5, //horizontal right
+    top: 0.5, //vertical top
+    bottom: 0.5, //vertical bottom
   };
   
   this.tiles = [];
   this.ntiles = function () {return this.tiles.length;};
+  
   this.size = function ()
   {
     var sum = 0;
-    for (var i = 0; i < this.ntiles(); i++) {sum += this.tiles[i].size;};
+    for (var i = 0; i < this.ntiles(); i++) {sum += this.tiles[i].type;};
     return sum;
-  };
-  
-  this.findSize = function (size)
-  {
-    if (1 - this.size() >= size) {return 0;};
-    return -1;
   };
   
   this.renderDesktop = function ()
   {
-    return RenderTiles(this.tiles, this.ntiles());
+    return RenderTiles(this.tiles, this.ntiles(), this.divider);
   };
   
   this.addTile = function (tile)
   {
-    if (this.size() === 1) {return -1;};
+    if (this.size()+tile.type >= 1) {return -1;};
     this.tiles.push(tile);
     return 0;
   };
@@ -133,16 +127,6 @@ function Layer ()
 {
   this.desktops = [];
   this.ndesktops =  function () {return this.desktops.length;};
-  this.size = function () {return this.ndesktops() / workspace.desktops;};
-  
-  this.findSize = function (size)
-  {
-    for (var i = 0; i < this.ndesktops(); i++)
-    {
-      if (this.desktops[i].findSize(size) !== -1) {return i;};
-    };
-    return -1;
-  };
   
   this.renderLayer = function ()
   {
@@ -155,7 +139,7 @@ function Layer ()
   
   this.addDesktop = function (desktop)
   {
-    if (this.size() >= 1) {return -1;};
+    if (workspace.desktops-this.ndesktops() < 1) {return -1;};
     this.desktops.push(desktop);
     return 0;
   };
@@ -175,16 +159,15 @@ function Layer ()
   
   this.addTile = function (tile)
   {
-    var found = this.findSize(tile.size);
-    if (i !== -1 )
+    var added = -1;
+    for (var i = 0; i < this.ndesktops(); i++)
     {
-      this.desktops[found].addTile(tile);
-      return 0;
+      added = this.desktops[i].addTile(tile);
+      if (added === 0) {return added;};
     };
     var desktop = new Desktop();
     if (this.addDesktop(desktop) === -1) {return -1;};
-    this.desktops[this.ndesktops() - 1].addTile(tile);
-    return 0;
+    return this.desktops[this.ndesktops()-1].addTile(tile);
   };
   
   this.removeTile = function (tile_index, desktop_index)
@@ -214,17 +197,6 @@ function Layout ()
 {
   this.layers = [];
   this.nlayers = function () {return this.layers.length;};
-  
-  this.findSize = function (size)
-  {
-    var found = -1;
-    for (var i = 0; i < this.nlayers(); i++)
-    {
-      found = this.layers[i].findSize(size);
-      if (found !== -1) {return {desktop_index: found, layer_index: i};};
-    };
-    return found;
-  };
   
   this.renderLayout = function ()
   {
@@ -256,15 +228,15 @@ function Layout ()
   
   this.addDesktop = function (desktop)
   {
-    for (var i = 0; this.nlayers(); i++)
+    var added = -1;
+    for (var i = 0; i < this.nlayers(); i++)
     {
-      if (this.layers[i].size() < 1) 
-      {
-        this.layers[i].addDesktop(desktop);
-        return 0;
-      };
+      added = this.layers[i].addDesktop(desktop);
+      if (added === 0) {return added};
     };
-    return -1;
+    var layer = new Layer();
+    this.addLayer(layer);
+    return this.layers[this.nlayers() - 1].addDesktop(desktop);
   };
   
   this.removeDesktop = function (desktop_index, layer_index)
@@ -281,15 +253,17 @@ function Layout ()
   
   this.addTile = function (tile)
   {
-    var found = this.findSize(tile.size);
-    if (found !== -1 )
+    var added = -1;
+    for (var i = 0; i < this.nlayers(); i++)
     {
-      this.layers[found.layer_index].desktops[found.desktop_index].addTile(tile);
-      return 0;
+      added = this.layers[i].addTile(tile);
+      if (added === 0) {return added};
     };
     var layer = new Layer();
-    this.addLayer(desktop);
-    return this.layers[this.nlayers() - 1].addTile(tile);
+    this.addLayer(layer);
+    var desktop = new Desktop();
+    this.layers[this.nlayers()-1].addDesktop(desktop);
+    return this.layers[this.nlayers()-1].desktops[0].addTile(tile);
   };
   
   this.removeTile = function (tile_index, desktop_index, layer_index)
@@ -313,6 +287,117 @@ function Layout ()
 // Functions
 // ---------
 
+function Geometry (x, y, width, height)
+{
+  return Qt.rect
+  (
+    Math.floor(x),
+    Math.floor(y),
+    Math.floor(width),
+    Math.floor(height)
+  );
+};
+
+function RenderTiles (tiles, ntiles, divider)
+{
+  if (ntiles === 0) {return -1;};
+  
+  var client;
+  
+  var w = desk_area.width-3*gap; // width
+  var h = desk_area.height-3*gap; // height
+  
+  var tlw = divider.top*w; // top left width
+  var tlh = divider.left*h; // top left height
+  var trw = (1-divider.top)*w; // top right width
+  var trh = divider.right*h; // top right height
+  var brw = (1-divider.bottom)*w; // bottom right width
+  var brh = (1-divider.right)*h; // bottom right height
+  var blw = divider.bottom*w; // bottom left width
+  var blh = (1-divider.left)*h; // bottom left height
+  
+  var sx = gap+desk_area.x_min; // start x
+  var htx = sx+tlw+gap; // half top x
+  var hbx = sx+blw+gap; // half bottom x
+  
+  var sy = gap+desk_area.y_min; // start y
+  var hly = sy+tlh+gap; // half left y
+  var hry = sy+trh+gap; // half right y
+  
+  if (ntiles === 1)
+  {
+    client = FindClient(tiles[0].window_id);
+    client.geometry = Geometry(sx, sy, w+gap, h+gap);
+  }
+  if (ntiles === 2)
+  {
+    client = FindClient(tiles[0].window_id);
+    client.geometry = Geometry(sx, sy, (tlw+blw)/2, (tlh+blh)/2);
+    client = FindClient(tiles[1].window_id);
+    client.geometry = Geometry((htx+hbx)/2, sy, (trw+brw)/2, (trh+brh)/2);
+  };
+  if (ntiles === 3)
+  {
+    if (tiles[0].type === 0.25 && tiles[1].type === 0.5 && tiles[2].type === 0.25)
+    {
+      client = FindClient(tiles[0].window_id);
+      client.geometry = Geometry(sx, sy, tlw, tlh);
+      client = FindClient(tiles[1].window_id);
+      client.geometry = Geometry((htx+hbx)/2, sy, (trw+brw)/2, (trh+brh)/2);
+      client = FindClient(tiles[2].window_id);
+      client.geometry = Geometry(sx, hly, blw, blw);
+    }
+    else if (tiles[0].type === 0.25 && tiles[1].type === 0.25 && tiles[2].type === 0.5)
+    {
+      client = FindClient(tiles[0].window_id);
+      client.geometry = Geometry(sx, sy, tlw, tlh);
+      client = FindClient(tiles[1].window_id);
+      client.geometry = Geometry(sx, hly, blw, blw);
+      client = FindClient(tiles[2].window_id);
+      client.geometry = Geometry((htx+hbx)/2, sy, (trw+brw)/2, (trh+brh)/2);
+    }
+    else
+    {
+      client = FindClient(tiles[0].window_id);
+      client.geometry = Geometry(sx, sy, (tlw+blw)/2, (tlh+blh)/2);
+      client = FindClient(tiles[1].window_id);
+      client.geometry = Geometry(htx, sy, trw, trh);
+      client = FindClient(tiles[2].window_id);
+      client.geometry = Geometry(hbx, hry, brw, brh);
+    };
+  };
+  if (ntiles === 4)
+  {
+    client = FindClient(tiles[0].window_id);
+    client.geometry = Geometry(sx, sy, tlw, tlh);
+    client = FindClient(tiles[1].window_id);
+    client.geometry = Geometry(htx, sy, trw, trh);
+    client = FindClient(tiles[2].window_id);
+    client.geometry = Geometry(hbx, hry, brw, brh);
+    client = FindClient(tiles[3].window_id);
+    client.geometry = Geometry(sx, hly, blw, blw);
+  };
+  return -1;
+};
+
+function CheckClient (client)
+{  
+  if (client.specialWindow) {return false;};
+  
+  for (var i = 0; i < ignored_captions.length; i++)
+  {
+    if (ignored_captions[i].indexOf(client.caption.toString()) === -1) {return false;};
+  };
+  
+  for (var i = 0; i < ignored_clients.length; i++)
+  {
+    if (ignored_clients[i].indexOf(client.resourceClass.toString()) === -1) {return false;};
+    if (ignored_clients[i].indexOf(client.resourceName.toString()) === -1) {return false;};
+  };
+  
+  return true;
+};
+
 function FindClient (window_id)
 {
   var clients = workspace.clientList();
@@ -326,197 +411,75 @@ function FindClient (window_id)
   return -1;
 };
 
-function RenderTiles (tiles, ntiles)
-{
-  if (ntiles === 0) {return -1;}
-  else if (ntiles === 1)
-  {
-    var width = desk_area.width-2*gap;
-    var height = desk_area.height-2*gap;
-    
-    var client = FindClient(tiles[0].window_id);
-    client.geometry = Qt.rect
-    (
-      Math.floor(gap+desk_area.x_min),
-      Math.floor(gap+desk_area.y_min),
-      Math.floor(width),
-      Math.floor(height)
-    );
-  }
-  else if (ntiles === 2)
-  {
-    var lwidth = (this.divider.vt+this.divider.vb)/2*(desk_area.width-3*gap);
-    var rwidth = (1-(this.divider.vt+this.divider.vb)/2)*(desk_area.width-3*gap);
-    var height = desk_area.height-2*gap;
-    
-    var client = FindClient(tiles[0].window_id);
-    client.geometry = Qt.rect
-    (
-      Math.floor(gap+desk_area.x_min),
-      Math.floor(gap+desk_area.y_min),
-      Math.floor(lwidth),
-      Math.floor(height)
-    );
-    client = FindClient(tiles[1].window_id);
-    client.geometry = Qt.rect
-    (
-      Math.floor(gap+desk_area.x_min+lwidth+gap),
-      Math.floor(gap+desk_area.y_min),
-      Math.floor(rwidth),
-      Math.floor(height)
-    );
-  }
-  else if (ntiles === 3)
-  {
-    var lwidth = (this.divider.vt+this.divider.vb)/2*(desk_area.width-3*gap);
-    var rwidth = (1-(this.divider.vt+this.divider.vb)/2)*(desk_area.width-3*gap);
-    var lheight = desk_area.height-2*gap;
-    var trheight = this.divider.hr*(desk_area.height-3*gap);
-    var brheight = (1-this.divider.hr)*(desk_area.height-3*gap);
-    
-    var client = FindClient(tiles[0].window_id);
-    client.geometry = Qt.rect
-    (
-      Math.floor(gap+desk_area.x_min),
-      Math.floor(gap+desk_area.y_min),
-      Math.floor(lwidth),
-      Math.floor(lheight)
-    );
-    client = FindClient(tiles[1].window_id);
-    client.geometry = Qt.rect
-    (
-      Math.floor(gap+desk_area.x_min+lwidth+gap),
-      Math.floor(gap+desk_area.y_min),
-      Math.floor(rwidth),
-      Math.floor(trheight)
-    );
-    client = FindClient(tiles[2].window_id);
-    client.geometry = Qt.rect
-    (
-      Math.floor(gap+desk_area.x_min+lwidth+gap),
-      Math.floor(gap+desk_area.y_min+theight+gap),
-      Math.floor(rwidth),
-      Math.floor(brheight)
-    );
-  } else if (ntiles === 4)
-  {
-    var tlwidth = this.divider.vt*(desk_area.width-3*gap);
-    var blwidth = this.divider.vb*(desk_area.width-3*gap);
-    var trwidth = (1-this.divider.vt)*(desk_area.width-3*gap);
-    var brwidth = (1-this.divider.vb)*(desk_area.width-3*gap);
-    var tlheight = this.divider.hl*(desk_area.height-3*gap);
-    var blheight = (1-this.divider.hl)*(desk_area.height-3*gap);
-    var trheight = this.divider.hr*(desk_area.height-3*gap);
-    var brheight = (1-this.divider.hr)*(desk_area.height-3*gap);
-    
-    var client = FindClient(tiles[0].window_id);
-    client.geometry = Qt.rect
-    (
-      Math.floor(gap+desk_area.x_min),
-      Math.floor(gap+desk_area.y_min),
-      Math.floor(tlwidth),
-      Math.floor(tlheight)
-    );
-    client = FindClient(tiles[1].window_id);
-    client.geometry = Qt.rect
-    (
-      Math.floor(gap+desk_area.x_min+tlwidth+gap),
-      Math.floor(gap+desk_area.y_min),
-      Math.floor(trwidth),
-      Math.floor(trheight)
-    );
-    client = FindClient(tiles[2].window_id);
-    client.geometry = Qt.rect
-    (
-      Math.floor(gap+desk_area.x_min+tlwidth+gap),
-      Math.floor(gap+desk_area.y_min+trheight+gap),
-      Math.floor(brwidth),
-      Math.floor(brheight)
-    );
-    client = FindClient(tiles[3].window_id);
-    client.geometry = Qt.rect
-    (
-      Math.floor(gap+desk_area.x_min),
-      Math.floor(gap+desk_area.y_min+tlheight+gap),
-      Math.floor(blwidth),
-      Math.floor(blheight)
-    );
-  } else {return -1;};
-  return 0;
-};
+// ---------------------------
+// Connecting The KWin Signals
+// ---------------------------
+
+layout = new Layout();
+
+// workspace.clientAdded.connect
+// (
+//   function(client)
+//   {
+//     if (!CheckClient(client)) {return -1;};
+//     print('Adding new tile');
+//   }
+// );
+// workspace.clientRemoved.connect
+// (
+//   function(client)
+//   {
+//     
+//   }
+// );
+
+
+
+
 
 // -------------
 // Class Testing
 // -------------
 
-var layout = new Layout();
-
-var layer1 = new Layer();
-var layer2 = new Layer();
-
-var desktop1 = new Desktop();
-var desktop2 = new Desktop();
-var desktop3 = new Desktop();
-var desktop4 = new Desktop();
-
-var tile1 = new Tile(1, 0.25);
-var tile2 = new Tile(2, 0.5);
-var tile3 = new Tile(3, 0.25);
-var tile4 = new Tile(4, 0.5);
-var tile5 = new Tile(5, 0.25);
-var tile6 = new Tile(6, 0.5);
-var tile7 = new Tile(7, 0.25);
-var tile8 = new Tile(8, 0.5);
-
-print('Adding Tiles to Desktops');
-print(desktop1.addTile(tile1));
-print(desktop1.addTile(tile2));
-print(desktop2.addTile(tile3));
-print(desktop2.addTile(tile4));
-print(desktop3.addTile(tile5));
-print(desktop3.addTile(tile6));
-print(desktop4.addTile(tile7));
-print(desktop4.addTile(tile8));
-
-print('Adding Desktops to Layers');
-print(layer1.addDesktop(desktop1));
-print(layer1.addDesktop(desktop2));
-print(layer2.addDesktop(desktop3));
-print(layer2.addDesktop(desktop4));
-
-print('Adding Layers to Layout');
-print(layout.addLayer(layer1));
-print(layout.addLayer(layer2));
-
-print('Testing Methods');
-print(layout.findTile(2).desktop_index);
-print(layout.findTile(2).layer_index);
-
-// -----
-// Start
-// -----
-
-// // execute when new client is opened
-// workspace.clientAdded.connect
-// (
-//   function(client)
-//   {
-// //     var geometry = client.geometry
-// //     geometry.x = client.x + gap + margins["left"];
-// //     geometry.y = client.y + gap + margins["top"];
-// //     geometry.width = client.width - gap * 2 - margins["left"] - margins["right"];
-// //     geometry.height = client.height * 0.5 - gap - margins["top"];
-// //     
-// //   //   client.geometry = geometry
-// //     
-// //     print(client.windowId)
-// //     print(client.caption)
-// //     print('new client opened')
-// //     print(client.geometry.x)
-// //     print(client.geometry.y)
-// //     print(client.geometry.width)
-// //     print(client.geometry.height)
+// var layout = new Layout();
 // 
-//   };
-// );
-
+// var layer1 = new Layer();
+// var layer2 = new Layer();
+// 
+// var desktop1 = new Desktop();
+// var desktop2 = new Desktop();
+// var desktop3 = new Desktop();
+// var desktop4 = new Desktop();
+// 
+// var tile1 = new Tile(1, 0.25);
+// var tile2 = new Tile(2, 0.5);
+// var tile3 = new Tile(3, 0.25);
+// var tile4 = new Tile(4, 0.5);
+// var tile5 = new Tile(5, 0.25);
+// var tile6 = new Tile(6, 0.5);
+// var tile7 = new Tile(7, 0.25);
+// var tile8 = new Tile(8, 0.5);
+// 
+// print('Adding Tiles to Desktops');
+// print(desktop1.addTile(tile1));
+// print(desktop1.addTile(tile2));
+// print(desktop2.addTile(tile3));
+// print(desktop2.addTile(tile4));
+// print(desktop3.addTile(tile5));
+// print(desktop3.addTile(tile6));
+// print(desktop4.addTile(tile7));
+// print(desktop4.addTile(tile8));
+// 
+// print('Adding Desktops to Layers');
+// print(layer1.addDesktop(desktop1));
+// print(layer1.addDesktop(desktop2));
+// print(layer2.addDesktop(desktop3));
+// print(layer2.addDesktop(desktop4));
+// 
+// print('Adding Layers to Layout');
+// print(layout.addLayer(layer1));
+// print(layout.addLayer(layer2));
+// 
+// print('Testing Methods');
+// print(layout.findTile(2).desktop_index);
+// print(layout.findTile(2).layer_index);
