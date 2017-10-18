@@ -24,7 +24,7 @@ var desk_area =
 };
 
 // the smallest tile, must be either 1, 0.5 or 0.25, defaults to 0.25, so quarters are not needed to be specified
-var minimum_tile_type =
+var tile_types =
 {
   kate: 0.5,
   chromium: 0.5,
@@ -89,9 +89,9 @@ function Desktop ()
     return sum;
   };
   
-  this.renderDesktop = function ()
+  this.renderDesktop = function (desktop_index)
   {
-    return RenderTiles(this.tiles, this.ntiles(), this.divider);
+    return RenderTiles(this.tiles, this.ntiles(), this.divider, desktop_index);
   };
   
   this.addTile = function (tile)
@@ -154,7 +154,7 @@ function Layer ()
   this.renderDesktop = function (desktop_index)
   {
     if (desktop_index >= this.ndesktops()) {return -1;};
-    return this.desktops[desktop_index].renderDesktop();
+    return this.desktops[desktop_index].renderDesktop(desktop_index);
   };
   
   this.addTile = function (tile)
@@ -287,22 +287,24 @@ function Layout ()
 // Functions
 // ---------
 
-function Geometry (x, y, width, height)
+function RenderClient (client, number, x, y, width, height)
 {
-  return Qt.rect
+  client.desktop = number;
+  client.geometry = Qt.rect
   (
     Math.floor(x),
     Math.floor(y),
     Math.floor(width),
     Math.floor(height)
   );
+  return 0;
 };
 
-function RenderTiles (tiles, ntiles, divider)
+function RenderTiles (tiles, ntiles, divider, desktop_index)
 {
   if (ntiles === 0) {return -1;};
   
-  var client;
+  var d = desktop_index+1;
   
   var w = desk_area.width-3*gap; // width
   var h = desk_area.height-3*gap; // height
@@ -326,76 +328,79 @@ function RenderTiles (tiles, ntiles, divider)
   
   if (ntiles === 1)
   {
-    client = FindClient(tiles[0].window_id);
-    client.geometry = Geometry(sx, sy, w+gap, h+gap);
+    RenderClient(FindClient(tiles[0].window_id), d, sx, sy, w+gap, h+gap);
   }
   if (ntiles === 2)
   {
-    client = FindClient(tiles[0].window_id);
-    client.geometry = Geometry(sx, sy, (tlw+blw)/2, (tlh+blh)/2);
-    client = FindClient(tiles[1].window_id);
-    client.geometry = Geometry((htx+hbx)/2, sy, (trw+brw)/2, (trh+brh)/2);
+    RenderClient(FindClient(tiles[0].window_id), d, sx, sy, (tlw+blw)/2, (tlh+blh)/2);
+    RenderClient(FindClient(tiles[1].window_id), d, (htx+hbx)/2, sy, (trw+brw)/2, (trh+brh)/2);
   };
   if (ntiles === 3)
   {
     if (tiles[0].type === 0.25 && tiles[1].type === 0.5 && tiles[2].type === 0.25)
     {
-      client = FindClient(tiles[0].window_id);
-      client.geometry = Geometry(sx, sy, tlw, tlh);
-      client = FindClient(tiles[1].window_id);
-      client.geometry = Geometry((htx+hbx)/2, sy, (trw+brw)/2, (trh+brh)/2);
-      client = FindClient(tiles[2].window_id);
-      client.geometry = Geometry(sx, hly, blw, blw);
+      RenderClient(FindClient(tiles[0].window_id), d, sx, sy, tlw, tlh);
+      RenderClient(FindClient(tiles[1].window_id), d, (htx+hbx)/2, sy, (trw+brw)/2, (trh+brh)/2);
+      RenderClient(FindClient(tiles[2].window_id), d, sx, hly, blw, blw);
     }
     else if (tiles[0].type === 0.25 && tiles[1].type === 0.25 && tiles[2].type === 0.5)
     {
-      client = FindClient(tiles[0].window_id);
-      client.geometry = Geometry(sx, sy, tlw, tlh);
-      client = FindClient(tiles[1].window_id);
-      client.geometry = Geometry(sx, hly, blw, blw);
-      client = FindClient(tiles[2].window_id);
-      client.geometry = Geometry((htx+hbx)/2, sy, (trw+brw)/2, (trh+brh)/2);
+      RenderClient(FindClient(tiles[0].window_id), d, sx, sy, tlw, tlh);
+      RenderClient(FindClient(tiles[1].window_id), d, sx, hly, blw, blw);
+      RenderClient(FindClient(tiles[2].window_id), d, (htx+hbx)/2, sy, (trw+brw)/2, (trh+brh)/2);
     }
     else
     {
-      client = FindClient(tiles[0].window_id);
-      client.geometry = Geometry(sx, sy, (tlw+blw)/2, (tlh+blh)/2);
-      client = FindClient(tiles[1].window_id);
-      client.geometry = Geometry(htx, sy, trw, trh);
-      client = FindClient(tiles[2].window_id);
-      client.geometry = Geometry(hbx, hry, brw, brh);
+      RenderClient(FindClient(tiles[0].window_id), d, sx, sy, (tlw+blw)/2, (tlh+blh)/2);
+      RenderClient(FindClient(tiles[1].window_id), d, htx, sy, trw, trh);
+      RenderClient(FindClient(tiles[2].window_id), d, hbx, hry, brw, brh);
     };
   };
   if (ntiles === 4)
   {
-    client = FindClient(tiles[0].window_id);
-    client.geometry = Geometry(sx, sy, tlw, tlh);
-    client = FindClient(tiles[1].window_id);
-    client.geometry = Geometry(htx, sy, trw, trh);
-    client = FindClient(tiles[2].window_id);
-    client.geometry = Geometry(hbx, hry, brw, brh);
-    client = FindClient(tiles[3].window_id);
-    client.geometry = Geometry(sx, hly, blw, blw);
+    RenderClient(FindClient(tiles[0].window_id), d, sx, sy, tlw, tlh);
+    RenderClient(FindClient(tiles[1].window_id), d, htx, sy, trw, trh);
+    RenderClient(FindClient(tiles[2].window_id), d, hbx, hry, brw, brh);
+    RenderClient(FindClient(tiles[3].window_id), d, sx, hly, blw, blw);
   };
   return -1;
 };
 
-function CheckClient (client)
+function MakeTile (client)
 {  
-  if (client.specialWindow) {return false;};
+  if (client.specialWindow) {return -1;};
+  
+  var c_class = client.resourceClass.toString();
+  var c_name = client.resourceName.toString();
+  var c_caption = client.caption.toString();
   
   for (var i = 0; i < ignored_captions.length; i++)
   {
-    if (ignored_captions[i].indexOf(client.caption.toString()) === -1) {return false;};
+    if (ignored_captions[i].indexOf(c_caption) !== -1) {return -1;};
   };
   
   for (var i = 0; i < ignored_clients.length; i++)
   {
-    if (ignored_clients[i].indexOf(client.resourceClass.toString()) === -1) {return false;};
-    if (ignored_clients[i].indexOf(client.resourceName.toString()) === -1) {return false;};
+    if (ignored_clients[i].indexOf(c_class) !== -1) {return -1;};
+    if (ignored_clients[i].indexOf(c_name) !== -1) {return -1;};
   };
   
-  return true;
+  var type = 0.25;
+  for (var i = 0; i < tile_types.length; i++)
+  {
+    if (c_class in tile_types)
+    {
+      type = tile_types[c_class];
+      break;
+    };
+    if (c_name in tile_types)
+    {
+      type = tile_types[c_name];
+      break;
+    };
+  };
+  var tile = new Tile(client.windowId, type);
+  return tile;
 };
 
 function FindClient (window_id)
@@ -417,19 +422,23 @@ function FindClient (window_id)
 
 layout = new Layout();
 
-// workspace.clientAdded.connect
-// (
-//   function(client)
-//   {
-//     if (!CheckClient(client)) {return -1;};
-//     print('Adding new tile');
-//   }
-// );
+workspace.clientAdded.connect
+(
+  function(client)
+  {
+    var tile = MakeTile(client);
+    if (tile === -1) {return -1;};
+    layout.addTile(tile);
+    layout.renderLayout();
+    return 0;
+  }
+);
+
 // workspace.clientRemoved.connect
 // (
 //   function(client)
 //   {
-//     
+// 
 //   }
 // );
 
