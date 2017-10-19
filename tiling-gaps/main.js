@@ -290,13 +290,14 @@ function Layout ()
 function RenderClient (client, number, x, y, width, height)
 {
   client.desktop = number;
-  client.geometry = Qt.rect
-  (
-    Math.floor(x),
-    Math.floor(y),
-    Math.floor(width),
-    Math.floor(height)
-  );
+  client.geometry = 
+  {
+    x: Math.floor(x),
+    y: Math.floor(y),
+    width: Math.floor(width),
+    height: Math.floor(height),
+  };
+  
   return 0;
 };
 
@@ -328,40 +329,40 @@ function RenderTiles (tiles, ntiles, divider, desktop_index)
   
   if (ntiles === 1)
   {
-    RenderClient(FindClient(tiles[0].window_id), d, sx, sy, w+gap, h+gap);
+    RenderClient(GetClient(tiles[0].window_id), d, sx, sy, w+gap, h+gap);
   }
   if (ntiles === 2)
   {
-    RenderClient(FindClient(tiles[0].window_id), d, sx, sy, (tlw+blw)/2, (tlh+blh)/2);
-    RenderClient(FindClient(tiles[1].window_id), d, (htx+hbx)/2, sy, (trw+brw)/2, (trh+brh)/2);
+    RenderClient(GetClient(tiles[0].window_id), d, sx, sy, (tlw+blw)/2, h+gap);
+    RenderClient(GetClient(tiles[1].window_id), d, (htx+hbx)/2, sy, (trw+brw)/2, h+gap);
   };
   if (ntiles === 3)
   {
     if (tiles[0].type === 0.25 && tiles[1].type === 0.5 && tiles[2].type === 0.25)
     {
-      RenderClient(FindClient(tiles[0].window_id), d, sx, sy, tlw, tlh);
-      RenderClient(FindClient(tiles[1].window_id), d, (htx+hbx)/2, sy, (trw+brw)/2, (trh+brh)/2);
-      RenderClient(FindClient(tiles[2].window_id), d, sx, hly, blw, blw);
+      RenderClient(GetClient(tiles[0].window_id), d, sx, sy, tlw, tlh);
+      RenderClient(GetClient(tiles[1].window_id), d, (htx+hbx)/2, sy, (trw+brw)/2, h+gap);
+      RenderClient(GetClient(tiles[2].window_id), d, sx, hly, blw, blw);
     }
     else if (tiles[0].type === 0.25 && tiles[1].type === 0.25 && tiles[2].type === 0.5)
     {
-      RenderClient(FindClient(tiles[0].window_id), d, sx, sy, tlw, tlh);
-      RenderClient(FindClient(tiles[1].window_id), d, sx, hly, blw, blw);
-      RenderClient(FindClient(tiles[2].window_id), d, (htx+hbx)/2, sy, (trw+brw)/2, (trh+brh)/2);
+      RenderClient(GetClient(tiles[0].window_id), d, sx, sy, tlw, tlh);
+      RenderClient(GetClient(tiles[1].window_id), d, sx, hly, blw, blw);
+      RenderClient(GetClient(tiles[2].window_id), d, (htx+hbx)/2, sy, (trw+brw)/2, h+gap);
     }
     else
     {
-      RenderClient(FindClient(tiles[0].window_id), d, sx, sy, (tlw+blw)/2, (tlh+blh)/2);
-      RenderClient(FindClient(tiles[1].window_id), d, htx, sy, trw, trh);
-      RenderClient(FindClient(tiles[2].window_id), d, hbx, hry, brw, brh);
+      RenderClient(GetClient(tiles[0].window_id), d, sx, sy, (tlw+blw)/2, h+gap);
+      RenderClient(GetClient(tiles[1].window_id), d, htx, sy, trw, trh);
+      RenderClient(GetClient(tiles[2].window_id), d, hbx, hry, brw, brh);
     };
   };
   if (ntiles === 4)
   {
-    RenderClient(FindClient(tiles[0].window_id), d, sx, sy, tlw, tlh);
-    RenderClient(FindClient(tiles[1].window_id), d, htx, sy, trw, trh);
-    RenderClient(FindClient(tiles[2].window_id), d, hbx, hry, brw, brh);
-    RenderClient(FindClient(tiles[3].window_id), d, sx, hly, blw, blw);
+    RenderClient(GetClient(tiles[0].window_id), d, sx, sy, tlw, tlh);
+    RenderClient(GetClient(tiles[1].window_id), d, htx, sy, trw, trh);
+    RenderClient(GetClient(tiles[2].window_id), d, hbx, hry, brw, brh);
+    RenderClient(GetClient(tiles[3].window_id), d, sx, hly, blw, blw);
   };
   return -1;
 };
@@ -403,17 +404,12 @@ function MakeTile (client)
   return tile;
 };
 
-function FindClient (window_id)
+var new_client;
+function GetClient (window_id)
 {
-  var clients = workspace.clientList();
-  for (var i = 0; i<clients.length; i++)
-  {
-    if (clients[i].windowId === window_id)
-    {
-      return clients[i];
-    };
-  };
-  return -1;
+  if (new_client.windowId === window_id) {return new_client;};
+  
+  return workspace.getClient(window_id);
 };
 
 // ---------------------------
@@ -426,6 +422,7 @@ workspace.clientAdded.connect
 (
   function(client)
   {
+    new_client = client; // newly added clients are not inside workspace yet, thus need to be stored in new_client
     var tile = MakeTile(client);
     if (tile === -1) {return -1;};
     layout.addTile(tile);
@@ -434,13 +431,15 @@ workspace.clientAdded.connect
   }
 );
 
-// workspace.clientRemoved.connect
-// (
-//   function(client)
-//   {
-// 
-//   }
-// );
+workspace.clientRemoved.connect
+(
+  function(client)
+  {
+    var found = layout.findTile(client.windowId);
+    if (found === -1) {return -1;}
+    return layout.removeTile(found.tile_index, found.desktop_index, found.layer_index);
+  }
+);
 
 
 
