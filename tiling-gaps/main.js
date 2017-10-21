@@ -26,9 +26,11 @@ var desk_area =
 // the smallest tile, must be either 1, 0.5 or 0.25, defaults to 0.25, so quarters are not needed to be specified
 var tile_types =
 {
-//   kate: 0.5,
   texstudio: 1,
-  konsole: 0.5,
+  inkscape: 1,
+  gimp: 1,
+  spotify: 0.5,
+  kate: 0.5,
 };
 
 // clients that are not tiled
@@ -56,6 +58,7 @@ var ignored_captions =
   "File Upload",
   "Move to Trash",
   "Quit GIMP",
+  "Preferences",
   "Create a New Image",
   "QEMU",
 ];
@@ -267,6 +270,7 @@ function Layout ()
 function RenderClient (client, d, x, y, width, height)
 {
   client.desktop = d;
+  client.fullScreen = false;
   client.geometry = 
   {
     x: Math.floor(x),
@@ -348,11 +352,12 @@ function MakeTile (client)
   
   for (var i = 0; i < ignored_captions.length; i++)
   {
-    if (ignored_captions[i].indexOf(c_caption) !== -1) {return -1;};
+    if (ignored_captions[i] === c_caption) {return -1;};
   };
   
   for (var i = 0; i < ignored_clients.length; i++)
   {
+    if (c_class === '' || c_name === '') {break;};
     if (ignored_clients[i].indexOf(c_class) !== -1) {return -1;};
     if (ignored_clients[i].indexOf(c_name) !== -1) {return -1;};
   };
@@ -365,7 +370,6 @@ function MakeTile (client)
   return tile;
 };
 
-var new_client;
 function GetClient (window_id)
 {
   var client = workspace.getClient(window_id);
@@ -406,6 +410,54 @@ workspace.clientRemoved.connect
   }
 );
 
+// -------
+// Testing
+// -------
+
+// var clients = workspace.clientList(); 
+// for (var i=0; i<clients.length; i++)
+// {
+//   print(clients[i].caption);
+//   if (clients[i].caption === 'Spotify')
+//   {
+//     clients[i].geometry = {x: 10, y: 50, width: 100, height: 500}
+//   };
+// };
+
+
+// kate = workspace.getClient(71303173);
+// konsole = workspace.getClient(69206022);
+
+
+// function PrintProperties(c)
+// {
+//   print('------------');
+//   print(c.alpha);
+//   print(c.frameId);
+//   print(c.geometry.toString());
+//   print(c.visibleRect.toString());
+//   print(c.height);
+//   print(c.pos.toString());
+//   print(c.screen);
+//   print(c.size.toString());
+//   print(c.width);
+//   print(c.windowId);
+//   print(c.x);
+//   print(c.y);
+//   print(c.desktop);
+//   print(c.onAllDesktops);
+//   print(c.rect.toString());
+//   print(c.clientPos.toString());
+//   print(c.clientSize.toString());
+//   print(c.resourceName.toString());
+//   print(c.resourceClass.toString());
+//   print(c.windowRole.toString());
+//   print(c.shaped);
+//   print(c.modal);
+//   print(c.resizeable);
+//   print(c.fullScreen);
+//   print(c.blocksCompositing);
+// };
 
 // -------------
 // Class Testing

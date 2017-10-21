@@ -3,4 +3,6 @@
 - Tiling + Gaps
 
 # To Do
-- test Layer and Layout classes
+- spotify does not pass ClientCheck
+- kate does not take on geometry
+- inkscape is fullscreened always
