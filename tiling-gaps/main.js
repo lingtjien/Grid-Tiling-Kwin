@@ -26,8 +26,9 @@ var desk_area =
 // the smallest tile, must be either 1, 0.5 or 0.25, defaults to 0.25, so quarters are not needed to be specified
 var tile_types =
 {
-  kate: 0.5,
-  chromium: 0.5,
+//   kate: 0.5,
+  texstudio: 1,
+  konsole: 0.5,
 };
 
 // clients that are not tiled
@@ -94,26 +95,20 @@ function Desktop ()
   
   this.addTile = function (tile)
   {
-    if (this.size()+tile.type >= 1) {return -1;};
+    if (this.size()+tile.type > 1) {return -1;};
     this.tiles.push(tile);
     return 0;
   };
   
-  this.removeTile = function (tile_index)
-  {
-    if (tile_index >= this.ntiles()) {return -1;};
-    this.tiles.splice(tile_index, 1);
-    return 0;
-  };
-  
-  this.findTile = function (window_id)
+  this.removeTile = function (window_id)
   {
     if (this.ntiles() === 0) {return -1;};
     for (var i = 0; i < this.ntiles(); i++)
     {
       if (this.tiles[i].window_id === window_id)
       {
-        return i;
+        this.tiles.splice(i, 1);
+        return 0;
       };
     };
     return -1;
@@ -128,11 +123,12 @@ function Layer ()
   
   this.renderLayer = function ()
   {
+    var render = -1;
     for (var i = 0; i < this.ndesktops(); i++)
     {
-      if (this.desktops[i].renderDesktop() === -1) {return -1};
+      render = this.desktops[i].renderDesktop(i);
     };
-    return 0;
+    return render;
   };
   
   this.addDesktop = function (desktop)
@@ -168,26 +164,15 @@ function Layer ()
     return this.desktops[this.ndesktops()-1].addTile(tile);
   };
   
-  this.removeTile = function (tile_index, desktop_index)
+  this.removeTile = function (window_id)
   {
-    if (desktop_index >= this.ndesktops()) {return -1;};
-    if (this.desktops[desktop_index].removeTile(tile_index) === 0)
-    {
-      if (this.desktops[desktop_index].size() === 0) {this.removeDesktop(i);};
-      return 0;
-    };
-    return -1;
-  };
-  
-  this.findTile = function (window_id)
-  {
-    var found = -1;
+    var removed = -1;
     for (var i = 0; i < this.ndesktops(); i++)
     {
-      found = this.desktops[i].findTile(window_id);
-      if (found !== -1) {return {tile_index: found, desktop_index: i};};
+      removed = this.desktops[i].removeTile(window_id);
+      if (removed === 0) {return removed;};
     };
-    return found;
+    return removed;
   };
 };
 
@@ -198,11 +183,12 @@ function Layout ()
   
   this.renderLayout = function ()
   {
+    var render = -1;
     for (var i = 0; i < this.nlayers(); i++)
     {
-      if (this.layers[i].renderLayer() === -1) {return -1;};
+      render = this.layers[i].renderLayer();
     };
-    return 0;
+    return render;
   };
   
   this.addLayer = function (layer) 
@@ -259,25 +245,18 @@ function Layout ()
     };
     var layer = new Layer();
     this.addLayer(layer);
-    var desktop = new Desktop();
-    this.layers[this.nlayers()-1].addDesktop(desktop);
-    return this.layers[this.nlayers()-1].desktops[0].addTile(tile);
+    return this.layers[this.nlayers()-1].addTile(tile);
   };
   
-  this.removeTile = function (tile_index, desktop_index, layer_index)
+  this.removeTile = function (window_id)
   {
-    if (layer_index >= this.nlayers()) {return -1;};
-    return this.layers[layer_index].removeTile(desktop_index, tile_index);
-  };
-  
-  this.findTile = function (window_id)
-  {
+    removed = -1;
     for (var i = 0; i < this.nlayers(); i++)
     {
-      var found = this.layers[i].findTile(window_id);
-      if (found !== -1) {return {tile_index: found.tile_index, desktop_index: found.desktop_index, layer_index: i};};
+      removed = this.layers[i].removeTile(window_id);
+      if (removed === 0) {return removed;};
     };
-    return -1;
+    return removed;
   };
 };
 
@@ -285,9 +264,9 @@ function Layout ()
 // Functions
 // ---------
 
-function RenderClient (client, number, x, y, width, height)
+function RenderClient (client, d, x, y, width, height)
 {
-  client.desktop = number;
+  client.desktop = d;
   client.geometry = 
   {
     x: Math.floor(x),
@@ -295,12 +274,6 @@ function RenderClient (client, number, x, y, width, height)
     width: Math.floor(width),
     height: Math.floor(height),
   };
-  
-  print(client.caption);
-  print(client.geometry.x);
-  print(client.geometry.y);
-  print(client.geometry.width);
-  print(client.geometry.height);
   
   return 0;
 };
@@ -385,20 +358,9 @@ function MakeTile (client)
   };
   
   var type = 0.25;
-  for (var i = 0; i < tile_types.length; i++)
-  {
-    if (c_class in tile_types)
-    {
-      type = tile_types[c_class];
-      break;
-    };
-    if (c_name in tile_types)
-    {
-      type = tile_types[c_name];
-      break;
-    };
-  };
-  print(type);
+  if (c_class in tile_types) {type = tile_types[c_class];};
+  if (c_name in tile_types) {type = tile_types[c_name];};
+
   var tile = new Tile(client.windowId, type);
   return tile;
 };
@@ -407,13 +369,11 @@ var new_client;
 function GetClient (window_id)
 {
   var client = workspace.getClient(window_id);
-  
-  if (client === undefined && new_client.windowId === window_id)
+  if (client === null && new_client.windowId === window_id)
   {
-    var client = new_client;
-    new_client = {windowId: undefined};
+    client = new_client;
+    new_client = {window_id: null};
   }
-  
   return client;
 };
 
@@ -423,52 +383,28 @@ function GetClient (window_id)
 
 layout = new Layout();
 
-// make this piece of code work
-var type = 0.25;
-for (var i = 0; i < tile_types.length; i++)
-{
-  var c_class = "kate";
-  if (c_class in tile_types)
+workspace.clientAdded.connect
+(
+  function(client)
   {
-    type = tile_types[c_class];
-    break;
-  };
-  if (c_name in tile_types)
+    new_client = client; // newly added clients are not inside workspace yet, thus need to be stored in global new_client
+    var tile = MakeTile(client);
+    if (tile === -1) {return -1;};
+    layout.addTile(tile);
+    layout.renderLayout();
+    return 0;
+  }
+);
+
+workspace.clientRemoved.connect
+(
+  function(client)
   {
-    type = tile_types[c_name];
-    break;
-  };
-};
-print(type);
-
-// workspace.clientAdded.connect
-// (
-//   function(client)
-//   {
-//     new_client = client; // newly added clients are not inside workspace yet, thus need to be stored in global new_client
-//     var tile = MakeTile(client);
-//     if (tile === -1) {return -1;};
-//     layout.addTile(tile);
-//     layout.renderLayout();
-//     return 0;
-//   }
-// );
-// 
-// workspace.clientRemoved.connect
-// (
-//   function(client)
-//   {
-//     
-//     //rewrite remove tile for only window_id as argument -> get rid of findTile
-//     var found = layout.findTile(client.windowId);
-//     if (found === -1) {return -1;}
-//     layout.removeTile(found.tile_index, found.desktop_index, found.layer_index);
-//     layout.renderLayout();
-//   }
-// );
-
-
-
+    var removed = layout.removeTile(client.windowId);
+    if (removed === 0) {return layout.renderLayout();};
+    return -1;
+  }
+);
 
 
 // -------------
