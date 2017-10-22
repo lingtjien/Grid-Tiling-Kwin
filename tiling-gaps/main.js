@@ -274,10 +274,10 @@ function Layout ()
 // Functions
 // ---------
 
-function RenderClient (client, d, x, y, width, height)
+function RenderClient (tile, d, x, y, width, height)
 {
-  client.desktop = d;
-  client.geometry = 
+  var client = workspace.getClient(tile.window_id);
+  var geometry = 
   {
     x: Math.floor(x),
     y: Math.floor(y),
@@ -285,6 +285,10 @@ function RenderClient (client, d, x, y, width, height)
     height: Math.floor(height),
   };
   
+  client.desktop = d;
+  client.tiled_desktop = d;
+  client.geometry = geometry;
+  client.tiled_geometry = geometry;
   return 0;
 };
 
@@ -310,40 +314,40 @@ function RenderTiles (tiles, ntiles, divider, desktop_index)
   
   if (ntiles === 1)
   {
-    RenderClient(workspace.getClient(tiles[0].window_id), d, sx, sy, w+gap, h+gap);
+    RenderClient(tiles[0], d, sx, sy, w+gap, h+gap);
   }
   if (ntiles === 2)
   {
-    RenderClient(workspace.getClient(tiles[0].window_id), d, sx, sy, lw, h+gap);
-    RenderClient(workspace.getClient(tiles[1].window_id), d, hx, sy, rw, h+gap);
+    RenderClient(tiles[0], d, sx, sy, lw, h+gap);
+    RenderClient(tiles[1], d, hx, sy, rw, h+gap);
   };
   if (ntiles === 3)
   {
     if (tiles[0].type === 0.25 && tiles[1].type === 0.5 && tiles[2].type === 0.25)
     {
-      RenderClient(workspace.getClient(tiles[0].window_id), d, sx, sy, lw, th);
-      RenderClient(workspace.getClient(tiles[1].window_id), d, hx, sy, rw, h+gap);
-      RenderClient(workspace.getClient(tiles[2].window_id), d, sx, hy, lw, bh);
+      RenderClient(tiles[0], d, sx, sy, lw, th);
+      RenderClient(tiles[1], d, hx, sy, rw, h+gap);
+      RenderClient(tiles[2], d, sx, hy, lw, bh);
     }
     else if (tiles[0].type === 0.25 && tiles[1].type === 0.25 && tiles[2].type === 0.5)
     {
-      RenderClient(workspace.getClient(tiles[0].window_id), d, sx, sy, lw, th);
-      RenderClient(workspace.getClient(tiles[1].window_id), d, sx, hy, lw, bh);
-      RenderClient(workspace.getClient(tiles[2].window_id), d, hx, sy, rw, h+gap);
+      RenderClient(tiles[0], d, sx, sy, lw, th);
+      RenderClient(tiles[1], d, sx, hy, lw, bh);
+      RenderClient(tiles[2], d, hx, sy, rw, h+gap);
     }
     else
     {
-      RenderClient(workspace.getClient(tiles[0].window_id), d, sx, sy, lw, h+gap);
-      RenderClient(workspace.getClient(tiles[1].window_id), d, hx, sy, rw, th);
-      RenderClient(workspace.getClient(tiles[2].window_id), d, hx, hy, rw, bh);
+      RenderClient(tiles[0], d, sx, sy, lw, h+gap);
+      RenderClient(tiles[1], d, hx, sy, rw, th);
+      RenderClient(tiles[2], d, hx, hy, rw, bh);
     };
   };
   if (ntiles === 4)
   {
-    RenderClient(workspace.getClient(tiles[0].window_id), d, sx, sy, lw, th);
-    RenderClient(workspace.getClient(tiles[1].window_id), d, hx, sy, rw, th);
-    RenderClient(workspace.getClient(tiles[2].window_id), d, hx, hy, rw, bh);
-    RenderClient(workspace.getClient(tiles[3].window_id), d, sx, hy, lw, bh);
+    RenderClient(tiles[0], d, sx, sy, lw, th);
+    RenderClient(tiles[1], d, hx, sy, rw, th);
+    RenderClient(tiles[2], d, hx, hy, rw, bh);
+    RenderClient(tiles[3], d, sx, hy, lw, bh);
   };
   return -1;
 };
@@ -376,12 +380,33 @@ function MakeTile (client)
   return tile;
 };
 
+function ClientChanged (client)
+{
+  // client moved
+  if (client.tiled_geometry.x !== client.geometry.x || client.tiled_geometry.y !== client.geometry.y)
+  {
+    print('client moved');
+  };
+  // client resized
+  if (client.tiled_geometry.width !== client.geometry.width || client.tiled_geometry.height !== client.geometry.height)
+  {
+    
+    print('client resized');
+  };
+  // client moved desktop
+  if (client.tiled_desktop !== client.desktop)
+  {
+    print('client moved desktop');
+  };
+  return 0;
+};
+
 // ---------------------------
 // Connecting The KWin Signals
 // ---------------------------
 
 var added_clients = {}; // window_id of added clients
-layout = new Layout(); // main class, contains all methods
+var layout = new Layout(); // main class, contains all methods
 
 workspace.clientActivated.connect // clientAdded does not work for a lot of clients
 (
@@ -395,6 +420,7 @@ workspace.clientActivated.connect // clientAdded does not work for a lot of clie
     layout.addTile(tile);
     layout.renderLayout();
     workspace.currentDesktop = client.desktop;
+    ConnectClient(client);
     return 0;
   }
 );
@@ -414,3 +440,22 @@ workspace.clientRemoved.connect
     return removed;
   }
 );
+
+function ConnectClient (client)
+{
+  client.clientFinishUserMovedResized.connect
+  (
+    function (client)
+    {
+      return ClientChanged(client);
+    }
+  );
+//   client.clientStepUserMovedResized.connect
+//   (
+//     function (client)
+//     {
+//       return ClientChanged(client);
+//     }
+//   );
+  return 0;
+};
