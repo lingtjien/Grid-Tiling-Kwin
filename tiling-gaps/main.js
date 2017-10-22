@@ -5,7 +5,7 @@
 // Parameters
 // ----------
 
-var gap = 10;
+var gap = 16;
 
 var margins =
 {
@@ -67,8 +67,6 @@ var ignored_captions =
 // Class Definitions
 // -----------------
 
-var managed_window_id = {};
-
 function Tile (window_id, type)
 {
   this.window_id = window_id; // must be unique for every window
@@ -120,7 +118,6 @@ function Desktop ()
   };
 };
 
-// all virtual desktops are contained in one layer
 function Layer ()
 {
   this.desktops = [];
@@ -175,7 +172,11 @@ function Layer ()
     for (var i = 0; i < this.ndesktops(); i++)
     {
       removed = this.desktops[i].removeTile(window_id);
-      if (removed === 0) {return removed;};
+      if (removed === 0)
+      {
+        if (this.desktops[i].size() === 0) {removed = this.removeDesktop(i);};
+        break;
+      };
     };
     return removed;
   };
@@ -259,7 +260,11 @@ function Layout ()
     for (var i = 0; i < this.nlayers(); i++)
     {
       removed = this.layers[i].removeTile(window_id);
-      if (removed === 0) {return removed;};
+      if (removed === 0)
+      {
+        if (this.layers[i].ndesktops === 0) {removed = this.removeLayer(i);};
+        break;
+      };
     };
     return removed;
   };
@@ -272,7 +277,7 @@ function Layout ()
 function RenderClient (client, d, x, y, width, height)
 {
   client.desktop = d;
-  client.fullScreen = false;
+//   client.fullScreen = false;
   client.geometry = 
   {
     x: Math.floor(x),
@@ -376,19 +381,21 @@ function MakeTile (client)
 // Connecting The KWin Signals
 // ---------------------------
 
-layout = new Layout();
+var added_clients = {}; // window_id of added clients
+layout = new Layout(); // main class, contains all methods
 
 workspace.clientActivated.connect // clientAdded does not work for a lot of clients
 (
   function (client)
   {
-    if (client === null || client.windowId in managed_window_id) {return -1;};
-    managed_window_id[client.windowId] = true;
+    if (client === null || client.windowId in added_clients) {return -1;};
+    added_clients[client.windowId] = true;
     
     var tile = MakeTile(client);
     if (tile === -1) {return -1;};
     layout.addTile(tile);
     layout.renderLayout();
+    workspace.currentDesktop = client.desktop;
     return 0;
   }
 );
@@ -397,12 +404,15 @@ workspace.clientRemoved.connect
 (
   function (client)
   {
-    if (!(client.windowId in managed_window_id)) {return -1;};
-    delete managed_window_id[client.windowId];
+    if (!(client.windowId in added_clients)) {return -1;};
+    delete added_clients[client.windowId];
     
     var removed = layout.removeTile(client.windowId);
-    if (removed === 0) {return layout.renderLayout();};
-    return -1;
+    if (removed === 0)
+    {
+      layout.renderLayout();
+    };
+    return removed;
   }
 );
 
