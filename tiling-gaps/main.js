@@ -58,7 +58,7 @@ var ignored_captions =
   "File Upload",
   "Move to Trash",
   "Quit GIMP",
-  "Preferences",
+  "Preferences (Shift+Ctrl+P)",
   "Create a New Image",
   "QEMU",
 ];
@@ -277,7 +277,6 @@ function Layout ()
 function RenderClient (client, d, x, y, width, height)
 {
   client.desktop = d;
-//   client.fullScreen = false;
   client.geometry = 
   {
     x: Math.floor(x),
