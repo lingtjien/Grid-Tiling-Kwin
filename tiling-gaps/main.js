@@ -75,12 +75,6 @@ function Tile (window_id, type)
 
 function Desktop ()
 {
-  this.divider = 
-  {
-    horizontal: 0.5,
-    vertical: 0.5,
-  };
-  
   this.tiles = [];
   this.ntiles = function () {return this.tiles.length;};
   
@@ -89,11 +83,6 @@ function Desktop ()
     var sum = 0;
     for (var i = 0; i < this.ntiles(); i++) {sum += this.tiles[i].type;};
     return sum;
-  };
-  
-  this.renderDesktop = function (desktop_index)
-  {
-    return RenderTiles(this.tiles, this.ntiles(), this.divider, desktop_index);
   };
   
   this.addTile = function (tile)
@@ -116,22 +105,37 @@ function Desktop ()
     };
     return -1;
   };
+  
+  // divider
+  this.divider = 
+  {
+    horizontal: 0.5,
+    vertical: 0.5,
+  };
+  
+  this.setDivider = function (horizontal, vertical)
+  {
+    this.divider.horizontal = horizontal;
+    this.divider.vertical = vertical;
+    return 0;
+  };
+  
+  this.getDivider = function ( )
+  {
+    return this.divider;
+  };
+  
+  // rendering
+  this.renderDesktop = function (desktop_index, layer_index)
+  {
+    return RenderTiles(this.divider, this.tiles, this.ntiles(), desktop_index, layer_index);
+  };
 };
 
 function Layer ()
 {
   this.desktops = [];
   this.ndesktops =  function () {return this.desktops.length;};
-  
-  this.renderLayer = function ()
-  {
-    var render = -1;
-    for (var i = 0; i < this.ndesktops(); i++)
-    {
-      render = this.desktops[i].renderDesktop(i);
-    };
-    return render;
-  };
   
   this.addDesktop = function (desktop)
   {
@@ -145,12 +149,6 @@ function Layer ()
     if (desktop_index >= this.ndesktops()) {return -1;};
     this.desktops.splice(desktop_index, 1);
     return 0;
-  };
-  
-  this.renderDesktop = function (desktop_index)
-  {
-    if (desktop_index >= this.ndesktops()) {return -1;};
-    return this.desktops[desktop_index].renderDesktop(desktop_index);
   };
   
   this.addTile = function (tile)
@@ -180,22 +178,42 @@ function Layer ()
     };
     return removed;
   };
+  
+  // divider
+  this.setDivider = function (horizontal, vertical, desktop_index)
+  {
+    if (desktop_index >= this.ndesktops()) {return -1;};
+    return this.desktops[desktop_index].setDivider(horizontal, vertical);
+  };
+  
+  this.getDivider = function (desktop_index)
+  {
+    if (desktop_index >= this.ndesktops()) {return -1;};
+    return this.desktops[desktop_index].getDivider();
+  };
+  
+  // rendering
+  this.renderLayer = function (layer_index)
+  {
+    var render = -1;
+    for (var i = 0; i < this.ndesktops(); i++)
+    {
+      render = this.desktops[i].renderDesktop(i, layer_index);
+    };
+    return render;
+  };
+  
+  this.renderDesktop = function (desktop_index, layer_index)
+  {
+    if (desktop_index >= this.ndesktops()) {return -1;};
+    return this.desktops[desktop_index].renderDesktop(desktop_index, layer_index);
+  };
 };
 
 function Layout ()
 {
   this.layers = [];
   this.nlayers = function () {return this.layers.length;};
-  
-  this.renderLayout = function ()
-  {
-    var render = -1;
-    for (var i = 0; i < this.nlayers(); i++)
-    {
-      render = this.layers[i].renderLayer();
-    };
-    return render;
-  };
   
   this.addLayer = function (layer) 
   {
@@ -208,12 +226,6 @@ function Layout ()
     if (layer_index >= this.nlayers()) {return -1;};
     this.layers.splice(layer_index, 1);
     return 0;
-  };
-  
-  this.renderLayer = function (layer_index)
-  {
-    if (layer_index >= this.nlayers()) {return -1;};
-    return this.layers[layer_index].renderLayer();
   };
   
   this.addDesktop = function (desktop)
@@ -233,12 +245,6 @@ function Layout ()
   {
     if (layer_index >= this.nlayers()) {return -1;};
     return this.layers[layer_index].removeDesktop(desktop_index);
-  };
-  
-  this.renderDesktop = function (desktop_index, layer_index)
-  {
-    if (layer_index >= this.nlayers()) {return -1;};
-    return this.layers[layer_index].renderDesktop(desktop_index);
   };
   
   this.addTile = function (tile)
@@ -268,13 +274,49 @@ function Layout ()
     };
     return removed;
   };
+  
+  // divider
+  this.setDivider = function (horizontal, vertical, desktop_index, layer_index)
+  {
+    if (layer_index >= this.nlayers()) {return -1;};
+    return this.layers[layer_index].setDivider(horizontal, vertical, desktop_index);
+  };
+  
+  this.getDivider = function (desktop_index, layer_index)
+  {
+    if (layer_index >= this.nlayers()) {return -1;};
+    return this.layers[layer_index].getDivider(desktop_index);
+  };
+  
+  // rendering
+  this.renderLayout = function ()
+  {
+    var render = -1;
+    for (var i = 0; i < this.nlayers(); i++)
+    {
+      render = this.layers[i].renderLayer(i);
+    };
+    return render;
+  };
+  
+  this.renderLayer = function (layer_index)
+  {
+    if (layer_index >= this.nlayers()) {return -1;};
+    return this.layers[layer_index].renderLayer();
+  };
+  
+  this.renderDesktop = function (desktop_index, layer_index)
+  {
+    if (layer_index >= this.nlayers()) {return -1;};
+    return this.layers[layer_index].renderDesktop(desktop_index, layer_index);
+  };
 };
 
 // ---------
 // Functions
 // ---------
 
-function RenderClient (tile, d, x, y, width, height)
+function RenderClient (x, y, width, height, tile, desktop_index , layer_index)
 {
   var client = workspace.getClient(tile.window_id);
   var geometry = 
@@ -285,18 +327,21 @@ function RenderClient (tile, d, x, y, width, height)
     height: Math.floor(height),
   };
   
-  client.desktop = d;
-  client.tiled_desktop = d;
+  client.desktop = desktop_index+1;
   client.geometry = geometry;
-  client.tiled_geometry = geometry;
+  
+  client.tiled = 
+  {
+    desktop_index: desktop_index,
+    geometry: geometry,
+    layer_index: layer_index,
+  };
   return 0;
 };
 
-function RenderTiles (tiles, ntiles, divider, desktop_index)
+function RenderTiles (divider, tiles, ntiles, desktop_index, layer_index)
 {
   if (ntiles === 0) {return -1;};
-  
-  var d = desktop_index+1;
   
   var w = desk_area.width-3*gap; // width
   var h = desk_area.height-3*gap; // height
@@ -314,40 +359,40 @@ function RenderTiles (tiles, ntiles, divider, desktop_index)
   
   if (ntiles === 1)
   {
-    RenderClient(tiles[0], d, sx, sy, w+gap, h+gap);
+    RenderClient(sx, sy, w+gap, h+gap, tiles[0], desktop_index, layer_index);
   }
   if (ntiles === 2)
   {
-    RenderClient(tiles[0], d, sx, sy, lw, h+gap);
-    RenderClient(tiles[1], d, hx, sy, rw, h+gap);
+    RenderClient(sx, sy, lw, h+gap, tiles[0], desktop_index, layer_index);
+    RenderClient(hx, sy, rw, h+gap, tiles[1], desktop_index, layer_index);
   };
   if (ntiles === 3)
   {
     if (tiles[0].type === 0.25 && tiles[1].type === 0.5 && tiles[2].type === 0.25)
     {
-      RenderClient(tiles[0], d, sx, sy, lw, th);
-      RenderClient(tiles[1], d, hx, sy, rw, h+gap);
-      RenderClient(tiles[2], d, sx, hy, lw, bh);
+      RenderClient(sx, sy, lw, th, tiles[0], desktop_index, layer_index);
+      RenderClient(hx, sy, rw, h+gap, tiles[1], desktop_index, layer_index);
+      RenderClient(sx, hy, lw, bh, tiles[2], desktop_index, layer_index);
     }
     else if (tiles[0].type === 0.25 && tiles[1].type === 0.25 && tiles[2].type === 0.5)
     {
-      RenderClient(tiles[0], d, sx, sy, lw, th);
-      RenderClient(tiles[1], d, sx, hy, lw, bh);
-      RenderClient(tiles[2], d, hx, sy, rw, h+gap);
+      RenderClient(sx, sy, lw, th, tiles[0], desktop_index, layer_index);
+      RenderClient(sx, hy, lw, bh, tiles[1], desktop_index, layer_index);
+      RenderClient(hx, sy, rw, h+gap, tiles[2], desktop_index, layer_index);
     }
     else
     {
-      RenderClient(tiles[0], d, sx, sy, lw, h+gap);
-      RenderClient(tiles[1], d, hx, sy, rw, th);
-      RenderClient(tiles[2], d, hx, hy, rw, bh);
+      RenderClient(sx, sy, lw, h+gap, tiles[0], desktop_index, layer_index);
+      RenderClient(hx, sy, rw, th, tiles[1], desktop_index, layer_index);
+      RenderClient(hx, hy, rw, bh, tiles[2], desktop_index, layer_index);
     };
   };
   if (ntiles === 4)
   {
-    RenderClient(tiles[0], d, sx, sy, lw, th);
-    RenderClient(tiles[1], d, hx, sy, rw, th);
-    RenderClient(tiles[2], d, hx, hy, rw, bh);
-    RenderClient(tiles[3], d, sx, hy, lw, bh);
+    RenderClient(sx, sy, lw, th, tiles[0], desktop_index, layer_index);
+    RenderClient(hx, sy, rw, th, tiles[1], desktop_index, layer_index);
+    RenderClient(hx, hy, rw, bh, tiles[2], desktop_index, layer_index);
+    RenderClient(sx, hy, lw, bh, tiles[3], desktop_index, layer_index);
   };
   return -1;
 };
@@ -380,25 +425,40 @@ function MakeTile (client)
   return tile;
 };
 
-function ClientChanged (client)
+function GeometryChanged (client)
 {
-  // client moved
-  if (client.tiled_geometry.x !== client.geometry.x || client.tiled_geometry.y !== client.geometry.y)
-  {
-    print('client moved');
-  };
-  // client resized
-  if (client.tiled_geometry.width !== client.geometry.width || client.tiled_geometry.height !== client.geometry.height)
+  var changed = -1;
+  
+  var resized_width = (client.tiled.geometry.width !== client.geometry.width);
+  var resized_height = (client.tiled.geometry.height !== client.geometry.height);
+  
+  var moved_x = (client.tiled.geometry.x !== client.geometry.x && !resized_width);
+  var moved_y = (client.tiled.geometry.y !== client.geometry.y && !resized_height);
+  
+  if (layout.layers[client.tiled.layer_index].desktops[client.tiled.desktop_index].length === 1) {return -1;};
+  
+  if (resized_width)
   {
     
-    print('client resized');
+    changed = 0;
   };
-  // client moved desktop
-  if (client.tiled_desktop !== client.desktop)
+  if (resized_height)
   {
-    print('client moved desktop');
+    
+    changed = 0;
   };
-  return 0;
+  if (moved_x)
+  {
+    
+    changed = 0;
+  };
+  if (moved_y)
+  {
+    
+    changed = 0;
+  };
+  
+  return changed;
 };
 
 // ---------------------------
@@ -447,14 +507,14 @@ function ConnectClient (client)
   (
     function (client)
     {
-      return ClientChanged(client);
+      if (GeometryChanged(client) === -1) {return -1;};
+      return layout.renderLayout();
     }
   );
 //   client.clientStepUserMovedResized.connect
 //   (
 //     function (client)
 //     {
-//       return ClientChanged(client);
 //     }
 //   );
   return 0;
