@@ -67,6 +67,8 @@ var ignored_captions =
 // Class Definitions
 // -----------------
 
+var managed_window_id = {};
+
 function Tile (window_id, type)
 {
   this.window_id = window_id; // must be unique for every window
@@ -304,40 +306,40 @@ function RenderTiles (tiles, ntiles, divider, desktop_index)
   
   if (ntiles === 1)
   {
-    RenderClient(GetClient(tiles[0].window_id), d, sx, sy, w+gap, h+gap);
+    RenderClient(workspace.getClient(tiles[0].window_id), d, sx, sy, w+gap, h+gap);
   }
   if (ntiles === 2)
   {
-    RenderClient(GetClient(tiles[0].window_id), d, sx, sy, lw, h+gap);
-    RenderClient(GetClient(tiles[1].window_id), d, hx, sy, rw, h+gap);
+    RenderClient(workspace.getClient(tiles[0].window_id), d, sx, sy, lw, h+gap);
+    RenderClient(workspace.getClient(tiles[1].window_id), d, hx, sy, rw, h+gap);
   };
   if (ntiles === 3)
   {
     if (tiles[0].type === 0.25 && tiles[1].type === 0.5 && tiles[2].type === 0.25)
     {
-      RenderClient(GetClient(tiles[0].window_id), d, sx, sy, lw, th);
-      RenderClient(GetClient(tiles[1].window_id), d, hx, sy, rw, h+gap);
-      RenderClient(GetClient(tiles[2].window_id), d, sx, hy, lw, bh);
+      RenderClient(workspace.getClient(tiles[0].window_id), d, sx, sy, lw, th);
+      RenderClient(workspace.getClient(tiles[1].window_id), d, hx, sy, rw, h+gap);
+      RenderClient(workspace.getClient(tiles[2].window_id), d, sx, hy, lw, bh);
     }
     else if (tiles[0].type === 0.25 && tiles[1].type === 0.25 && tiles[2].type === 0.5)
     {
-      RenderClient(GetClient(tiles[0].window_id), d, sx, sy, lw, th);
-      RenderClient(GetClient(tiles[1].window_id), d, sx, hy, lw, bh);
-      RenderClient(GetClient(tiles[2].window_id), d, hx, sy, rw, h+gap);
+      RenderClient(workspace.getClient(tiles[0].window_id), d, sx, sy, lw, th);
+      RenderClient(workspace.getClient(tiles[1].window_id), d, sx, hy, lw, bh);
+      RenderClient(workspace.getClient(tiles[2].window_id), d, hx, sy, rw, h+gap);
     }
     else
     {
-      RenderClient(GetClient(tiles[0].window_id), d, sx, sy, lw, h+gap);
-      RenderClient(GetClient(tiles[1].window_id), d, hx, sy, rw, th);
-      RenderClient(GetClient(tiles[2].window_id), d, hx, hy, rw, bh);
+      RenderClient(workspace.getClient(tiles[0].window_id), d, sx, sy, lw, h+gap);
+      RenderClient(workspace.getClient(tiles[1].window_id), d, hx, sy, rw, th);
+      RenderClient(workspace.getClient(tiles[2].window_id), d, hx, hy, rw, bh);
     };
   };
   if (ntiles === 4)
   {
-    RenderClient(GetClient(tiles[0].window_id), d, sx, sy, lw, th);
-    RenderClient(GetClient(tiles[1].window_id), d, hx, sy, rw, th);
-    RenderClient(GetClient(tiles[2].window_id), d, hx, hy, rw, bh);
-    RenderClient(GetClient(tiles[3].window_id), d, sx, hy, lw, bh);
+    RenderClient(workspace.getClient(tiles[0].window_id), d, sx, sy, lw, th);
+    RenderClient(workspace.getClient(tiles[1].window_id), d, hx, sy, rw, th);
+    RenderClient(workspace.getClient(tiles[2].window_id), d, hx, hy, rw, bh);
+    RenderClient(workspace.getClient(tiles[3].window_id), d, sx, hy, lw, bh);
   };
   return -1;
 };
@@ -361,24 +363,13 @@ function MakeTile (client)
     if (ignored_clients[i].indexOf(c_class) !== -1) {return -1;};
     if (ignored_clients[i].indexOf(c_name) !== -1) {return -1;};
   };
-  
+
   var type = 0.25;
   if (c_class in tile_types) {type = tile_types[c_class];};
   if (c_name in tile_types) {type = tile_types[c_name];};
-
+  
   var tile = new Tile(client.windowId, type);
   return tile;
-};
-
-function GetClient (window_id)
-{
-  var client = workspace.getClient(window_id);
-  if (client === null && new_client.windowId === window_id)
-  {
-    client = new_client;
-    new_client = {window_id: null};
-  }
-  return client;
 };
 
 // ---------------------------
@@ -387,11 +378,13 @@ function GetClient (window_id)
 
 layout = new Layout();
 
-workspace.clientAdded.connect
+workspace.clientActivated.connect // clientAdded does not work for a lot of clients
 (
-  function(client)
+  function (client)
   {
-    new_client = client; // newly added clients are not inside workspace yet, thus need to be stored in global new_client
+    if (client === null || client.windowId in managed_window_id) {return -1;};
+    managed_window_id[client.windowId] = true;
+    
     var tile = MakeTile(client);
     if (tile === -1) {return -1;};
     layout.addTile(tile);
@@ -402,62 +395,16 @@ workspace.clientAdded.connect
 
 workspace.clientRemoved.connect
 (
-  function(client)
+  function (client)
   {
+    if (!(client.windowId in managed_window_id)) {return -1;};
+    delete managed_window_id[client.windowId];
+    
     var removed = layout.removeTile(client.windowId);
     if (removed === 0) {return layout.renderLayout();};
     return -1;
   }
 );
-
-// -------
-// Testing
-// -------
-
-// var clients = workspace.clientList(); 
-// for (var i=0; i<clients.length; i++)
-// {
-//   print(clients[i].caption);
-//   if (clients[i].caption === 'Spotify')
-//   {
-//     clients[i].geometry = {x: 10, y: 50, width: 100, height: 500}
-//   };
-// };
-
-
-// kate = workspace.getClient(71303173);
-// konsole = workspace.getClient(69206022);
-
-
-// function PrintProperties(c)
-// {
-//   print('------------');
-//   print(c.alpha);
-//   print(c.frameId);
-//   print(c.geometry.toString());
-//   print(c.visibleRect.toString());
-//   print(c.height);
-//   print(c.pos.toString());
-//   print(c.screen);
-//   print(c.size.toString());
-//   print(c.width);
-//   print(c.windowId);
-//   print(c.x);
-//   print(c.y);
-//   print(c.desktop);
-//   print(c.onAllDesktops);
-//   print(c.rect.toString());
-//   print(c.clientPos.toString());
-//   print(c.clientSize.toString());
-//   print(c.resourceName.toString());
-//   print(c.resourceClass.toString());
-//   print(c.windowRole.toString());
-//   print(c.shaped);
-//   print(c.modal);
-//   print(c.resizeable);
-//   print(c.fullScreen);
-//   print(c.blocksCompositing);
-// };
 
 // -------------
 // Class Testing
