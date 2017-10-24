@@ -23,8 +23,6 @@ var deskArea =
   height: workspace.displayHeight-margins.bottom-margins.top,
 };
 
-var dividerBounds = 0.2; // from this value to 1-value
-
 // smallest minType sizes
 var fullClients =
 [
@@ -67,6 +65,8 @@ var ignoredCaptions =
   "Create a New Image",
   "QEMU",
 ];
+
+var dividerBounds = 0.2; // from this value to 1-value
 
 // -----------------
 // Class Definitions
@@ -269,7 +269,7 @@ function Layout ()
       removed = this.layers[i].removeClient(windowId);
       if (removed === 0)
       {
-        if (this.layers[i].ndesktops === 0) {removed = this.removeLayer(i);};
+        if (this.layers[i].ndesktops() === 0) {removed = this.removeLayer(i);};
         break;
       };
     };
@@ -317,6 +317,196 @@ function Layout ()
 // Functions
 // ---------
 
+var typeF = {left: true, right: true, top: true, bottom: true}; // full
+var typeLH = {left: true, right: false, top: true, bottom: true}; // left half
+var typeRH = {left: false, right: true, top: true, bottom: true}; // right half
+var typeTLQ = {left: true, right: false, top: true, bottom: false}; // top left quarter
+var typeTRQ = {left: false, right: true, top: true, bottom: false}; // top right quarter
+var typeBRQ = {left: false, right: true, top: false, bottom: true}; // bottom right quarter
+var typeBLQ = {left: true, right: false, top: false, bottom: true}; // bottom left quarter
+
+function AssignType (clients, nclients)
+{
+  if (nclients === 0) {return -1;};
+  if (nclients === 1)
+  {
+    clients[0].type = typeF;
+  }
+  if (nclients === 2)
+  {
+    clients[0].type = typeLH;
+    clients[1].type = typeRH;
+  };
+  if (nclients === 3)
+  {
+    if (clients[0].minType === 0.25 && clients[1].minType === 0.5 && clients[2].minType === 0.25)
+    {
+      clients[0].type = typeTLQ;
+      clients[1].type = typeRH;
+      clients[2].type = typeBLQ;
+    }
+    else if (clients[0].minType === 0.25 && clients[1].minType === 0.25 && clients[2].minType === 0.5)
+    {
+      clients[0].type = typeTLQ;
+      clients[1].type = typeBLQ;
+      clients[2].type = typeRH;
+    }
+    else
+    {
+      clients[0].type = typeLH;
+      clients[1].type = typeTRQ;
+      clients[2].type = typeBRQ;
+    };
+  };
+  if (nclients === 4)
+  {
+    clients[0].type = typeTLQ;
+    clients[1].type = typeTRQ;
+    clients[2].type = typeBRQ;
+    clients[3].type = typeBLQ;
+  };
+  return 0;
+};
+
+function RenderClients (divider, clients, nclients, desktopIndex, layerIndex)
+{
+  if (AssignType(clients, nclients) === -1) {return -1;};
+  
+  var w = deskArea.width-3*gap; // width
+  var h = deskArea.height-3*gap; // height
+  
+  var lw = divider.vertical*w; // left width
+  var rw = (1-divider.vertical)*w; // right width
+  var th = divider.horizontal*h; // top height
+  var bh = (1-divider.horizontal)*h; // bottom height
+  
+  var sx = gap+deskArea.xMin; // start x
+  var hx = sx+lw+gap; // half x
+  
+  var sy = gap+deskArea.yMin; // start y
+  var hy = sy+th+gap; // half left y
+  
+  for (var i = 0; i < nclients; i++)
+  {
+    var client = clients[i];
+    if (client.type === typeF)
+    {
+      SetClient(client, sx, sy, w+gap, h+gap, desktopIndex, layerIndex);
+      continue;
+    };
+    if (client.type === typeLH)
+    {
+      SetClient(client, sx, sy, lw, h+gap, desktopIndex, layerIndex);
+      continue;
+    };
+    if (client.type === typeRH)
+    {
+      SetClient(client, hx, sy, rw, h+gap, desktopIndex, layerIndex);
+      continue;
+    };
+    if (client.type === typeTLQ)
+    {
+      SetClient(client, sx, sy, lw, th, desktopIndex, layerIndex);
+      continue;
+    };
+    if (client.type === typeTRQ)
+    {
+      SetClient(client, hx, sy, rw, th, desktopIndex, layerIndex);
+      continue;
+    };
+    if (client.type === typeBRQ)
+    {
+      SetClient(client, hx, hy, rw, bh, desktopIndex, layerIndex);
+      continue;
+    };
+    if (client.type === typeBLQ)
+    {
+      SetClient(client, sx, hy, lw, bh, desktopIndex, layerIndex);
+      continue;
+    };
+  };
+  return 0;
+};
+
+function SetClient (client, x, y, width, height, desktopIndex, layerIndex)
+{
+  var geometry = 
+  {
+    x: Math.floor(x),
+    y: Math.floor(y),
+    width: Math.floor(width),
+    height: Math.floor(height),
+  };
+  
+  client.desktop = desktopIndex+1;
+  client.geometry = geometry;
+  client.geometryRender = geometry;
+  client.desktopIndex = desktopIndex;
+  client.layerIndex = layerIndex;
+  return 0;
+};
+
+function GeometryChanged (client)
+{
+  var changed = -1;
+  
+  var resizedWidth = (client.geometryRender.width !== client.geometry.width);
+  var resizedHeight = (client.geometryRender.height !== client.geometry.height);
+  
+  var movedX = (client.geometryRender.x !== client.geometry.x && !resizedWidth);
+  var movedY = (client.geometryRender.y !== client.geometry.y && !resizedHeight);
+  
+  if (!resizedWidth && !resizedHeight && !movedX && !movedY) {return changed};
+  
+  if (client.type === typeF)
+  {
+    var maxWidth = deskArea.width-2*gap;
+    var minWidth = dividerBounds*maxWidth;
+    var maxHeight = deskArea.height-2*gap;
+    var minHeight = dividerBounds*maxHeight;
+  }
+  else if (client.type === typeLH || client.type === typeRH)
+  {
+    var maxWidth = deskArea.height-2*gap;
+    var minWidth = dividerBounds*maxHeight;
+    var maxHeight = 0.5*deskArea.height-2*gap;
+    var minHeight = dividerBounds*maxHeight;
+  }
+  else
+  {
+    var maxWidth = 0.5*deskArea.height-2*gap;
+    var minWidth = dividerBounds*maxHeight;
+    var maxHeight = 0.5*deskArea.height-2*gap;
+    var minHeight = dividerBounds*maxHeight;
+  };
+  
+  var divider = layout.getDivider(client.desktopIndex, client.layerIndex);
+  
+  if (resizedWidth)
+  {
+    var changedWidth = client.geometry.width-client.geometryRender.width;
+    
+    changed = 0;
+  };
+  if (resizedHeight)
+  {
+    
+    changed = 0;
+  };
+  if (movedX)
+  {
+    
+    changed = 0;
+  };
+  if (movedY)
+  {
+    
+    changed = 0;
+  };
+  
+  return changed;
+};
+
 function CheckClient (client)
 {  
   if (client.specialWindow) {return -1;};
@@ -357,165 +547,6 @@ function CheckClient (client)
   
   client.minType = minType;
   return client;
-};
-
-function SetClient (x, y, width, height, client, desktopIndex, layerIndex)
-{
-  var geometry = 
-  {
-    x: Math.floor(x),
-    y: Math.floor(y),
-    width: Math.floor(width),
-    height: Math.floor(height),
-  };
-  
-  client.desktop = desktopIndex+1;
-  client.geometry = geometry;
-  client.geometryRender = geometry;
-  client.desktopIndex = desktopIndex;
-  client.layerIndex = layerIndex;
-  return 0;
-};
-
-function AssignType (clients, nclients)
-{
-  if (nclients === 0) {return -1;};
-  if (nclients === 1)
-  {
-    clients[0].type = "f";
-  }
-  if (nclients === 2)
-  {
-    clients[0].type = "lh";
-    clients[1].type = "rh";
-  };
-  if (nclients === 3)
-  {
-    if (clients[0].minType === 0.25 && clients[1].minType === 0.5 && clients[2].minType === 0.25)
-    {
-      clients[0].type = "tlq";
-      clients[1].type = "rh";
-      clients[2].type = "blq";
-    }
-    else if (clients[0].minType === 0.25 && clients[1].minType === 0.25 && clients[2].minType === 0.5)
-    {
-      clients[0].type = "tlq";
-      clients[1].type = "blq";
-      clients[2].type = "rh";
-    }
-    else
-    {
-      clients[0].type = "lh";
-      clients[1].type = "trq";
-      clients[2].type = "brq";
-    };
-  };
-  if (nclients === 4)
-  {
-    clients[0].type = "tlq";
-    clients[1].type = "trq";
-    clients[2].type = "brq";
-    clients[3].type = "blq";
-  };
-  return 0;
-};
-
-function RenderClients (divider, clients, nclients, desktopIndex, layerIndex)
-{
-  if (AssignType(clients, nclients) === -1) {return -1;};
-  
-  var w = deskArea.width-3*gap; // width
-  var h = deskArea.height-3*gap; // height
-  
-  var lw = divider.vertical*w; // left width
-  var rw = (1-divider.vertical)*w; // right width
-  var th = divider.horizontal*h; // top height
-  var bh = (1-divider.horizontal)*h; // bottom height
-  
-  var sx = gap+deskArea.xMin; // start x
-  var hx = sx+lw+gap; // half x
-  
-  var sy = gap+deskArea.yMin; // start y
-  var hy = sy+th+gap; // half left y
-  
-  for (var i = 0; i < nclients; i++)
-  {
-    var client = clients[i];
-    if (client.type === "f") // full
-    {
-      SetClient(sx, sy, w+gap, h+gap, client, desktopIndex, layerIndex);
-      continue;
-    };
-    if (client.type === "lh") // left half
-    {
-      SetClient(sx, sy, lw, h+gap, client, desktopIndex, layerIndex);
-      continue;
-    };
-    if (client.type === "rh") // right half
-    {
-      SetClient(hx, sy, rw, h+gap, client, desktopIndex, layerIndex);
-      continue;
-    };
-    if (client.type === "tlq") // top left quarter
-    {
-      SetClient(sx, sy, lw, th, client, desktopIndex, layerIndex);
-      continue;
-    };
-    if (client.type === "trq") // top right quarter
-    {
-      SetClient(hx, sy, rw, th, client, desktopIndex, layerIndex);
-      continue;
-    };
-    if (client.type === "brq") // bottom right quarter
-    {
-      SetClient(hx, hy, rw, bh, client, desktopIndex, layerIndex);
-      continue;
-    };
-    if (client.type === "blq") // bottom left quarter
-    {
-      SetClient(sx, hy, lw, bh, client, desktopIndex, layerIndex);
-      continue;
-    };
-  };
-  return 0;
-};
-
-function GeometryChanged (client)
-{
-  var changed = -1;
-  
-  var resizedWidth = (client.geometryRender.width !== client.geometry.width);
-  var resizedHeight = (client.geometryRender.height !== client.geometry.height);
-  
-  var movedX = (client.geometryRender.x !== client.geometry.x && !resizedWidth);
-  var movedY = (client.geometryRender.y !== client.geometry.y && !resizedHeight);
-  
-  if (!resizedWidth && !resizedHeight && !movedX && !movedY) {return changed};
-  var divider = layout.getDivider(client.desktopIndex, client.layerIndex);
-  
-  if (resizedWidth)
-  {
-    var changedWidth = client.geometry.width-client.geometryRender.width;
-    
-    changed = 0;
-  };
-  if (resizedHeight)
-  {
-    
-    changed = 0;
-  };
-  if (movedX)
-  {
-    
-    changed = 0;
-  };
-  if (movedY)
-  {
-    
-    changed = 0;
-  };
-  
-  return changed;
 };
 
 // ---------------------------
