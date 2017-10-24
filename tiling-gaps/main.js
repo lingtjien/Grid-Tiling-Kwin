@@ -23,6 +23,8 @@ var deskArea =
   height: workspace.displayHeight-margins.bottom-margins.top,
 };
 
+var dividerBounds = 0.2; // from this value to 1-value
+
 // the smallest client tile type, must be either 1, 0.5 or 0.25, defaults to 0.25, so quarters are not needed to be specified
 var fullClients =
 [
@@ -85,7 +87,7 @@ function Desktop ()
   
   this.addClient = function (client)
   {
-    if (CheckClient(client) === -1) {return -1;};
+    if (CheckClient(client) === -1) {return -1;}; // on succes adds type to client
     if (this.size()+client.type > 1) {return -1;};
     this.clients.push(client);
     return 0;
@@ -431,7 +433,7 @@ function RenderDesktop (divider, clients, nclients, desktopIndex, layerIndex)
     RenderClient(hx, hy, rw, bh, clients[2], desktopIndex, layerIndex);
     RenderClient(sx, hy, lw, bh, clients[3], desktopIndex, layerIndex);
   };
-  return -1;
+  return 0;
 };
 
 function GeometryChanged (client)
@@ -450,6 +452,7 @@ function GeometryChanged (client)
   
   if (resizedWidth)
   {
+    var changedWidth = client.geometry.width-client.geometryRender.width;
     
     changed = 0;
   };
@@ -489,7 +492,7 @@ workspace.clientActivated.connect // clientAdded does not work for a lot of clie
     
     layout.renderLayout();
     workspace.currentDesktop = client.desktop;
-//     ConnectClient(client);
+    ConnectClient(client); // connect client signals
     return 0;
   }
 );
