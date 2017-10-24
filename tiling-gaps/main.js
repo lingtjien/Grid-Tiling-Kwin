@@ -23,15 +23,19 @@ var deskArea =
   height: workspace.displayHeight-margins.bottom-margins.top,
 };
 
-// the smallest tile, must be either 1, 0.5 or 0.25, defaults to 0.25, so quarters are not needed to be specified
-var tileTypes =
-{
-  texstudio: 1,
-  inkscape: 1,
-  gimp: 1,
-  spotify: 0.5,
-  kate: 0.5,
-};
+// the smallest client tile type, must be either 1, 0.5 or 0.25, defaults to 0.25, so quarters are not needed to be specified
+var fullClients =
+[
+  "texstudio",
+  "inkscape",
+  "gimp",
+];
+
+var halfClients =
+[
+  "kate",
+  "spotify",
+];
 
 // clients that are not tiled
 var ignoredClients =
@@ -41,7 +45,6 @@ var ignoredClients =
   "krunner",
   "ksmserver",
   "lattedock",
-  "latte-dock",
   "pinentry",
   "Plasma",
   "plasma",
@@ -67,39 +70,35 @@ var ignoredCaptions =
 // Class Definitions
 // -----------------
 
-function Tile (windowId, type)
-{
-  this.windowId = windowId; // must be unique for every window
-  this.type = type; // either 1/0.5/0.25 = fill/half/quarter, the minimum tile type
-};
-
+// clients must have a property type, which is either 1.0/0.5/0.25 = fill/half/quarter, the minimum tile type
 function Desktop ()
 {
-  this.tiles = [];
-  this.ntiles = function () {return this.tiles.length;};
+  this.clients = [];
+  this.nclients = function () {return this.clients.length;};
   
   this.size = function ()
   {
     var sum = 0;
-    for (var i = 0; i < this.ntiles(); i++) {sum += this.tiles[i].type;};
+    for (var i = 0; i < this.nclients(); i++) {sum += this.clients[i].type;};
     return sum;
   };
   
-  this.addTile = function (tile)
+  this.addClient = function (client)
   {
-    if (this.size()+tile.type > 1) {return -1;};
-    this.tiles.push(tile);
+    if (CheckClient(client) === -1) {return -1;};
+    if (this.size()+client.type > 1) {return -1;};
+    this.clients.push(client);
     return 0;
   };
   
-  this.removeTile = function (windowId)
+  this.removeClient = function (windowId)
   {
-    if (this.ntiles() === 0) {return -1;};
-    for (var i = 0; i < this.ntiles(); i++)
+    if (this.nclients() === 0) {return -1;};
+    for (var i = 0; i < this.nclients(); i++)
     {
-      if (this.tiles[i].windowId === windowId)
+      if (this.clients[i].windowId === windowId)
       {
-        this.tiles.splice(i, 1);
+        this.clients.splice(i, 1);
         return 0;
       };
     };
@@ -128,7 +127,7 @@ function Desktop ()
   // rendering
   this.renderDesktop = function (desktopIndex, layerIndex)
   {
-    return RenderTiles(this.divider, this.tiles, this.ntiles(), desktopIndex, layerIndex);
+    return RenderDesktop(this.divider, this.clients, this.nclients(), desktopIndex, layerIndex);
   };
 };
 
@@ -151,25 +150,25 @@ function Layer ()
     return 0;
   };
   
-  this.addTile = function (tile)
+  this.addClient = function (client)
   {
     var added = -1;
     for (var i = 0; i < this.ndesktops(); i++)
     {
-      added = this.desktops[i].addTile(tile);
+      added = this.desktops[i].addClient(client);
       if (added === 0) {return added;};
     };
     var desktop = new Desktop();
     if (this.addDesktop(desktop) === -1) {return -1;};
-    return this.desktops[this.ndesktops()-1].addTile(tile);
+    return this.desktops[this.ndesktops()-1].addClient(client);
   };
   
-  this.removeTile = function (windowId)
+  this.removeClient = function (windowId)
   {
     var removed = -1;
     for (var i = 0; i < this.ndesktops(); i++)
     {
-      removed = this.desktops[i].removeTile(windowId);
+      removed = this.desktops[i].removeClient(windowId);
       if (removed === 0)
       {
         if (this.desktops[i].size() === 0) {removed = this.removeDesktop(i);};
@@ -247,25 +246,25 @@ function Layout ()
     return this.layers[layerIndex].removeDesktop(desktopIndex);
   };
   
-  this.addTile = function (tile)
+  this.addClient = function (client)
   {
     var added = -1;
     for (var i = 0; i < this.nlayers(); i++)
     {
-      added = this.layers[i].addTile(tile);
+      added = this.layers[i].addClient(client);
       if (added === 0) {return added};
     };
     var layer = new Layer();
     this.addLayer(layer);
-    return this.layers[this.nlayers()-1].addTile(tile);
+    return this.layers[this.nlayers()-1].addClient(client);
   };
   
-  this.removeTile = function (windowId)
+  this.removeClient = function (windowId)
   {
     removed = -1;
     for (var i = 0; i < this.nlayers(); i++)
     {
-      removed = this.layers[i].removeTile(windowId);
+      removed = this.layers[i].removeClient(windowId);
       if (removed === 0)
       {
         if (this.layers[i].ndesktops === 0) {removed = this.removeLayer(i);};
@@ -316,9 +315,51 @@ function Layout ()
 // Functions
 // ---------
 
-function RenderClient (x, y, width, height, tile, desktopIndex , layerIndex)
+function CheckClient (client)
+{  
+  if (client.specialWindow) {return -1;};
+  
+  var clientClass = client.resourceClass.toString();
+  var clientName = client.resourceName.toString();
+  var clientCaption = client.caption.toString();
+  
+  for (var i = 0; i < ignoredCaptions.length; i++)
+  {
+    if (ignoredCaptions[i] === clientCaption) {return -1;};
+  };
+  
+  for (var i = 0; i < ignoredClients.length; i++)
+  {
+    //     if (clientClass === '' || clientName === '') {break;};
+    if (clientClass.indexOf(ignoredClients[i]) !== -1) {return -1;};
+    if (clientName.indexOf(ignoredClients[i]) !== -1) {return -1;};
+  };
+  
+  var type = 0.25;
+  for (var i = 0; i < fullClients.length; i++)
+  {
+    if (clientClass.indexOf(fullClients[i]) !== -1 || clientName.indexOf(fullClients[i]) !== -1)
+    {
+      type = 1;
+      break;
+    };
+  };
+  for (var i = 0; i < halfClients.length; i++)
+  {
+    if (clientClass.indexOf(halfClients[i]) !== -1 || clientClass.indexOf(halfClients[i]) !== -1)
+    {
+      type = 0.5;
+      break;
+    };
+  };
+  
+  client.type = type;
+  return client;
+};
+
+function RenderClient (x, y, width, height, client, desktopIndex, layerIndex)
 {
-  var client = workspace.getClient(tile.windowId);
+//   var client = workspace.getClient(tile.windowId);
   var geometry = 
   {
     x: Math.floor(x),
@@ -329,19 +370,15 @@ function RenderClient (x, y, width, height, tile, desktopIndex , layerIndex)
   
   client.desktop = desktopIndex+1;
   client.geometry = geometry;
-  
-  client.tiled = 
-  {
-    desktopIndex: desktopIndex,
-    geometry: geometry,
-    layerIndex: layerIndex,
-  };
+  client.geometryRender = geometry;
+  client.desktopIndex = desktopIndex;
+  client.layerIndex = layerIndex;
   return 0;
 };
 
-function RenderTiles (divider, tiles, ntiles, desktopIndex, layerIndex)
+function RenderDesktop (divider, clients, nclients, desktopIndex, layerIndex)
 {
-  if (ntiles === 0) {return -1;};
+  if (nclients === 0) {return -1;};
   
   var w = deskArea.width-3*gap; // width
   var h = deskArea.height-3*gap; // height
@@ -357,109 +394,83 @@ function RenderTiles (divider, tiles, ntiles, desktopIndex, layerIndex)
   var sy = gap+deskArea.yMin; // start y
   var hy = sy+th+gap; // half left y
   
-  if (ntiles === 1)
+  if (nclients === 1)
   {
-    RenderClient(sx, sy, w+gap, h+gap, tiles[0], desktopIndex, layerIndex);
+    RenderClient(sx, sy, w+gap, h+gap, clients[0], desktopIndex, layerIndex);
   }
-  if (ntiles === 2)
+  if (nclients === 2)
   {
-    RenderClient(sx, sy, lw, h+gap, tiles[0], desktopIndex, layerIndex);
-    RenderClient(hx, sy, rw, h+gap, tiles[1], desktopIndex, layerIndex);
+    RenderClient(sx, sy, lw, h+gap, clients[0], desktopIndex, layerIndex);
+    RenderClient(hx, sy, rw, h+gap, clients[1], desktopIndex, layerIndex);
   };
-  if (ntiles === 3)
+  if (nclients === 3)
   {
-    if (tiles[0].type === 0.25 && tiles[1].type === 0.5 && tiles[2].type === 0.25)
+    if (clients[0].type === 0.25 && clients[1].type === 0.5 && clients[2].type === 0.25)
     {
-      RenderClient(sx, sy, lw, th, tiles[0], desktopIndex, layerIndex);
-      RenderClient(hx, sy, rw, h+gap, tiles[1], desktopIndex, layerIndex);
-      RenderClient(sx, hy, lw, bh, tiles[2], desktopIndex, layerIndex);
+      RenderClient(sx, sy, lw, th, clients[0], desktopIndex, layerIndex);
+      RenderClient(hx, sy, rw, h+gap, clients[1], desktopIndex, layerIndex);
+      RenderClient(sx, hy, lw, bh, clients[2], desktopIndex, layerIndex);
     }
-    else if (tiles[0].type === 0.25 && tiles[1].type === 0.25 && tiles[2].type === 0.5)
+    else if (clients[0].type === 0.25 && clients[1].type === 0.25 && clients[2].type === 0.5)
     {
-      RenderClient(sx, sy, lw, th, tiles[0], desktopIndex, layerIndex);
-      RenderClient(sx, hy, lw, bh, tiles[1], desktopIndex, layerIndex);
-      RenderClient(hx, sy, rw, h+gap, tiles[2], desktopIndex, layerIndex);
+      RenderClient(sx, sy, lw, th, clients[0], desktopIndex, layerIndex);
+      RenderClient(sx, hy, lw, bh, clients[1], desktopIndex, layerIndex);
+      RenderClient(hx, sy, rw, h+gap, clients[2], desktopIndex, layerIndex);
     }
     else
     {
-      RenderClient(sx, sy, lw, h+gap, tiles[0], desktopIndex, layerIndex);
-      RenderClient(hx, sy, rw, th, tiles[1], desktopIndex, layerIndex);
-      RenderClient(hx, hy, rw, bh, tiles[2], desktopIndex, layerIndex);
+      RenderClient(sx, sy, lw, h+gap, clients[0], desktopIndex, layerIndex);
+      RenderClient(hx, sy, rw, th, clients[1], desktopIndex, layerIndex);
+      RenderClient(hx, hy, rw, bh, clients[2], desktopIndex, layerIndex);
     };
   };
-  if (ntiles === 4)
+  if (nclients === 4)
   {
-    RenderClient(sx, sy, lw, th, tiles[0], desktopIndex, layerIndex);
-    RenderClient(hx, sy, rw, th, tiles[1], desktopIndex, layerIndex);
-    RenderClient(hx, hy, rw, bh, tiles[2], desktopIndex, layerIndex);
-    RenderClient(sx, hy, lw, bh, tiles[3], desktopIndex, layerIndex);
+    RenderClient(sx, sy, lw, th, clients[0], desktopIndex, layerIndex);
+    RenderClient(hx, sy, rw, th, clients[1], desktopIndex, layerIndex);
+    RenderClient(hx, hy, rw, bh, clients[2], desktopIndex, layerIndex);
+    RenderClient(sx, hy, lw, bh, clients[3], desktopIndex, layerIndex);
   };
   return -1;
 };
 
-function MakeTile (client)
-{  
-  if (client.specialWindow) {return -1;};
+function GeometryChanged (client)
+{
+  var changed = -1;
   
-  var clientClass = client.resourceClass.toString();
-  var clientName = client.resourceName.toString();
-  var clientCaption = client.caption.toString();
+  var resizedWidth = (client.geometryRender.width !== client.geometry.width);
+  var resizedHeight = (client.geometryRender.height !== client.geometry.height);
   
-  for (var i = 0; i < ignoredCaptions.length; i++)
+  var movedX = (client.geometryRender.x !== client.geometry.x && !resizedWidth);
+  var movedY = (client.geometryRender.y !== client.geometry.y && !resizedHeight);
+  
+  if (!resizedWidth && !resizedHeight && !movedX && !movedY) {return changed};
+//   if (layout.layers[client.layerIndex].desktops[client.desktopIndex].length === 1) {return changed;};
+  var divider = layout.getDivider(client.desktopIndex, client.layerIndex);
+  
+  if (resizedWidth)
   {
-    if (ignoredCaptions[i] === clientCaption) {return -1;};
+    
+    changed = 0;
+  };
+  if (resizedHeight)
+  {
+    
+    changed = 0;
+  };
+  if (movedX)
+  {
+    
+    changed = 0;
+  };
+  if (movedY)
+  {
+    
+    changed = 0;
   };
   
-  for (var i = 0; i < ignoredClients.length; i++)
-  {
-    if (clientClass === '' || clientName === '') {break;};
-    if (ignoredClients[i].indexOf(clientClass) !== -1) {return -1;};
-    if (ignoredClients[i].indexOf(clientName) !== -1) {return -1;};
-  };
-
-  var type = 0.25;
-  if (clientClass in tileTypes) {type = tileTypes[clientClass];};
-  if (clientName in tileTypes) {type = tileTypes[clientName];};
-  
-  var tile = new Tile(client.windowId, type);
-  return tile;
+  return changed;
 };
-
-// function GeometryChanged (client)
-// {
-//   var changed = -1;
-//   
-//   var resizedWidth = (client.tiled.geometry.width !== client.geometry.width);
-//   var resizedHeight = (client.tiled.geometry.height !== client.geometry.height);
-//   
-//   var movedX = (client.tiled.geometry.x !== client.geometry.x && !resizedWidth);
-//   var movedY = (client.tiled.geometry.y !== client.geometry.y && !resizedHeight);
-//   
-//   if (layout.layers[client.tiled.layerIndex].desktops[client.tiled.desktopIndex].length === 1) {return -1;};
-//   
-//   if (resizedWidth)
-//   {
-//     
-//     changed = 0;
-//   };
-//   if (resizedHeight)
-//   {
-//     
-//     changed = 0;
-//   };
-//   if (movedX)
-//   {
-//     
-//     changed = 0;
-//   };
-//   if (movedY)
-//   {
-//     
-//     changed = 0;
-//   };
-//   
-//   return changed;
-// };
 
 // ---------------------------
 // Connecting The KWin Signals
@@ -473,11 +484,9 @@ workspace.clientActivated.connect // clientAdded does not work for a lot of clie
   function (client)
   {
     if (client === null || client.windowId in addedClients) {return -1;};
+    if (layout.addClient(client) === -1) {return -1;};
     addedClients[client.windowId] = true;
     
-    var tile = MakeTile(client);
-    if (tile === -1) {return -1;};
-    layout.addTile(tile);
     layout.renderLayout();
     workspace.currentDesktop = client.desktop;
 //     ConnectClient(client);
@@ -492,7 +501,7 @@ workspace.clientRemoved.connect
     if (!(client.windowId in addedClients)) {return -1;};
     delete addedClients[client.windowId];
     
-    var removed = layout.removeTile(client.windowId);
+    var removed = layout.removeClient(client.windowId);
     if (removed === 0)
     {
       layout.renderLayout();
