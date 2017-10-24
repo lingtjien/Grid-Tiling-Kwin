@@ -15,16 +15,16 @@ var margins =
   right: 0,
 };
 
-var desk_area =
+var deskArea =
 {
-  x_min: margins.left,
-  y_min: margins.top,
+  xMin: margins.left,
+  yMin: margins.top,
   width: workspace.displayWidth-margins.right-margins.left,
   height: workspace.displayHeight-margins.bottom-margins.top,
 };
 
 // the smallest tile, must be either 1, 0.5 or 0.25, defaults to 0.25, so quarters are not needed to be specified
-var tile_types =
+var tileTypes =
 {
   texstudio: 1,
   inkscape: 1,
@@ -34,7 +34,7 @@ var tile_types =
 };
 
 // clients that are not tiled
-var ignored_clients =
+var ignoredClients =
 [
   "albert",
   "kazam",
@@ -53,7 +53,7 @@ var ignored_clients =
 ];
 
 // client captions that are not tiled
-var ignored_captions =
+var ignoredCaptions =
 [
   "File Upload",
   "Move to Trash",
@@ -67,9 +67,9 @@ var ignored_captions =
 // Class Definitions
 // -----------------
 
-function Tile (window_id, type)
+function Tile (windowId, type)
 {
-  this.window_id = window_id; // must be unique for every window
+  this.windowId = windowId; // must be unique for every window
   this.type = type; // either 1/0.5/0.25 = fill/half/quarter, the minimum tile type
 };
 
@@ -92,12 +92,12 @@ function Desktop ()
     return 0;
   };
   
-  this.removeTile = function (window_id)
+  this.removeTile = function (windowId)
   {
     if (this.ntiles() === 0) {return -1;};
     for (var i = 0; i < this.ntiles(); i++)
     {
-      if (this.tiles[i].window_id === window_id)
+      if (this.tiles[i].windowId === windowId)
       {
         this.tiles.splice(i, 1);
         return 0;
@@ -126,9 +126,9 @@ function Desktop ()
   };
   
   // rendering
-  this.renderDesktop = function (desktop_index, layer_index)
+  this.renderDesktop = function (desktopIndex, layerIndex)
   {
-    return RenderTiles(this.divider, this.tiles, this.ntiles(), desktop_index, layer_index);
+    return RenderTiles(this.divider, this.tiles, this.ntiles(), desktopIndex, layerIndex);
   };
 };
 
@@ -144,10 +144,10 @@ function Layer ()
     return 0;
   };
   
-  this.removeDesktop = function (desktop_index)
+  this.removeDesktop = function (desktopIndex)
   {
-    if (desktop_index >= this.ndesktops()) {return -1;};
-    this.desktops.splice(desktop_index, 1);
+    if (desktopIndex >= this.ndesktops()) {return -1;};
+    this.desktops.splice(desktopIndex, 1);
     return 0;
   };
   
@@ -164,12 +164,12 @@ function Layer ()
     return this.desktops[this.ndesktops()-1].addTile(tile);
   };
   
-  this.removeTile = function (window_id)
+  this.removeTile = function (windowId)
   {
     var removed = -1;
     for (var i = 0; i < this.ndesktops(); i++)
     {
-      removed = this.desktops[i].removeTile(window_id);
+      removed = this.desktops[i].removeTile(windowId);
       if (removed === 0)
       {
         if (this.desktops[i].size() === 0) {removed = this.removeDesktop(i);};
@@ -180,33 +180,33 @@ function Layer ()
   };
   
   // divider
-  this.setDivider = function (horizontal, vertical, desktop_index)
+  this.setDivider = function (horizontal, vertical, desktopIndex)
   {
-    if (desktop_index >= this.ndesktops()) {return -1;};
-    return this.desktops[desktop_index].setDivider(horizontal, vertical);
+    if (desktopIndex >= this.ndesktops()) {return -1;};
+    return this.desktops[desktopIndex].setDivider(horizontal, vertical);
   };
   
-  this.getDivider = function (desktop_index)
+  this.getDivider = function (desktopIndex)
   {
-    if (desktop_index >= this.ndesktops()) {return -1;};
-    return this.desktops[desktop_index].getDivider();
+    if (desktopIndex >= this.ndesktops()) {return -1;};
+    return this.desktops[desktopIndex].getDivider();
   };
   
   // rendering
-  this.renderLayer = function (layer_index)
+  this.renderLayer = function (layerIndex)
   {
     var render = -1;
     for (var i = 0; i < this.ndesktops(); i++)
     {
-      render = this.desktops[i].renderDesktop(i, layer_index);
+      render = this.desktops[i].renderDesktop(i, layerIndex);
     };
     return render;
   };
   
-  this.renderDesktop = function (desktop_index, layer_index)
+  this.renderDesktop = function (desktopIndex, layerIndex)
   {
-    if (desktop_index >= this.ndesktops()) {return -1;};
-    return this.desktops[desktop_index].renderDesktop(desktop_index, layer_index);
+    if (desktopIndex >= this.ndesktops()) {return -1;};
+    return this.desktops[desktopIndex].renderDesktop(desktopIndex, layerIndex);
   };
 };
 
@@ -221,10 +221,10 @@ function Layout ()
     return 0;
   };
   
-  this.removeLayer = function (layer_index)
+  this.removeLayer = function (layerIndex)
   {
-    if (layer_index >= this.nlayers()) {return -1;};
-    this.layers.splice(layer_index, 1);
+    if (layerIndex >= this.nlayers()) {return -1;};
+    this.layers.splice(layerIndex, 1);
     return 0;
   };
   
@@ -241,10 +241,10 @@ function Layout ()
     return this.layers[this.nlayers() - 1].addDesktop(desktop);
   };
   
-  this.removeDesktop = function (desktop_index, layer_index)
+  this.removeDesktop = function (desktopIndex, layerIndex)
   {
-    if (layer_index >= this.nlayers()) {return -1;};
-    return this.layers[layer_index].removeDesktop(desktop_index);
+    if (layerIndex >= this.nlayers()) {return -1;};
+    return this.layers[layerIndex].removeDesktop(desktopIndex);
   };
   
   this.addTile = function (tile)
@@ -260,12 +260,12 @@ function Layout ()
     return this.layers[this.nlayers()-1].addTile(tile);
   };
   
-  this.removeTile = function (window_id)
+  this.removeTile = function (windowId)
   {
     removed = -1;
     for (var i = 0; i < this.nlayers(); i++)
     {
-      removed = this.layers[i].removeTile(window_id);
+      removed = this.layers[i].removeTile(windowId);
       if (removed === 0)
       {
         if (this.layers[i].ndesktops === 0) {removed = this.removeLayer(i);};
@@ -276,16 +276,16 @@ function Layout ()
   };
   
   // divider
-  this.setDivider = function (horizontal, vertical, desktop_index, layer_index)
+  this.setDivider = function (horizontal, vertical, desktopIndex, layerIndex)
   {
-    if (layer_index >= this.nlayers()) {return -1;};
-    return this.layers[layer_index].setDivider(horizontal, vertical, desktop_index);
+    if (layerIndex >= this.nlayers()) {return -1;};
+    return this.layers[layerIndex].setDivider(horizontal, vertical, desktopIndex);
   };
   
-  this.getDivider = function (desktop_index, layer_index)
+  this.getDivider = function (desktopIndex, layerIndex)
   {
-    if (layer_index >= this.nlayers()) {return -1;};
-    return this.layers[layer_index].getDivider(desktop_index);
+    if (layerIndex >= this.nlayers()) {return -1;};
+    return this.layers[layerIndex].getDivider(desktopIndex);
   };
   
   // rendering
@@ -299,16 +299,16 @@ function Layout ()
     return render;
   };
   
-  this.renderLayer = function (layer_index)
+  this.renderLayer = function (layerIndex)
   {
-    if (layer_index >= this.nlayers()) {return -1;};
-    return this.layers[layer_index].renderLayer();
+    if (layerIndex >= this.nlayers()) {return -1;};
+    return this.layers[layerIndex].renderLayer();
   };
   
-  this.renderDesktop = function (desktop_index, layer_index)
+  this.renderDesktop = function (desktopIndex, layerIndex)
   {
-    if (layer_index >= this.nlayers()) {return -1;};
-    return this.layers[layer_index].renderDesktop(desktop_index, layer_index);
+    if (layerIndex >= this.nlayers()) {return -1;};
+    return this.layers[layerIndex].renderDesktop(desktopIndex, layerIndex);
   };
 };
 
@@ -316,9 +316,9 @@ function Layout ()
 // Functions
 // ---------
 
-function RenderClient (x, y, width, height, tile, desktop_index , layer_index)
+function RenderClient (x, y, width, height, tile, desktopIndex , layerIndex)
 {
-  var client = workspace.getClient(tile.window_id);
+  var client = workspace.getClient(tile.windowId);
   var geometry = 
   {
     x: Math.floor(x),
@@ -327,72 +327,72 @@ function RenderClient (x, y, width, height, tile, desktop_index , layer_index)
     height: Math.floor(height),
   };
   
-  client.desktop = desktop_index+1;
+  client.desktop = desktopIndex+1;
   client.geometry = geometry;
   
   client.tiled = 
   {
-    desktop_index: desktop_index,
+    desktopIndex: desktopIndex,
     geometry: geometry,
-    layer_index: layer_index,
+    layerIndex: layerIndex,
   };
   return 0;
 };
 
-function RenderTiles (divider, tiles, ntiles, desktop_index, layer_index)
+function RenderTiles (divider, tiles, ntiles, desktopIndex, layerIndex)
 {
   if (ntiles === 0) {return -1;};
   
-  var w = desk_area.width-3*gap; // width
-  var h = desk_area.height-3*gap; // height
+  var w = deskArea.width-3*gap; // width
+  var h = deskArea.height-3*gap; // height
   
   var lw = divider.vertical*w; // left width
   var rw = (1-divider.vertical)*w; // right width
   var th = divider.horizontal*h; // top height
   var bh = (1-divider.horizontal)*h; // bottom height
   
-  var sx = gap+desk_area.x_min; // start x
+  var sx = gap+deskArea.xMin; // start x
   var hx = sx+lw+gap; // half x
   
-  var sy = gap+desk_area.y_min; // start y
+  var sy = gap+deskArea.yMin; // start y
   var hy = sy+th+gap; // half left y
   
   if (ntiles === 1)
   {
-    RenderClient(sx, sy, w+gap, h+gap, tiles[0], desktop_index, layer_index);
+    RenderClient(sx, sy, w+gap, h+gap, tiles[0], desktopIndex, layerIndex);
   }
   if (ntiles === 2)
   {
-    RenderClient(sx, sy, lw, h+gap, tiles[0], desktop_index, layer_index);
-    RenderClient(hx, sy, rw, h+gap, tiles[1], desktop_index, layer_index);
+    RenderClient(sx, sy, lw, h+gap, tiles[0], desktopIndex, layerIndex);
+    RenderClient(hx, sy, rw, h+gap, tiles[1], desktopIndex, layerIndex);
   };
   if (ntiles === 3)
   {
     if (tiles[0].type === 0.25 && tiles[1].type === 0.5 && tiles[2].type === 0.25)
     {
-      RenderClient(sx, sy, lw, th, tiles[0], desktop_index, layer_index);
-      RenderClient(hx, sy, rw, h+gap, tiles[1], desktop_index, layer_index);
-      RenderClient(sx, hy, lw, bh, tiles[2], desktop_index, layer_index);
+      RenderClient(sx, sy, lw, th, tiles[0], desktopIndex, layerIndex);
+      RenderClient(hx, sy, rw, h+gap, tiles[1], desktopIndex, layerIndex);
+      RenderClient(sx, hy, lw, bh, tiles[2], desktopIndex, layerIndex);
     }
     else if (tiles[0].type === 0.25 && tiles[1].type === 0.25 && tiles[2].type === 0.5)
     {
-      RenderClient(sx, sy, lw, th, tiles[0], desktop_index, layer_index);
-      RenderClient(sx, hy, lw, bh, tiles[1], desktop_index, layer_index);
-      RenderClient(hx, sy, rw, h+gap, tiles[2], desktop_index, layer_index);
+      RenderClient(sx, sy, lw, th, tiles[0], desktopIndex, layerIndex);
+      RenderClient(sx, hy, lw, bh, tiles[1], desktopIndex, layerIndex);
+      RenderClient(hx, sy, rw, h+gap, tiles[2], desktopIndex, layerIndex);
     }
     else
     {
-      RenderClient(sx, sy, lw, h+gap, tiles[0], desktop_index, layer_index);
-      RenderClient(hx, sy, rw, th, tiles[1], desktop_index, layer_index);
-      RenderClient(hx, hy, rw, bh, tiles[2], desktop_index, layer_index);
+      RenderClient(sx, sy, lw, h+gap, tiles[0], desktopIndex, layerIndex);
+      RenderClient(hx, sy, rw, th, tiles[1], desktopIndex, layerIndex);
+      RenderClient(hx, hy, rw, bh, tiles[2], desktopIndex, layerIndex);
     };
   };
   if (ntiles === 4)
   {
-    RenderClient(sx, sy, lw, th, tiles[0], desktop_index, layer_index);
-    RenderClient(hx, sy, rw, th, tiles[1], desktop_index, layer_index);
-    RenderClient(hx, hy, rw, bh, tiles[2], desktop_index, layer_index);
-    RenderClient(sx, hy, lw, bh, tiles[3], desktop_index, layer_index);
+    RenderClient(sx, sy, lw, th, tiles[0], desktopIndex, layerIndex);
+    RenderClient(hx, sy, rw, th, tiles[1], desktopIndex, layerIndex);
+    RenderClient(hx, hy, rw, bh, tiles[2], desktopIndex, layerIndex);
+    RenderClient(sx, hy, lw, bh, tiles[3], desktopIndex, layerIndex);
   };
   return -1;
 };
@@ -401,86 +401,86 @@ function MakeTile (client)
 {  
   if (client.specialWindow) {return -1;};
   
-  var c_class = client.resourceClass.toString();
-  var c_name = client.resourceName.toString();
-  var c_caption = client.caption.toString();
+  var clientClass = client.resourceClass.toString();
+  var clientName = client.resourceName.toString();
+  var clientCaption = client.caption.toString();
   
-  for (var i = 0; i < ignored_captions.length; i++)
+  for (var i = 0; i < ignoredCaptions.length; i++)
   {
-    if (ignored_captions[i] === c_caption) {return -1;};
+    if (ignoredCaptions[i] === clientCaption) {return -1;};
   };
   
-  for (var i = 0; i < ignored_clients.length; i++)
+  for (var i = 0; i < ignoredClients.length; i++)
   {
-    if (c_class === '' || c_name === '') {break;};
-    if (ignored_clients[i].indexOf(c_class) !== -1) {return -1;};
-    if (ignored_clients[i].indexOf(c_name) !== -1) {return -1;};
+    if (clientClass === '' || clientName === '') {break;};
+    if (ignoredClients[i].indexOf(clientClass) !== -1) {return -1;};
+    if (ignoredClients[i].indexOf(clientName) !== -1) {return -1;};
   };
 
   var type = 0.25;
-  if (c_class in tile_types) {type = tile_types[c_class];};
-  if (c_name in tile_types) {type = tile_types[c_name];};
+  if (clientClass in tileTypes) {type = tileTypes[clientClass];};
+  if (clientName in tileTypes) {type = tileTypes[clientName];};
   
   var tile = new Tile(client.windowId, type);
   return tile;
 };
 
-function GeometryChanged (client)
-{
-  var changed = -1;
-  
-  var resized_width = (client.tiled.geometry.width !== client.geometry.width);
-  var resized_height = (client.tiled.geometry.height !== client.geometry.height);
-  
-  var moved_x = (client.tiled.geometry.x !== client.geometry.x && !resized_width);
-  var moved_y = (client.tiled.geometry.y !== client.geometry.y && !resized_height);
-  
-  if (layout.layers[client.tiled.layer_index].desktops[client.tiled.desktop_index].length === 1) {return -1;};
-  
-  if (resized_width)
-  {
-    
-    changed = 0;
-  };
-  if (resized_height)
-  {
-    
-    changed = 0;
-  };
-  if (moved_x)
-  {
-    
-    changed = 0;
-  };
-  if (moved_y)
-  {
-    
-    changed = 0;
-  };
-  
-  return changed;
-};
+// function GeometryChanged (client)
+// {
+//   var changed = -1;
+//   
+//   var resizedWidth = (client.tiled.geometry.width !== client.geometry.width);
+//   var resizedHeight = (client.tiled.geometry.height !== client.geometry.height);
+//   
+//   var movedX = (client.tiled.geometry.x !== client.geometry.x && !resizedWidth);
+//   var movedY = (client.tiled.geometry.y !== client.geometry.y && !resizedHeight);
+//   
+//   if (layout.layers[client.tiled.layerIndex].desktops[client.tiled.desktopIndex].length === 1) {return -1;};
+//   
+//   if (resizedWidth)
+//   {
+//     
+//     changed = 0;
+//   };
+//   if (resizedHeight)
+//   {
+//     
+//     changed = 0;
+//   };
+//   if (movedX)
+//   {
+//     
+//     changed = 0;
+//   };
+//   if (movedY)
+//   {
+//     
+//     changed = 0;
+//   };
+//   
+//   return changed;
+// };
 
 // ---------------------------
 // Connecting The KWin Signals
 // ---------------------------
 
-var added_clients = {}; // window_id of added clients
+var addedClients = {}; // windowId of added clients
 var layout = new Layout(); // main class, contains all methods
 
 workspace.clientActivated.connect // clientAdded does not work for a lot of clients
 (
   function (client)
   {
-    if (client === null || client.windowId in added_clients) {return -1;};
-    added_clients[client.windowId] = true;
+    if (client === null || client.windowId in addedClients) {return -1;};
+    addedClients[client.windowId] = true;
     
     var tile = MakeTile(client);
     if (tile === -1) {return -1;};
     layout.addTile(tile);
     layout.renderLayout();
     workspace.currentDesktop = client.desktop;
-    ConnectClient(client);
+//     ConnectClient(client);
     return 0;
   }
 );
@@ -489,8 +489,8 @@ workspace.clientRemoved.connect
 (
   function (client)
   {
-    if (!(client.windowId in added_clients)) {return -1;};
-    delete added_clients[client.windowId];
+    if (!(client.windowId in addedClients)) {return -1;};
+    delete addedClients[client.windowId];
     
     var removed = layout.removeTile(client.windowId);
     if (removed === 0)
@@ -501,21 +501,21 @@ workspace.clientRemoved.connect
   }
 );
 
-function ConnectClient (client)
-{
-  client.clientFinishUserMovedResized.connect
-  (
-    function (client)
-    {
-      if (GeometryChanged(client) === -1) {return -1;};
-      return layout.renderLayout();
-    }
-  );
-//   client.clientStepUserMovedResized.connect
+// function ConnectClient (client)
+// {
+//   client.clientFinishUserMovedResized.connect
 //   (
 //     function (client)
 //     {
+//       if (GeometryChanged(client) === -1) {return -1;};
+//       return layout.renderLayout();
 //     }
 //   );
-  return 0;
-};
+// //   client.clientStepUserMovedResized.connect
+// //   (
+// //     function (client)
+// //     {
+// //     }
+// //   );
+//   return 0;
+// };
