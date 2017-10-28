@@ -620,42 +620,6 @@ function MoveAllClientsBottom (clients, nclients)
   return 0;
 };
 
-function SwitchClientRight (clientIndex, clients, nclients)
-{
-  if (clientIndex >= nclients || clients[clientIndex].type.right) {return -1;};
-  
-  var type = clients[clientIndex].type;
-  if (type.size === 0.5)
-  {
-    MoveAllClientsLeft(clients, nclients);
-    MoveClientRight(clientIndex, clients, nclients);
-  }
-  else if (type.size === 0.25)
-  {
-    var index = FindType(typeRH, clients, nclients);
-    if (index !== -1)
-    {
-      MoveAllClientsRight(clients, nclients);
-      MoveClientLeft(index, clients, nclients);
-    }
-    else if (type === typeTLQ)
-    {
-      MoveClientLeft(FindType(typeTRQ, clients, nclients), clients, nclients);
-      MoveClientRight(clientIndex, clients, nclients);
-    }
-    else if (type === typeBLQ)
-    {
-      MoveClientLeft(FindType(typeTRQ, clients, nclients), clients, nclients);
-      MoveClientRight(clientIndex, clients, nclients);
-    };
-  }
-  else
-  {
-    return -1;
-  };
-  return 0;
-};
-
 function SwitchClientLeft (clientIndex, clients, nclients)
 {
   if (clientIndex >= nclients || clients[clientIndex].type.left) {return -1;};
@@ -681,8 +645,44 @@ function SwitchClientLeft (clientIndex, clients, nclients)
     }
     else if (type === typeBRQ)
     {
-      MoveClientRight(FindType(typeTLQ, clients, nclients), clients, nclients);
+      MoveClientRight(FindType(typeBLQ, clients, nclients), clients, nclients);
       MoveClientLeft(clientIndex, clients, nclients);
+    };
+  }
+  else
+  {
+    return -1;
+  };
+  return 0;
+};
+
+function SwitchClientRight (clientIndex, clients, nclients)
+{
+  if (clientIndex >= nclients || clients[clientIndex].type.right) {return -1;};
+  
+  var type = clients[clientIndex].type;
+  if (type.size === 0.5)
+  {
+    MoveAllClientsLeft(clients, nclients);
+    MoveClientRight(clientIndex, clients, nclients);
+  }
+  else if (type.size === 0.25)
+  {
+    var index = FindType(typeRH, clients, nclients);
+    if (index !== -1)
+    {
+      MoveAllClientsRight(clients, nclients);
+      MoveClientLeft(index, clients, nclients);
+    }
+    else if (type === typeTLQ)
+    {
+      MoveClientLeft(FindType(typeTRQ, clients, nclients), clients, nclients);
+      MoveClientRight(clientIndex, clients, nclients);
+    }
+    else if (type === typeBLQ)
+    {
+      MoveClientLeft(FindType(typeBRQ, clients, nclients), clients, nclients);
+      MoveClientRight(clientIndex, clients, nclients);
     };
   }
   else
