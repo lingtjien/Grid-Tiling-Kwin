@@ -3,4 +3,3 @@
 - Tiling + Gaps
 
 # To Do
-- rewrite to, tile -> client with additonal properties
