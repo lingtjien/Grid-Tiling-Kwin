@@ -67,12 +67,12 @@ var ignoredCaptions =
 ];
 
 var dividerBounds = 0.2; // from this value to 1-value
+var moveOutside = 0.5; // move clients outside this value times the size of the client
 
-// -----------------
-// Class Definitions
-// -----------------
+// --------------
+// Layout Classes
+// --------------
 
-// clients must have a property minType, which is either 1.0/0.5/0.25 = fill/half/quarter, the minimum tile minType
 function Desktop ()
 {
   this.clients = [];
@@ -89,6 +89,7 @@ function Desktop ()
   {
     if (CheckClient(client) === -1) {return -1;}; // on succes adds minType to client
     if (this.size()+client.minType > 1) {return -1;};
+    SplitType(client, this.clients, this.nclients());
     this.clients.push(client);
     return 0;
   };
@@ -100,6 +101,7 @@ function Desktop ()
     {
       if (this.clients[i].windowId === windowId)
       {
+        CombineType(i, this.clients, this.nclients());
         this.clients.splice(i, 1);
         return 0;
       };
@@ -120,12 +122,28 @@ function Desktop ()
     return -1;
   };
   
-  this.switchClient = function (i, j)
+  this.switchClientLeft = function (clientIndex)
   {
-    if (i >= this.nclients() || j >= this.nclients()) {return -1;};
-    var temp = this.clients[i];
-    this.clients[i] = this.clients[j];
-    this.clients[j] = temp;
+    if (clientIndex >= this.nclients()) {return -1;};
+    return SwitchClientLeft(clientIndex, this.clients, this.nclients());
+  };
+  
+  this.switchClientRight = function (clientIndex)
+  {
+    if (clientIndex >= this.nclients()) {return -1;};
+    return SwitchClientRight(clientIndex, this.clients, this.nclients());
+  };
+  
+  this.switchClientTop = function (clientIndex)
+  {
+    if (clientIndex >= this.nclients()) {return -1;};
+    return SwitchClientTop(clientIndex, this.clients, this.nclients());
+  };
+  
+  this.switchClientBottom = function (clientIndex)
+  {
+    if (clientIndex >= this.nclients()) {return -1;};
+    return SwitchClientBottom(clientIndex, this.clients, this.nclients());
   };
   
   // divider
@@ -212,10 +230,28 @@ function Layer ()
     return client;
   };
   
-  this.switchClient = function (i, j, desktopIndex)
+  this.switchClientLeft = function (clientIndex, desktopIndex)
   {
     if (desktopIndex >= this.ndesktops()) {return -1;};
-    return this.desktops[desktopIndex].switchClient(i, j);
+    return this.desktops[desktopIndex].switchClientLeft(clientIndex);
+  };
+  
+  this.switchClientRight = function (clientIndex, desktopIndex)
+  {
+    if (desktopIndex >= this.ndesktops()) {return -1;};
+    return this.desktops[desktopIndex].switchClientRight(clientIndex);
+  };
+  
+  this.switchClientTop = function (clientIndex, desktopIndex)
+  {
+    if (desktopIndex >= this.ndesktops()) {return -1;};
+    return this.desktops[desktopIndex].switchClientTop(clientIndex);
+  };
+  
+  this.switchClientBottom = function (clientIndex, desktopIndex)
+  {
+    if (desktopIndex >= this.ndesktops()) {return -1;};
+    return this.desktops[desktopIndex].switchClientBottom(clientIndex);
   };
   
   // divider
@@ -325,10 +361,28 @@ function Layout ()
     return client;
   };
   
-  this.switchClient = function (i, j, desktopIndex, layerIndex)
+  this.switchClientLeft = function (clientIndex, desktopIndex, layerIndex)
   {
     if (layerIndex >= this.nlayers()) {return -1;};
-    return this.layers[layerIndex].switchClient(i, j, desktopIndex);
+    return this.layers[layerIndex].desktops[desktopIndex].switchClientLeft(clientIndex);
+  };
+  
+  this.switchClientRight = function (clientIndex, desktopIndex, layerIndex)
+  {
+    if (layerIndex >= this.nlayers()) {return -1;};
+    return this.layers[layerIndex].desktops[desktopIndex].switchClientRight(clientIndex);
+  };
+  
+  this.switchClientTop = function (clientIndex, desktopIndex, layerIndex)
+  {
+    if (layerIndex >= this.nlayers()) {return -1;};
+    return this.layers[layerIndex].desktops[desktopIndex].switchClientTop(clientIndex);
+  };
+  
+  this.switchClientBottom = function (clientIndex, desktopIndex, layerIndex)
+  {
+    if (layerIndex >= this.nlayers()) {return -1;};
+    return this.layers[layerIndex].desktops[desktopIndex].switchClientBottom(clientIndex);
   };
   
   // divider
@@ -368,65 +422,418 @@ function Layout ()
   };
 };
 
-// ---------
-// Functions
-// ---------
+// --------------
+// Type Functions
+// --------------
 
-var typeF = {left: true, right: true, top: true, bottom: true}; // full
-var typeLH = {left: true, right: false, top: true, bottom: true}; // left half
-var typeRH = {left: false, right: true, top: true, bottom: true}; // right half
-var typeTLQ = {left: true, right: false, top: true, bottom: false}; // top left quarter
-var typeTRQ = {left: false, right: true, top: true, bottom: false}; // top right quarter
-var typeBRQ = {left: false, right: true, top: false, bottom: true}; // bottom right quarter
-var typeBLQ = {left: true, right: false, top: false, bottom: true}; // bottom left quarter
+var typeF = {left: true, right: true, top: true, bottom: true, size: 1}; // full
+var typeLH = {left: true, right: false, top: true, bottom: true, size: 0.5}; // left half
+var typeRH = {left: false, right: true, top: true, bottom: true, size: 0.5}; // right half
+var typeTLQ = {left: true, right: false, top: true, bottom: false, size: 0.25}; // top left quarter
+var typeTRQ = {left: false, right: true, top: true, bottom: false, size: 0.25}; // top right quarter
+var typeBRQ = {left: false, right: true, top: false, bottom: true, size: 0.25}; // bottom right quarter
+var typeBLQ = {left: true, right: false, top: false, bottom: true, size: 0.25}; // bottom left quarter
 
-function AssignType (clients, nclients)
+function FindType (type, clients, nclients)
 {
-  if (nclients === 0) {return -1;};
-  if (nclients === 1)
+  var found = -1;
+  for (var i = 0; i < nclients; i++)
   {
-    clients[0].type = typeF;
-  }
-  if (nclients === 2)
-  {
-    clients[0].type = typeLH;
-    clients[1].type = typeRH;
-  };
-  if (nclients === 3)
-  {
-    if (clients[0].minType === 0.25 && clients[1].minType === 0.5 && clients[2].minType === 0.25)
+    if (clients[i].type === type)
     {
-      clients[0].type = typeTLQ;
-      clients[1].type = typeRH;
-      clients[2].type = typeBLQ;
-    }
-    else if (clients[0].minType === 0.25 && clients[1].minType === 0.25 && clients[2].minType === 0.5)
-    {
-      clients[0].type = typeTLQ;
-      clients[1].type = typeBLQ;
-      clients[2].type = typeRH;
-    }
-    else
-    {
-      clients[0].type = typeLH;
-      clients[1].type = typeTRQ;
-      clients[2].type = typeBRQ;
+      found = i;
+      break;
     };
   };
-  if (nclients === 4)
+  return found;
+};
+
+function FindLargestType (clients, nclients)
+{
+  var index = -1;
+  var largest = 0;
+  for (var i = 0; i < nclients; i++)
   {
-    clients[0].type = typeTLQ;
-    clients[1].type = typeTRQ;
-    clients[2].type = typeBRQ;
-    clients[3].type = typeBLQ;
+    var size = clients[i].type.size;
+    if (size > largest)
+    {
+      index = i;
+      largest = size;
+    }
+    else if (size === largest && clients[i].type.right) // prefer to find the right tile, when same size
+    {
+      index = i;
+    };
   };
+  return index;
+};
+
+function SplitType (client, clients, nclients)
+{
+  if (nclients === 0)
+  {
+    client.type = typeF;
+    return 0;
+  };
+  
+  var index = FindLargestType(clients, nclients);
+  if (clients[index].type === typeF)
+  {
+    clients[index].type = typeLH;
+    client.type = typeRH;
+    return 0;
+  }
+  else if (clients[index].type === typeLH)
+  {
+    clients[index].type = typeTLQ;
+    client.type = typeBLQ;
+    return 0;
+  }
+  else if (clients[index].type === typeRH)
+  {
+    clients[index].type = typeTRQ;
+    client.type = typeBRQ;
+    return 0;
+  }
+  else
+  {
+    return -1;
+  };
+};
+
+function CombineType (clientIndex, clients, nclients)
+{
+  var type = clients[clientIndex].type;
+  if (type === typeLH)
+  {
+    if (nclients === 2)
+    {
+      clients[FindType(typeRH, clients, nclients)].type = typeF;
+    }
+    else if (nclients === 3)
+    {
+      clients[FindType(typeTRQ, clients, nclients)].type = typeLH;
+      clients[FindType(typeBRQ, clients, nclients)].type = typeRH;
+    };
+  }
+  else if (type === typeRH)
+  {
+    if (nclients === 2)
+    {
+      clients[FindType(typeLH, clients, nclients)].type = typeF;
+    }
+    else if (nclients === 3)
+    {
+      clients[FindType(typeTLQ, clients, nclients)].type = typeLH;
+      clients[FindType(typeBLQ, clients, nclients)].type = typeRH;
+    };
+  }
+  else if (type === typeTLQ)
+  {
+    clients[FindType(typeBLQ, clients, nclients)].type = typeLH;
+  }
+  else if (type === typeTRQ)
+  {
+    clients[FindType(typeBRQ, clients, nclients)].type = typeRH;
+  }
+  else if (type === typeBRQ)
+  {
+    clients[FindType(typeTRQ, clients, nclients)].type = typeRH;
+  }
+  else if (type === typeBLQ)
+  {
+    clients[FindType(typeTLQ, clients, nclients)].type = typeLH;
+  }
+  else
+  {
+    return -1;
+  };
+};
+
+// -------------
+// Client Moving
+// -------------
+
+function MoveClientLeft (clientIndex, clients, nclients)
+{
+  if (clients[clientIndex].type === typeRH) {clients[clientIndex].type = typeLH; return 0;};
+  if (clients[clientIndex].type === typeTRQ) {clients[clientIndex].type = typeTLQ; return 0;};
+  if (clients[clientIndex].type === typeBRQ) {clients[clientIndex].type = typeBLQ; return 0;};
+  return -1;
+};
+
+function MoveClientRight (clientIndex, clients, nclients)
+{
+  if (clients[clientIndex].type === typeLH) {clients[clientIndex].type = typeRH; return 0;};
+  if (clients[clientIndex].type === typeTLQ) {clients[clientIndex].type = typeTRQ; return 0;};
+  if (clients[clientIndex].type === typeBLQ) {clients[clientIndex].type = typeBRQ; return 0;};
+  return -1;
+};
+
+function MoveClientTop (clientIndex, clients, nclients)
+{
+  if (clients[clientIndex].type === typeBLQ) {clients[clientIndex].type = typeTLQ; return 0;};
+  if (clients[clientIndex].type === typeBRQ) {clients[clientIndex].type = typeTRQ; return 0;};
+  return -1;
+};
+
+function MoveClientBottom (clientIndex, clients, nclients)
+{
+  if (clients[clientIndex].type === typeTLQ) {clients[clientIndex].type = typeBLQ; return 0;};
+  if (clients[clientIndex].type === typeTRQ) {clients[clientIndex].type = typeBRQ; return 0;};
+  return -1;
+};
+
+function MoveAllClientsLeft (clients, nclients)
+{
+  for (var i = 0; i < nclients; i++)
+  {
+    MoveClientLeft(i, clients, nclients);
+  };
+  return 0;
+};
+
+function MoveAllClientsRight (clients, nclients)
+{
+  for (var i = 0; i < nclients; i++)
+  {
+    MoveClientRight(i, clients, nclients);
+  };
+  return 0;
+};
+
+function MoveAllClientsTop (clients, nclients)
+{
+  for (var i = 0; i < nclients; i++)
+  {
+    MoveClientTop(i, clients, nclients);
+  };
+  return 0;
+};
+
+function MoveAllClientsBottom (clients, nclients)
+{
+  for (var i = 0; i < nclients; i++)
+  {
+    MoveClientBottom(i, clients, nclients);
+  };
+  return 0;
+};
+
+function SwitchClientRight (clientIndex, clients, nclients)
+{
+  if (clientIndex >= nclients || clients[clientIndex].type.right) {return -1;};
+  
+  var type = clients[clientIndex].type;
+  if (type.size === 0.5)
+  {
+    MoveAllClientsLeft(clients, nclients);
+    MoveClientRight(clientIndex, clients, nclients);
+  }
+  else if (type.size === 0.25)
+  {
+    var index = FindType(typeRH, clients, nclients);
+    if (index !== -1)
+    {
+      MoveAllClientsRight(clients, nclients);
+      MoveClientLeft(index, clients, nclients);
+    }
+    else if (type === typeTLQ)
+    {
+      MoveClientLeft(FindType(typeTRQ, clients, nclients), clients, nclients);
+      MoveClientRight(clientIndex, clients, nclients);
+    }
+    else if (type === typeBLQ)
+    {
+      MoveClientLeft(FindType(typeTRQ, clients, nclients), clients, nclients);
+      MoveClientRight(clientIndex, clients, nclients);
+    };
+  }
+  else
+  {
+    return -1;
+  };
+  return 0;
+};
+
+function SwitchClientLeft (clientIndex, clients, nclients)
+{
+  if (clientIndex >= nclients || clients[clientIndex].type.left) {return -1;};
+  
+  var type = clients[clientIndex].type;
+  if (type.size === 0.5)
+  {
+    MoveAllClientsRight(clients, nclients);
+    MoveClientLeft(clientIndex, clients, nclients);
+  }
+  else if (type.size === 0.25)
+  {
+    var index = FindType(typeLH, clients, nclients);
+    if (index !== -1)
+    {
+      MoveAllClientsLeft(clients, nclients);
+      MoveClientRight(index, clients, nclients);
+    }
+    else if (type === typeTRQ)
+    {
+      MoveClientRight(FindType(typeTLQ, clients, nclients), clients, nclients);
+      MoveClientLeft(clientIndex, clients, nclients);
+    }
+    else if (type === typeBRQ)
+    {
+      MoveClientRight(FindType(typeTLQ, clients, nclients), clients, nclients);
+      MoveClientLeft(clientIndex, clients, nclients);
+    };
+  }
+  else
+  {
+    return -1;
+  };
+  return 0;
+};
+
+function SwitchClientTop (clientIndex, clients, nclients)
+{
+  if (clientIndex >= nclients || clients[clientIndex].type.top) {return -1;};
+  
+  var type = clients[clientIndex].type;
+  if (type === typeBLQ)
+  {
+    MoveClientBottom(FindType(typeTLQ, clients, nclients), clients, nclients);
+    MoveClientTop(clientIndex, clients, nclients);
+  }
+  else if (type === typeBRQ)
+  {
+    MoveClientBottom(FindType(typeTRQ, clients, nclients), clients, nclients);
+    MoveClientTop(clientIndex, clients, nclients);
+  }
+  else
+  {
+    return -1;
+  };
+  return 0;
+};
+
+function SwitchClientBottom (clientIndex, clients, nclients)
+{
+  if (clientIndex >= nclients || clients[clientIndex].type.bottom) {return -1;};
+  
+  var type = clients[clientIndex].type;
+  if (type === typeTLQ)
+  {
+    MoveClientTop(FindType(typeBLQ, clients, nclients), clients, nclients);
+    MoveClientBottom(clientIndex, clients, nclients);
+  }
+  else if (type === typeTRQ)
+  {
+    MoveClientTop(FindType(typeBRQ, clients, nclients), clients, nclients);
+    MoveClientBottom(clientIndex, clients, nclients);
+  }
+  else
+  {
+    return -1;
+  };
+  return 0;
+};
+
+function GeometryChanged (windowId)
+{
+  var client = layout.getClient(windowId);
+  
+  var resizedWidth = (client.geometryRender.width !== client.geometry.width);
+  var resizedHeight = (client.geometryRender.height !== client.geometry.height);
+  
+  var movedX = (client.geometryRender.x !== client.geometry.x && !resizedWidth);
+  var movedY = (client.geometryRender.y !== client.geometry.y && !resizedHeight);
+  
+  if (!resizedWidth && !resizedHeight && !movedX && !movedY) {return -1};
+  
+  var diffWidth = client.geometry.width-client.geometryRender.width;
+  var diffHeight = client.geometry.height-client.geometryRender.height;
+  
+  var diffX = client.geometry.x-client.geometryRender.x;
+  var diffY = client.geometry.y-client.geometryRender.y;
+  
+  var divider = layout.getDivider(client.desktopIndex, client.layerIndex);
+  
+  if (resizedWidth)
+  {
+    if (client.type.left && !client.type.right)
+    {
+      divider.vertical += diffWidth/(workspace.displayWidth);
+    };
+    if (!client.type.left && client.type.right)
+    {
+      divider.vertical -= diffWidth/(workspace.displayWidth);
+    };
+  };
+  if (resizedHeight)
+  {
+    if (client.type.top && !client.type.bottom)
+    {
+      divider.horizontal += diffHeight/(workspace.displayHeight);
+    };
+    if (!client.type.top && client.type.bottom)
+    {
+      divider.horizontal -= diffHeight/(workspace.displayHeight);
+    };
+  };
+  if (movedX)
+  {
+    if (diffX > moveOutside*client.width)
+    {
+      layout.switchClientRight(client.clientIndex, client.desktopIndex, client.layerIndex);
+    }
+    else if (diffX < -moveOutside*client.width)
+    {
+      layout.switchClientLeft(client.clientIndex, client.desktopIndex, client.layerIndex);
+    };
+  };
+  if (movedY)
+  {
+    if (diffY > moveOutside*client.height)
+    {
+      layout.switchClientBottom(client.clientIndex, client.desktopIndex, client.layerIndex);
+    }
+    else if (diffY < -moveOutside*client.height)
+    {
+      layout.switchClientTop(client.clientIndex, client.desktopIndex, client.layerIndex);
+    };
+  };
+  
+  if (divider.horizontal < dividerBounds) {divider.horizontal = dividerBounds;};
+  if (divider.horizontal > 1-dividerBounds) {divider.horizontal = 1-dividerBounds;};
+  if (divider.vertical < dividerBounds) {divider.vertical = dividerBounds;};
+  if (divider.vertical > 1-dividerBounds) {divider.vertical = 1-dividerBounds;};
+  
+  return 0;
+};
+
+// ----------------
+// Client Rendering
+// ----------------
+
+function SetClient (client, x, y, width, height, clientIndex, desktopIndex, layerIndex)
+{
+  var geometry = 
+  {
+    x: Math.floor(x),
+    y: Math.floor(y),
+    width: Math.floor(width),
+    height: Math.floor(height),
+  };
+  
+  client.desktop = desktopIndex+1;
+  client.geometry = geometry;
+  client.geometryRender = geometry;
+  client.clientIndex = clientIndex;
+  client.desktopIndex = desktopIndex;
+  client.layerIndex = layerIndex;
   return 0;
 };
 
 function RenderClients (divider, clients, nclients, desktopIndex, layerIndex)
 {
-  if (AssignType(clients, nclients) === -1) {return -1;};
-  
   var w = deskArea.width-3*gap; // width
   var h = deskArea.height-3*gap; // height
   
@@ -483,101 +890,9 @@ function RenderClients (divider, clients, nclients, desktopIndex, layerIndex)
   return 0;
 };
 
-function SetClient (client, x, y, width, height, clientIndex, desktopIndex, layerIndex)
-{
-  var geometry = 
-  {
-    x: Math.floor(x),
-    y: Math.floor(y),
-    width: Math.floor(width),
-    height: Math.floor(height),
-  };
-  
-  client.desktop = desktopIndex+1;
-  client.geometry = geometry;
-  client.geometryRender = geometry;
-  client.clientIndex = clientIndex;
-  client.desktopIndex = desktopIndex;
-  client.layerIndex = layerIndex;
-  return 0;
-};
-
-function GeometryChanged (windowId)
-{
-  var changed = -1;
-  var client = layout.getClient(windowId);
-  
-  var resizedWidth = (client.geometryRender.width !== client.geometry.width);
-  var resizedHeight = (client.geometryRender.height !== client.geometry.height);
-  
-  var movedX = (client.geometryRender.x !== client.geometry.x && !resizedWidth);
-  var movedY = (client.geometryRender.y !== client.geometry.y && !resizedHeight);
-  
-  if (!resizedWidth && !resizedHeight && !movedX && !movedY) {return changed};
-  
-  var diffWidth = client.geometry.width-client.geometryRender.width;
-  var diffHeight = client.geometry.height-client.geometryRender.height;
-  
-  var diffX = client.geometry.x-client.geometryRender.x;
-  var diffY = client.geometry.y-client.geometryRender.y;
-  
-  var divider = layout.getDivider(client.desktopIndex, client.layerIndex);
-  
-  if (resizedWidth)
-  {
-    if (client.type.left && !client.type.right)
-    {
-      divider.vertical += diffWidth/(deskArea.width-2*gap);
-      changed = 0;
-    };
-    if (!client.type.left && client.type.right)
-    {
-      divider.vertical -= diffWidth/(deskArea.width-2*gap);
-      changed = 0;
-    };
-  };
-  if (resizedHeight)
-  {
-    if (client.type.top && !client.type.bottom)
-    {
-      divider.horizontal += diffHeight/(deskArea.height-2*gap);
-      changed = 0;
-    };
-    if (!client.type.top && client.type.bottom)
-    {
-      divider.horizontal -= diffHeight/(deskArea.height-2*gap);
-      changed = 0;
-    };
-  };
-  if (movedX)
-  {
-    if (client.type.left && !client.type.right)
-    {
-      if (diffX > 0.5*client.width)
-      {
-        
-      };
-      changed = 0;
-    };
-    if (!client.type.left && client.type.right)
-    {
-      
-      changed = 0;
-    };
-  };
-  if (movedY)
-  {
-    
-    changed = 0;
-  };
-  
-  if (divider.horizontal < dividerBounds) {divider.horizontal = dividerBounds;};
-  if (divider.horizontal > 1-dividerBounds) {divider.horizontal = 1-dividerBounds;};
-  if (divider.vertical < dividerBounds) {divider.vertical = dividerBounds;};
-  if (divider.vertical > 1-dividerBounds) {divider.vertical = 1-dividerBounds;};
-  
-  return changed;
-};
+// ---------------
+// Client Validity
+// ---------------
 
 function CheckClient (client)
 {  
@@ -599,19 +914,19 @@ function CheckClient (client)
   };
   
   var minType = 0.25;
-  for (var i = 0; i < fullClients.length; i++)
-  {
-    if (clientClass.indexOf(fullClients[i]) !== -1 || clientName.indexOf(fullClients[i]) !== -1)
-    {
-      minType = 1;
-      break;
-    };
-  };
   for (var i = 0; i < halfClients.length; i++)
   {
     if (clientClass.indexOf(halfClients[i]) !== -1 || clientClass.indexOf(halfClients[i]) !== -1)
     {
       minType = 0.5;
+      break;
+    };
+  };
+  for (var i = 0; i < fullClients.length; i++)
+  {
+    if (clientClass.indexOf(fullClients[i]) !== -1 || clientName.indexOf(fullClients[i]) !== -1)
+    {
+      minType = 1;
       break;
     };
   };
@@ -634,7 +949,6 @@ workspace.clientActivated.connect // clientAdded does not work for a lot of clie
     if (client === null || client.windowId in addedClients) {return -1;};
     if (layout.addClient(client) === -1) {return -1;};
     addedClients[client.windowId] = true;
-    
     layout.renderLayout();
     workspace.currentDesktop = client.desktop;
     ConnectClient(client); // connect client signals
