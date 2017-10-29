@@ -1,5 +1,5 @@
-# My personal KWin scripts
+# My personal KWin script
 
-- Tiling + Gaps
+- Automatically tiles new windows, using kwin 
 
 # To Do

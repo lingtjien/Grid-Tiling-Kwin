@@ -1068,7 +1068,7 @@ registerShortcut
 (
   "Tiling: Switch Up",
   "Tiling: Switch Up",
-  "Meta+Up",
+  "Alt+Up",
   function ()
   {
     client = layout.getClient(workspace.activeClient.windowId);
@@ -1081,7 +1081,7 @@ registerShortcut
 (
   "Tiling: Switch Down",
   "Tiling: Switch Down",
-  "Meta+Down",
+  "Alt+Down",
   function ()
   {
     client = layout.getClient(workspace.activeClient.windowId);
@@ -1094,7 +1094,7 @@ registerShortcut
 (
   "Tiling: Switch Left",
   "Tiling: Switch Left",
-  "Meta+Left",
+  "Alt+Left",
   function ()
   {
     client = layout.getClient(workspace.activeClient.windowId);
@@ -1107,7 +1107,7 @@ registerShortcut
 (
   "Tiling: Switch Right",
   "Tiling: Switch Right",
-  "Meta+Right",
+  "Alt+Right",
   function ()
   {
     client = layout.getClient(workspace.activeClient.windowId);
