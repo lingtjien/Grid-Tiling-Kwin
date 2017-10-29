@@ -1033,3 +1033,85 @@ function ConnectClient (client)
   );
   return 0;
 };
+
+// ------------------
+// Creating Shortcuts
+// ------------------
+
+registerShortcut
+(
+  "Tiling: Move Next Desktop",
+  "Tiling: Move Next Desktop",
+  "Meta+End",
+  function ()
+  {
+    client = layout.getClient(workspace.activeClient.windowId);
+    if (client === -1) {return -1;};
+    return layout.moveNextDesktop(client.clientIndex, client.desktopIndex, client.layerIndex);
+  }
+);
+
+registerShortcut
+(
+  "Tiling: Move Previous Desktop",
+  "Tiling: Move Previous Desktop",
+  "Meta+Home",
+  function ()
+  {
+    client = layout.getClient(workspace.activeClient.windowId);
+    if (client === -1) {return -1;};
+    return layout.SwitchPreviousDesktop(client.clientIndex, client.desktopIndex, client.layerIndex);
+  }
+);
+
+registerShortcut
+(
+  "Tiling: Switch Up",
+  "Tiling: Switch Up",
+  "Meta+Up",
+  function ()
+  {
+    client = layout.getClient(workspace.activeClient.windowId);
+    if (client === -1) {return -1;};
+    return layout.switchClientTop(client.clientIndex, client.desktopIndex, client.layerIndex);
+  }
+);
+
+registerShortcut
+(
+  "Tiling: Switch Down",
+  "Tiling: Switch Down",
+  "Meta+Down",
+  function ()
+  {
+    client = layout.getClient(workspace.activeClient.windowId);
+    if (client === -1) {return -1;};
+    return layout.switchClientBottom(client.clientIndex, client.desktopIndex, client.layerIndex);
+  }
+);
+
+registerShortcut
+(
+  "Tiling: Switch Left",
+  "Tiling: Switch Left",
+  "Meta+Left",
+  function ()
+  {
+    client = layout.getClient(workspace.activeClient.windowId);
+    if (client === -1) {return -1;};
+    return layout.switchClientLeft(client.clientIndex, client.desktopIndex, client.layerIndex);
+  }
+);
+
+registerShortcut
+(
+  "Tiling: Switch Right",
+  "Tiling: Switch Right",
+  "Meta+Right",
+  function ()
+  {
+    client = layout.getClient(workspace.activeClient.windowId);
+    if (client === -1) {return -1;};
+    return layout.switchClientRight(client.clientIndex, client.desktopIndex, client.layerIndex);
+  }
+);
