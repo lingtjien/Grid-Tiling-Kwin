@@ -5,6 +5,18 @@
 // workspace (contains all client info)
 // options (contains all options)
 
+// var gap = readConfig("gap");
+// var dividerBounds = readConfig("dividerBounds"); // from this value to 1-value
+// var moveOutside = readConfig("moveOutside"); // move clients outside this fraction of its own size
+// 
+// var margins =
+// {
+//   top: readConfig("topMargin"), // latte top dock height
+//   bottom: readConfig("bottomMargin"),
+//   left: readConfig("leftMargin"),
+//   right: readConfig("rightMargin"),
+// };
+
 var gap = 16;
 var dividerBounds = 0.2; // from this value to 1-value
 var moveOutside = 0.5; // move clients outside this fraction of its own size
@@ -23,6 +35,10 @@ var fullClients =
   "texstudio",
   "inkscape",
   "gimp",
+  "qtdesigner",
+  "qtcreator",
+  "kdevelop",
+  "kdenlive",
 ];
 
 var halfClients =
