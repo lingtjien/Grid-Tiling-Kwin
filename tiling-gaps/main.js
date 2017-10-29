@@ -1,11 +1,13 @@
-// workspace (contains all client info)
-// options (contains all options)
-
 // ----------
 // Parameters
 // ----------
 
+// workspace (contains all client info)
+// options (contains all options)
+
 var gap = 16;
+var dividerBounds = 0.2; // from this value to 1-value
+var moveOutside = 0.5; // move clients outside this fraction of its own size
 
 var margins =
 {
@@ -13,14 +15,6 @@ var margins =
   bottom: 0,
   left: 0,
   right: 0,
-};
-
-var deskArea =
-{
-  xMin: margins.left,
-  yMin: margins.top,
-  width: workspace.displayWidth-margins.right-margins.left,
-  height: workspace.displayHeight-margins.bottom-margins.top,
 };
 
 // smallest minType sizes
@@ -66,8 +60,13 @@ var ignoredCaptions =
   "QEMU",
 ];
 
-var dividerBounds = 0.2; // from this value to 1-value
-var moveOutside = 0.5; // move clients outside this value times the size of the client
+var deskArea =
+{
+  xMin: margins.left,
+  yMin: margins.top,
+  width: workspace.displayWidth-margins.right-margins.left,
+  height: workspace.displayHeight-margins.bottom-margins.top,
+};
 
 // --------------
 // Layout Classes
@@ -254,6 +253,32 @@ function Layer ()
     return this.desktops[desktopIndex].switchClientBottom(clientIndex);
   };
   
+  this.movePreviousDesktop = function (clientIndex, desktopIndex)
+  {
+    for (var i = desktopIndex-1; i >= 0; i--)
+    {
+      if (this.desktops[i].addClient(this.desktops[desktopIndex].clients[clientIndex]) === 0)
+      {
+        this.desktops[desktopIndex].clients.splice(clientIndex, 1);
+        return 0;
+      };
+    };
+    return -1;
+  };
+  
+  this.moveNextDesktop = function (clientIndex, desktopIndex)
+  {
+    for (var i = desktopIndex+1; i < this.ndesktops(); i++)
+    {
+      if (this.desktops[i].addClient(this.desktops[desktopIndex].clients[clientIndex]) === 0)
+      {
+        this.desktops[desktopIndex].clients.splice(clientIndex, 1);
+        return 0;
+      };
+    };
+    return -1;
+  };
+  
   // divider
   this.setDivider = function (horizontal, vertical, desktopIndex)
   {
@@ -383,6 +408,18 @@ function Layout ()
   {
     if (layerIndex >= this.nlayers()) {return -1;};
     return this.layers[layerIndex].desktops[desktopIndex].switchClientBottom(clientIndex);
+  };
+  
+  this.movePreviousDesktop = function (clientIndex, desktopIndex, layerIndex)
+  {
+    if (layerIndex >= this.nlayers()) {return -1;};
+    return this.layers[layerIndex].movePreviousDesktop(clientIndex, desktopIndex);
+  };
+  
+  this.moveNextDesktop = function (clientIndex, desktopIndex, layerIndex)
+  {
+    if (layerIndex >= this.nlayers()) {return -1;};
+    return this.layers[layerIndex].moveNextDesktop(clientIndex, desktopIndex);
   };
   
   // divider
@@ -736,24 +773,15 @@ function SwitchClientBottom (clientIndex, clients, nclients)
   return 0;
 };
 
-function GeometryChanged (windowId)
+function GeometryResized (windowId)
 {
   var client = layout.getClient(windowId);
   
   var resizedWidth = (client.geometryRender.width !== client.geometry.width);
   var resizedHeight = (client.geometryRender.height !== client.geometry.height);
-  
-  var movedX = (client.geometryRender.x !== client.geometry.x && !resizedWidth);
-  var movedY = (client.geometryRender.y !== client.geometry.y && !resizedHeight);
-  
-  if (!resizedWidth && !resizedHeight && !movedX && !movedY) {return -1};
-  
+  if (!resizedWidth && !resizedHeight) {return -1;};
   var diffWidth = client.geometry.width-client.geometryRender.width;
   var diffHeight = client.geometry.height-client.geometryRender.height;
-  
-  var diffX = client.geometry.x-client.geometryRender.x;
-  var diffY = client.geometry.y-client.geometryRender.y;
-  
   var divider = layout.getDivider(client.desktopIndex, client.layerIndex);
   
   if (resizedWidth)
@@ -778,6 +806,25 @@ function GeometryChanged (windowId)
       divider.horizontal -= diffHeight/(workspace.displayHeight);
     };
   };
+  
+  if (divider.horizontal < dividerBounds) {divider.horizontal = dividerBounds;};
+  if (divider.horizontal > 1-dividerBounds) {divider.horizontal = 1-dividerBounds;};
+  if (divider.vertical < dividerBounds) {divider.vertical = dividerBounds;};
+  if (divider.vertical > 1-dividerBounds) {divider.vertical = 1-dividerBounds;};
+  
+  return 0;
+};
+
+function GeometryMoved (windowId)
+{
+  var client = layout.getClient(windowId);
+  
+  var movedX = (client.geometryRender.x !== client.geometry.x && !(client.geometryRender.width !== client.geometry.width));
+  var movedY = (client.geometryRender.y !== client.geometry.y && !(client.geometryRender.height !== client.geometry.height));
+  if (!movedX && !movedY) {return -1;};
+  var diffX = client.geometry.x-client.geometryRender.x;
+  var diffY = client.geometry.y-client.geometryRender.y;
+  
   if (movedX)
   {
     if (diffX > moveOutside*client.width)
@@ -800,12 +847,6 @@ function GeometryChanged (windowId)
       layout.switchClientTop(client.clientIndex, client.desktopIndex, client.layerIndex);
     };
   };
-  
-  if (divider.horizontal < dividerBounds) {divider.horizontal = dividerBounds;};
-  if (divider.horizontal > 1-dividerBounds) {divider.horizontal = 1-dividerBounds;};
-  if (divider.vertical < dividerBounds) {divider.vertical = dividerBounds;};
-  if (divider.vertical > 1-dividerBounds) {divider.vertical = 1-dividerBounds;};
-  
   return 0;
 };
 
@@ -978,15 +1019,17 @@ function ConnectClient (client)
   (
     function (client)
     {
-      if (GeometryChanged(client.windowId) === -1) {return -1;};
+      if (GeometryResized(client.windowId) === -1 && GeometryMoved(client.windowId) === -1) {return -1;};
       return layout.renderLayout();
     }
   );
-//   client.clientStepUserMovedResized.connect
-//   (
-//     function (client)
-//     {
-//     }
-//   );
+  client.clientStepUserMovedResized.connect
+  (
+    function (client)
+    {
+      if (GeometryResized(client.windowId) === -1) {return -1;};
+      return layout.renderLayout();
+    }
+  );
   return 0;
 };
