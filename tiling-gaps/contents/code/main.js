@@ -149,16 +149,16 @@ function Desktop ()
     return SwitchClientRight(clientIndex, this.clients, this.nclients());
   };
   
-  this.switchClientTop = function (clientIndex)
+  this.switchClientUp = function (clientIndex)
   {
     if (clientIndex >= this.nclients()) {return -1;};
-    return SwitchClientTop(clientIndex, this.clients, this.nclients());
+    return SwitchClientUp(clientIndex, this.clients, this.nclients());
   };
   
-  this.switchClientBottom = function (clientIndex)
+  this.switchClientDown = function (clientIndex)
   {
     if (clientIndex >= this.nclients()) {return -1;};
-    return SwitchClientBottom(clientIndex, this.clients, this.nclients());
+    return SwitchClientDown(clientIndex, this.clients, this.nclients());
   };
   
   // divider
@@ -257,16 +257,16 @@ function Layer ()
     return this.desktops[desktopIndex].switchClientRight(clientIndex);
   };
   
-  this.switchClientTop = function (clientIndex, desktopIndex)
+  this.switchClientUp = function (clientIndex, desktopIndex)
   {
     if (desktopIndex >= this.ndesktops()) {return -1;};
-    return this.desktops[desktopIndex].switchClientTop(clientIndex);
+    return this.desktops[desktopIndex].switchClientUp(clientIndex);
   };
   
-  this.switchClientBottom = function (clientIndex, desktopIndex)
+  this.switchClientDown = function (clientIndex, desktopIndex)
   {
     if (desktopIndex >= this.ndesktops()) {return -1;};
-    return this.desktops[desktopIndex].switchClientBottom(clientIndex);
+    return this.desktops[desktopIndex].switchClientDown(clientIndex);
   };
   
   this.movePreviousDesktop = function (clientIndex, desktopIndex)
@@ -414,16 +414,16 @@ function Layout ()
     return this.layers[layerIndex].desktops[desktopIndex].switchClientRight(clientIndex);
   };
   
-  this.switchClientTop = function (clientIndex, desktopIndex, layerIndex)
+  this.switchClientUp = function (clientIndex, desktopIndex, layerIndex)
   {
     if (layerIndex >= this.nlayers()) {return -1;};
-    return this.layers[layerIndex].desktops[desktopIndex].switchClientTop(clientIndex);
+    return this.layers[layerIndex].desktops[desktopIndex].switchClientUp(clientIndex);
   };
   
-  this.switchClientBottom = function (clientIndex, desktopIndex, layerIndex)
+  this.switchClientDown = function (clientIndex, desktopIndex, layerIndex)
   {
     if (layerIndex >= this.nlayers()) {return -1;};
-    return this.layers[layerIndex].desktops[desktopIndex].switchClientBottom(clientIndex);
+    return this.layers[layerIndex].desktops[desktopIndex].switchClientDown(clientIndex);
   };
   
   this.movePreviousDesktop = function (clientIndex, desktopIndex, layerIndex)
@@ -623,14 +623,14 @@ function MoveClientRight (clientIndex, clients, nclients)
   return -1;
 };
 
-function MoveClientTop (clientIndex, clients, nclients)
+function MoveClientUp (clientIndex, clients, nclients)
 {
   if (clients[clientIndex].type === typeBLQ) {clients[clientIndex].type = typeTLQ; return 0;};
   if (clients[clientIndex].type === typeBRQ) {clients[clientIndex].type = typeTRQ; return 0;};
   return -1;
 };
 
-function MoveClientBottom (clientIndex, clients, nclients)
+function MoveClientDown (clientIndex, clients, nclients)
 {
   if (clients[clientIndex].type === typeTLQ) {clients[clientIndex].type = typeBLQ; return 0;};
   if (clients[clientIndex].type === typeTRQ) {clients[clientIndex].type = typeBRQ; return 0;};
@@ -655,20 +655,20 @@ function MoveAllClientsRight (clients, nclients)
   return 0;
 };
 
-function MoveAllClientsTop (clients, nclients)
+function MoveAllClientsUp (clients, nclients)
 {
   for (var i = 0; i < nclients; i++)
   {
-    MoveClientTop(i, clients, nclients);
+    MoveClientUp(i, clients, nclients);
   };
   return 0;
 };
 
-function MoveAllClientsBottom (clients, nclients)
+function MoveAllClientsDown (clients, nclients)
 {
   for (var i = 0; i < nclients; i++)
   {
-    MoveClientBottom(i, clients, nclients);
+    MoveClientDown(i, clients, nclients);
   };
   return 0;
 };
@@ -745,20 +745,20 @@ function SwitchClientRight (clientIndex, clients, nclients)
   return 0;
 };
 
-function SwitchClientTop (clientIndex, clients, nclients)
+function SwitchClientUp (clientIndex, clients, nclients)
 {
   if (clientIndex >= nclients || clients[clientIndex].type.top) {return -1;};
   
   var type = clients[clientIndex].type;
   if (type === typeBLQ)
   {
-    MoveClientBottom(FindType(typeTLQ, clients, nclients), clients, nclients);
-    MoveClientTop(clientIndex, clients, nclients);
+    MoveClientDown(FindType(typeTLQ, clients, nclients), clients, nclients);
+    MoveClientUp(clientIndex, clients, nclients);
   }
   else if (type === typeBRQ)
   {
-    MoveClientBottom(FindType(typeTRQ, clients, nclients), clients, nclients);
-    MoveClientTop(clientIndex, clients, nclients);
+    MoveClientDown(FindType(typeTRQ, clients, nclients), clients, nclients);
+    MoveClientUp(clientIndex, clients, nclients);
   }
   else
   {
@@ -767,20 +767,20 @@ function SwitchClientTop (clientIndex, clients, nclients)
   return 0;
 };
 
-function SwitchClientBottom (clientIndex, clients, nclients)
+function SwitchClientDown (clientIndex, clients, nclients)
 {
   if (clientIndex >= nclients || clients[clientIndex].type.bottom) {return -1;};
   
   var type = clients[clientIndex].type;
   if (type === typeTLQ)
   {
-    MoveClientTop(FindType(typeBLQ, clients, nclients), clients, nclients);
-    MoveClientBottom(clientIndex, clients, nclients);
+    MoveClientUp(FindType(typeBLQ, clients, nclients), clients, nclients);
+    MoveClientDown(clientIndex, clients, nclients);
   }
   else if (type === typeTRQ)
   {
-    MoveClientTop(FindType(typeBRQ, clients, nclients), clients, nclients);
-    MoveClientBottom(clientIndex, clients, nclients);
+    MoveClientUp(FindType(typeBRQ, clients, nclients), clients, nclients);
+    MoveClientDown(clientIndex, clients, nclients);
   }
   else
   {
@@ -856,11 +856,11 @@ function GeometryMoved (windowId)
   {
     if (diffY > moveOutside*client.height)
     {
-      layout.switchClientBottom(client.clientIndex, client.desktopIndex, client.layerIndex);
+      layout.switchClientDown(client.clientIndex, client.desktopIndex, client.layerIndex);
     }
     else if (diffY < -moveOutside*client.height)
     {
-      layout.switchClientTop(client.clientIndex, client.desktopIndex, client.layerIndex);
+      layout.switchClientUp(client.clientIndex, client.desktopIndex, client.layerIndex);
     };
   };
   return 0;
@@ -1063,7 +1063,9 @@ registerShortcut
   {
     client = layout.getClient(workspace.activeClient.windowId);
     if (client === -1) {return -1;};
-    return layout.moveNextDesktop(client.clientIndex, client.desktopIndex, client.layerIndex);
+    if (layout.moveNextDesktop(client.clientIndex, client.desktopIndex, client.layerIndex) === -1) {return -1;};
+    layout.renderLayout();
+    return 0;
   }
 );
 
@@ -1076,7 +1078,9 @@ registerShortcut
   {
     client = layout.getClient(workspace.activeClient.windowId);
     if (client === -1) {return -1;};
-    return layout.SwitchPreviousDesktop(client.clientIndex, client.desktopIndex, client.layerIndex);
+    if (layout.SwitchPreviousDesktop(client.clientIndex, client.desktopIndex, client.layerIndex) === -1) {return -1;};
+    layout.renderLayout();
+    return 0;
   }
 );
 
@@ -1089,7 +1093,9 @@ registerShortcut
   {
     client = layout.getClient(workspace.activeClient.windowId);
     if (client === -1) {return -1;};
-    return layout.switchClientTop(client.clientIndex, client.desktopIndex, client.layerIndex);
+    if (layout.switchClientUp(client.clientIndex, client.desktopIndex, client.layerIndex) === -1) {return -1;};
+    layout.renderLayout();
+    return 0;
   }
 );
 
@@ -1102,7 +1108,9 @@ registerShortcut
   {
     client = layout.getClient(workspace.activeClient.windowId);
     if (client === -1) {return -1;};
-    return layout.switchClientBottom(client.clientIndex, client.desktopIndex, client.layerIndex);
+    if (layout.switchClientDown(client.clientIndex, client.desktopIndex, client.layerIndex) === -1) {return -1;};
+    layout.renderLayout();
+    return 0;
   }
 );
 
@@ -1115,7 +1123,9 @@ registerShortcut
   {
     client = layout.getClient(workspace.activeClient.windowId);
     if (client === -1) {return -1;};
-    return layout.switchClientLeft(client.clientIndex, client.desktopIndex, client.layerIndex);
+    if (layout.switchClientLeft(client.clientIndex, client.desktopIndex, client.layerIndex) === -1) {return -1;};
+    layout.renderLayout();
+    return 0;
   }
 );
 
@@ -1128,6 +1138,8 @@ registerShortcut
   {
     client = layout.getClient(workspace.activeClient.windowId);
     if (client === -1) {return -1;};
-    return layout.switchClientRight(client.clientIndex, client.desktopIndex, client.layerIndex);
+    if (layout.switchClientRight(client.clientIndex, client.desktopIndex, client.layerIndex) === -1) {return -1;};
+    layout.renderLayout();
+    return 0;
   }
 );
