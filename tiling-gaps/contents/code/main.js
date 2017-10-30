@@ -271,32 +271,32 @@ function Layer ()
   
   this.movePreviousDesktop = function (clientIndex, desktopIndex)
   {
+    var client = layout.getClient(this.desktops[desktopIndex].clients[clientIndex].windowId);
     for (var i = desktopIndex-1; i >= 0; i--)
     {
-      if (this.desktops[i].addClient(this.desktops[desktopIndex].clients[clientIndex]) === 0)
-      {
-        this.desktops[desktopIndex].removeClient(this.desktops[desktopIndex].clients[clientIndex].windowId);
-        return 0;
-      };
+      if (this.desktops[i].size()+client.minType > 1) {continue;};
+      this.desktops[desktopIndex].removeClient(client.windowId);
+      this.desktops[i].addClient(client);
+      return 0;
     };
     return -1;
   };
   
   this.moveNextDesktop = function (clientIndex, desktopIndex)
   {
+    var client = layout.getClient(this.desktops[desktopIndex].clients[clientIndex].windowId);
     for (var i = desktopIndex+1; i < this.ndesktops(); i++)
     {
-      if (this.desktops[i].addClient(this.desktops[desktopIndex].clients[clientIndex]) === 0)
-      {
-        this.desktops[desktopIndex].removeClient(this.desktops[desktopIndex].clients[clientIndex].windowId);
-        return 0;
-      };
+      if (this.desktops[i].size()+client.minType > 1) {continue;};
+      this.desktops[desktopIndex].removeClient(client.windowId);
+      this.desktops[i].addClient(client);
+      return 0;
     };
     var desktop = new Desktop();
     if (this.addDesktop(desktop) !== -1)
     {
-      this.desktops[this.ndesktops()-1].addClient(this.desktops[desktopIndex].clients[clientIndex]);
-      this.desktops[desktopIndex].removeClient(this.desktops[desktopIndex].clients[clientIndex].windowId);
+      this.desktops[desktopIndex].removeClient(client.windowId);
+      this.desktops[this.ndesktops()-1].addClient(client);
       return 0;
     };
     return -1;
@@ -1051,6 +1051,15 @@ function ConnectClient (client)
     function (client)
     {
       if (GeometryResized(client.windowId) === -1) {return -1;};
+      return layout.renderLayout();
+    }
+  );
+  client.clientUnminimized.connect
+  (
+    function (client)
+    {
+      c = layout.getClient(client.windowId);
+      layout.moveNextDesktop(c.clientIndex, c.desktopIndex, c.layerIndex);
       return layout.renderLayout();
     }
   );
