@@ -275,7 +275,7 @@ function Layer ()
     {
       if (this.desktops[i].addClient(this.desktops[desktopIndex].clients[clientIndex]) === 0)
       {
-        this.desktops[desktopIndex].clients.splice(clientIndex, 1);
+        this.desktops[desktopIndex].removeClient(this.desktops[desktopIndex].clients[clientIndex].windowId);
         return 0;
       };
     };
@@ -288,9 +288,16 @@ function Layer ()
     {
       if (this.desktops[i].addClient(this.desktops[desktopIndex].clients[clientIndex]) === 0)
       {
-        this.desktops[desktopIndex].clients.splice(clientIndex, 1);
+        this.desktops[desktopIndex].removeClient(this.desktops[desktopIndex].clients[clientIndex].windowId);
         return 0;
       };
+    };
+    var desktop = new Desktop();
+    if (this.addDesktop(desktop) !== -1)
+    {
+      this.desktops[this.ndesktops()-1].addClient(this.desktops[desktopIndex].clients[clientIndex]);
+      this.desktops[desktopIndex].removeClient(this.desktops[desktopIndex].clients[clientIndex].windowId);
+      return 0;
     };
     return -1;
   };
