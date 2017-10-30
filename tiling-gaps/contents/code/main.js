@@ -1054,15 +1054,6 @@ function ConnectClient (client)
       return layout.renderLayout();
     }
   );
-  client.clientUnminimized.connect
-  (
-    function (client)
-    {
-      c = layout.getClient(client.windowId);
-      layout.moveNextDesktop(c.clientIndex, c.desktopIndex, c.layerIndex);
-      return layout.renderLayout();
-    }
-  );
   return 0;
 };
 
