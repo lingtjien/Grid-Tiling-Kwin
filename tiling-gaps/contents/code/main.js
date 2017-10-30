@@ -1056,8 +1056,8 @@ function ConnectClient (client)
 
 registerShortcut
 (
-  "Tiling: Move Next Desktop",
-  "Tiling: Move Next Desktop",
+  "Tiling-Gaps: Move Next Desktop",
+  "Tiling-Gaps: Move Next Desktop",
   "Meta+End",
   function ()
   {
@@ -1069,8 +1069,8 @@ registerShortcut
 
 registerShortcut
 (
-  "Tiling: Move Previous Desktop",
-  "Tiling: Move Previous Desktop",
+  "Tiling-Gaps: Move Previous Desktop",
+  "Tiling-Gaps: Move Previous Desktop",
   "Meta+Home",
   function ()
   {
@@ -1082,9 +1082,9 @@ registerShortcut
 
 registerShortcut
 (
-  "Tiling: Switch Up",
-  "Tiling: Switch Up",
-  "Alt+Up",
+  "Tiling-Gaps: Switch Up",
+  "Tiling-Gaps: Switch Up",
+  "Meta+Alt+Up",
   function ()
   {
     client = layout.getClient(workspace.activeClient.windowId);
@@ -1095,9 +1095,9 @@ registerShortcut
 
 registerShortcut
 (
-  "Tiling: Switch Down",
-  "Tiling: Switch Down",
-  "Alt+Down",
+  "Tiling-Gaps: Switch Down",
+  "Tiling-Gaps: Switch Down",
+  "Meta+Alt+Down",
   function ()
   {
     client = layout.getClient(workspace.activeClient.windowId);
@@ -1108,9 +1108,9 @@ registerShortcut
 
 registerShortcut
 (
-  "Tiling: Switch Left",
-  "Tiling: Switch Left",
-  "Alt+Left",
+  "Tiling-Gaps: Switch Left",
+  "Tiling-Gaps: Switch Left",
+  "Meta+Alt+Left",
   function ()
   {
     client = layout.getClient(workspace.activeClient.windowId);
@@ -1121,9 +1121,9 @@ registerShortcut
 
 registerShortcut
 (
-  "Tiling: Switch Right",
-  "Tiling: Switch Right",
-  "Alt+Right",
+  "Tiling-Gaps: Switch Right",
+  "Tiling-Gaps: Switch Right",
+  "Meta+Alt+Right",
   function ()
   {
     client = layout.getClient(workspace.activeClient.windowId);

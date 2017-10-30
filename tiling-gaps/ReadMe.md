@@ -1,5 +1,10 @@
 # My personal KWin script
 
-- Automatically tiles new windows, using kwin 
+Install using:
+
+plasmapkg2 --type kwinscript -i tiling-gaps
+
+Uninstall using:
+plasmapkg2 --type kwinscript -r tiling-gaps
 
 # To Do
