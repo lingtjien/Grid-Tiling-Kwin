@@ -5,76 +5,81 @@
 // workspace (contains all client info)
 // options (contains all options)
 
-// var gap = readConfig("gap");
-// var dividerBounds = readConfig("dividerBounds"); // from this value to 1-value
-// var moveOutside = readConfig("moveOutside"); // move clients outside this fraction of its own size
-// 
-// var margins =
-// {
-//   top: readConfig("topMargin"), // latte top dock height
-//   bottom: readConfig("bottomMargin"),
-//   left: readConfig("leftMargin"),
-//   right: readConfig("rightMargin"),
-// };
-
-var gap = 16;
-var dividerBounds = 0.2; // from this value to 1-value
-var moveOutside = 0.5; // move clients outside this fraction of its own size
+var gap = readConfig("gap");
+var dividerBounds = readConfig("dividerBounds"); // from this value to 1-value
+var moveThreshold = readConfig("moveThreshold"); // move clients outside this fraction of its own size
 
 var margins =
 {
-  top: 32, // latte top dock height
-  bottom: 0,
-  left: 0,
-  right: 0,
+  top: readConfig("topMargin"), // latte top dock height
+  bottom: readConfig("bottomMargin"),
+  left: readConfig("leftMargin"),
+  right: readConfig("rightMargin"),
 };
 
-// smallest minType sizes
-var fullClients =
-[
-  "texstudio",
-  "inkscape",
-  "gimp",
-  "designer",
-  "creator",
-  "kdevelop",
-  "kdenlive",
-];
+var fullClients = readConfig("fullClients");
+var halfClients = readConfig("halfClients");
+var ignoredClients = readConfig("ignoredClients");
+var ignoredCaptions = readConfig("ignoredCaptions");
 
-var halfClients =
-[
-  "kate",
-  "spotify",
-];
-
-// clients that are not tiled
-var ignoredClients =
-[
-  "albert",
-  "kazam",
-  "krunner",
-  "ksmserver",
-  "lattedock",
-  "pinentry",
-  "Plasma",
-  "plasma",
-  "plasma-desktop",
-  "plasmashell",
-  "plugin-container",
-  "simplescreenrecorder",
-  "yakuake",
-];
-
-// client captions that are not tiled
-var ignoredCaptions =
-[
-  "File Upload",
-  "Move to Trash",
-  "Quit GIMP",
-  "Preferences (Shift+Ctrl+P)",
-  "Create a New Image",
-  "QEMU",
-];
+// var gap = 16;
+// var dividerBounds = 0.2; // from this value to 1-value
+// var moveThreshold = 0.5; // move clients outside this fraction of its own size
+// 
+// var margins =
+// {
+//   top: 32, // latte top dock height
+//   bottom: 0,
+//   left: 0,
+//   right: 0,
+// };
+// 
+// // smallest minType sizes
+// var fullClients =
+// [
+//   "texstudio",
+//   "inkscape",
+//   "gimp",
+//   "designer",
+//   "creator",
+//   "kdevelop",
+//   "kdenlive",
+// ];
+// 
+// var halfClients =
+// [
+//   "kate",
+//   "spotify",
+// ];
+// 
+// // clients that are not tiled
+// var ignoredClients =
+// [
+//   "albert",
+//   "kazam",
+//   "krunner",
+//   "ksmserver",
+//   "lattedock",
+//   "pinentry",
+//   "Plasma",
+//   "plasma",
+//   "plasma-desktop",
+//   "plasmashell",
+//   "plugin-container",
+//   "simplescreenrecorder",
+//   "yakuake",
+// ];
+// 
+// // client captions that are not tiled
+// var ignoredCaptions =
+// [
+//   "File Upload",
+//   "Move to Trash",
+//   "Quit GIMP",
+//   "Preferences (Shift+Ctrl+P)",
+//   "Create a New Image",
+//   "QEMU",
+// ];
 
 var deskArea =
 {
@@ -850,22 +855,22 @@ function GeometryMoved (windowId)
   
   if (movedX)
   {
-    if (diffX > moveOutside*client.width)
+    if (diffX > moveThreshold*client.width)
     {
       layout.switchClientRight(client.clientIndex, client.desktopIndex, client.layerIndex);
     }
-    else if (diffX < -moveOutside*client.width)
+    else if (diffX < -moveThreshold*client.width)
     {
       layout.switchClientLeft(client.clientIndex, client.desktopIndex, client.layerIndex);
     };
   };
   if (movedY)
   {
-    if (diffY > moveOutside*client.height)
+    if (diffY > moveThreshold*client.height)
     {
       layout.switchClientDown(client.clientIndex, client.desktopIndex, client.layerIndex);
     }
-    else if (diffY < -moveOutside*client.height)
+    else if (diffY < -moveThreshold*client.height)
     {
       layout.switchClientUp(client.clientIndex, client.desktopIndex, client.layerIndex);
     };
