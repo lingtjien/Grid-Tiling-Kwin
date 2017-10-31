@@ -35,8 +35,8 @@ var fullClients =
   "texstudio",
   "inkscape",
   "gimp",
-  "qtdesigner",
-  "qtcreator",
+  "designer",
+  "creator",
   "kdevelop",
   "kdenlive",
 ];
@@ -965,7 +965,7 @@ function CheckClient (client)
   var clientClass = client.resourceClass.toString();
   var clientName = client.resourceName.toString();
   var clientCaption = client.caption.toString();
-  
+
   for (var i = 0; i < ignoredCaptions.length; i++)
   {
     if (ignoredCaptions[i] === clientCaption) {return -1;};
@@ -1086,7 +1086,7 @@ registerShortcut
   {
     client = layout.getClient(workspace.activeClient.windowId);
     if (client === -1) {return -1;};
-    if (layout.SwitchPreviousDesktop(client.clientIndex, client.desktopIndex, client.layerIndex) === -1) {return -1;};
+    if (layout.movePreviousDesktop(client.clientIndex, client.desktopIndex, client.layerIndex) === -1) {return -1;};
     layout.renderLayout();
     return 0;
   }
