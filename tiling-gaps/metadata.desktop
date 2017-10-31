@@ -12,5 +12,6 @@ X-KDE-PluginInfo-Name=tiling-gaps
 X-KDE-PluginInfo-Version=0.0.1
 
 X-KDE-PluginInfo-License=GPL
-X-KDE-ServiceTypes=KWin/Script
+X-KDE-ServiceTypes=KWin/Script,KCModule
+X-KDE-Library=kwin/effects/configs/kcm_kwin4_genericscripted
 X-KDE-PluginKeyword=tiling-gaps
