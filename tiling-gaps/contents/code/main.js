@@ -102,7 +102,6 @@ function Desktop ()
   
   this.addClient = function (client)
   {
-    if (CheckClient(client) === -1) {return -1;}; // on succes adds minType to client
     if (this.size()+client.minType > 1) {return -1;};
     SplitType(client, this.clients, this.nclients());
     this.clients.push(client);
@@ -271,7 +270,7 @@ function Layer ()
   
   this.movePreviousDesktop = function (clientIndex, desktopIndex)
   {
-    var client = layout.getClient(this.desktops[desktopIndex].clients[clientIndex].windowId);
+    var client = this.desktops[desktopIndex].clients[clientIndex];
     for (var i = desktopIndex-1; i >= 0; i--)
     {
       if (this.desktops[i].size()+client.minType > 1) {continue;};
@@ -284,7 +283,8 @@ function Layer ()
   
   this.moveNextDesktop = function (clientIndex, desktopIndex)
   {
-    var client = layout.getClient(this.desktops[desktopIndex].clients[clientIndex].windowId);
+    // client needs to be a copy, not a reference to the same
+    var client = this.desktops[desktopIndex].clients[clientIndex];
     for (var i = desktopIndex+1; i < this.ndesktops(); i++)
     {
       if (this.desktops[i].size()+client.minType > 1) {continue;};
@@ -1011,6 +1011,7 @@ workspace.clientActivated.connect // clientAdded does not work for a lot of clie
   function (client)
   {
     if (client === null || client.windowId in addedClients) {return -1;};
+    if (CheckClient(client) === -1) {return -1;}; // on succes adds minType to client
     if (layout.addClient(client) === -1) {return -1;};
     addedClients[client.windowId] = true;
     layout.renderLayout();
