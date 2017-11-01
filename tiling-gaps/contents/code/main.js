@@ -5,7 +5,7 @@
 // workspace (contains all client info)
 // options (contains all options)
 
-var gap = readConfig("gap");
+// var gap = readConfig("gap");
 // var dividerBounds = readConfig("dividerBounds"); // from this value to 1-value
 // var moveThreshold = readConfig("moveThreshold"); // move clients outside this fraction of its own size
 // 
@@ -22,7 +22,7 @@ var gap = readConfig("gap");
 // var ignoredClients = readConfig("ignoredClients");
 // var ignoredCaptions = readConfig("ignoredCaptions");
 
-// var gap = 16;
+var gap = 16;
 var dividerBounds = 0.2; // from this value to 1-value
 var moveThreshold = 0.5; // move clients outside this fraction of its own size
 
@@ -970,12 +970,12 @@ function RenderClients (divider, clients, nclients, desktopIndex, layerIndex)
 
 function CheckClient (client)
 {  
-  if (client.specialWindow) {return -1;};
+  if (client.specialWindow || client.dialog) {return -1;};
   
   var clientClass = client.resourceClass.toString();
   var clientName = client.resourceName.toString();
   var clientCaption = client.caption.toString();
-
+  
   for (var i = 0; i < ignoredCaptions.length; i++)
   {
     if (ignoredCaptions[i] === clientCaption) {return -1;};
