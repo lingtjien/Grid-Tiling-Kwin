@@ -25,6 +25,10 @@
 var gap = 16;
 var dividerBounds = 0.2; // from this value to 1-value
 var moveThreshold = 0.5; // move clients outside this fraction of its own size
+var dividerStepSize = 0.05;
+var opacity = 0.9;
+var noOpacity = false;
+var noBorder = true;
 
 var margins =
 {
@@ -164,6 +168,18 @@ function Desktop ()
     return SwitchClientDown(clientIndex, this.clients, this.nclients());
   };
   
+  this.increaseSize = function (clientIndex)
+  {
+    if (clientIndex >= this.nclients()) {return -1;};
+    return IncreaseSize(this.clients[clientIndex], this.divider);
+  };
+  
+  this.decreaseSize = function (clientIndex)
+  {
+    if (clientIndex >= this.nclients()) {return -1;};
+    return DecreaseSize(this.clients[clientIndex], this.divider);
+  };
+  
   // divider
   this.divider = 
   {
@@ -270,6 +286,18 @@ function Layer ()
   {
     if (desktopIndex >= this.ndesktops()) {return -1;};
     return this.desktops[desktopIndex].switchClientDown(clientIndex);
+  };
+  
+  this.increaseSize = function (clientIndex, desktopIndex)
+  {
+    if (desktopIndex >= this.ndesktops()) {return -1;};
+    return this.desktops[desktopIndex].increaseSize(clientIndex);
+  };
+  
+  this.decreaseSize = function (clientIndex, desktopIndex)
+  {
+    if (desktopIndex >= this.ndesktops()) {return -1;};
+    return this.desktops[desktopIndex].decreaseSize(clientIndex);
   };
   
   this.movePreviousDesktop = function (clientIndex, desktopIndex)
@@ -435,6 +463,18 @@ function Layout ()
   {
     if (layerIndex >= this.nlayers()) {return -1;};
     return this.layers[layerIndex].desktops[desktopIndex].switchClientDown(clientIndex);
+  };
+  
+  this.increaseSize = function (clientIndex, desktopIndex, layerIndex)
+  {
+    if (layerIndex >= this.nlayers()) {return -1;};
+    return this.layers[layerIndex].desktops[desktopIndex].increaseSize(clientIndex);
+  };
+  
+  this.decreaseSize = function (clientIndex, desktopIndex, layerIndex)
+  {
+    if (layerIndex >= this.nlayers()) {return -1;};
+    return this.layers[layerIndex].desktops[desktopIndex].decreaseSize(clientIndex);
   };
   
   this.movePreviousDesktop = function (clientIndex, desktopIndex, layerIndex)
@@ -828,6 +868,63 @@ function SwitchClientDown (clientIndex, clients, nclients)
   return 0;
 };
 
+function CheckDivider (divider)
+{
+  if (divider.horizontal < dividerBounds) {divider.horizontal = dividerBounds;};
+  if (divider.horizontal > 1-dividerBounds) {divider.horizontal = 1-dividerBounds;};
+  if (divider.vertical < dividerBounds) {divider.vertical = dividerBounds;};
+  if (divider.vertical > 1-dividerBounds) {divider.vertical = 1-dividerBounds;};
+  return 0;
+};
+
+function IncreaseSize (client, divider)
+{
+  var type = client.type;
+  if (type.left && !type.right)
+  {
+    divider.horizontal += dividerStepSize;
+  }
+  else if (!type.left && type.right)
+  {
+    divider.horizontal -= dividerStepSize;
+  };
+  
+  if (type.top && !type.bottom)
+  {
+    divider.vertical += dividerStepSize;
+  }
+  else if (!type.top && type.bottom)
+  {
+    divider.vertical -= dividerStepSize;
+  };
+  CheckDivider(divider);
+  return 0;
+};
+
+function DecreaseSize (client, divider)
+{
+  var type = client.type;
+  if (type.left && !type.right)
+  {
+    divider.horizontal -= dividerStepSize;
+  }
+  else if (!type.left && type.right)
+  {
+    divider.horizontal += dividerStepSize;
+  };
+  
+  if (type.top && !type.bottom)
+  {
+    divider.vertical -= dividerStepSize;
+  }
+  else if (!type.top && type.bottom)
+  {
+    divider.vertical += dividerStepSize;
+  };
+  CheckDivider(divider);
+  return 0;
+};
+
 function GeometryResized (windowId)
 {
   var client = layout.getClient(windowId);
@@ -861,12 +958,7 @@ function GeometryResized (windowId)
       divider.horizontal -= diffHeight/(workspace.displayHeight);
     };
   };
-  
-  if (divider.horizontal < dividerBounds) {divider.horizontal = dividerBounds;};
-  if (divider.horizontal > 1-dividerBounds) {divider.horizontal = 1-dividerBounds;};
-  if (divider.vertical < dividerBounds) {divider.vertical = dividerBounds;};
-  if (divider.vertical > 1-dividerBounds) {divider.vertical = 1-dividerBounds;};
-  
+  CheckDivider(divider);
   return 0;
 };
 
@@ -919,12 +1011,17 @@ function SetClient (client, x, y, width, height, clientIndex, desktopIndex, laye
     height: Math.floor(height),
   };
   
+  client.noBorder = noBorder;
+  if (noOpacity) {client.opacity = 1;}
+  else {client.opacity = opacity;};
+  
   client.desktop = desktopIndex+1;
   client.geometry = geometry;
   client.geometryRender = geometry;
   client.clientIndex = clientIndex;
   client.desktopIndex = desktopIndex;
   client.layerIndex = layerIndex;
+  
   return 0;
 };
 
@@ -1179,6 +1276,92 @@ registerShortcut
     client = layout.getClient(workspace.activeClient.windowId);
     if (client === -1) {return -1;};
     if (layout.switchClientRight(client.clientIndex, client.desktopIndex, client.layerIndex) === -1) {return -1;};
+    layout.renderLayout();
+    return 0;
+  }
+);
+
+registerShortcut
+(
+  "Tiling-Gaps: Toggle Border",
+  "Tiling-Gaps: Toggle Border",
+  "Meta+P",
+  function ()
+  {
+    noBorder = !noBorder;
+    layout.renderLayout();
+    return 0;
+  }
+);
+
+registerShortcut
+(
+  "Tiling-Gaps: Toggle Opacity",
+  "Tiling-Gaps: Toggle Opacity",
+  "Meta+O",
+  function ()
+  {
+    noOpacity = !noOpacity;
+    layout.renderLayout();
+    return 0;
+  }
+);
+
+registerShortcut
+(
+  "Tiling-Gaps: Close Client",
+  "Tiling-Gaps: Close Client",
+  "Meta+W",
+  function ()
+  {
+    var client = layout.getClient(workspace.activeClient.windowId);
+    client.closeWindow();
+    layout.renderLayout();
+    return 0;
+  }
+);
+
+registerShortcut
+(
+  "Tiling-Gaps: Close Desktop",
+  "Tiling-Gaps: Close Desktop",
+  "Meta+Q",
+  function ()
+  {
+    var client = layout.getClient(workspace.activeClient.windowId);
+    var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
+    for (var i = 0; i < desktop.length; i++)
+    {
+      desktop[i].closeWindow();
+    };
+    layout.renderLayout();
+    return 0;
+  }
+);
+
+registerShortcut
+(
+  "Tiling-Gaps: Increase Size",
+  "Tiling-Gaps: Increase Size",
+  "Meta+=",
+  function ()
+  {
+    var client = layout.getClient(workspace.activeClient.windowId);
+    layout.increaseSize(client.clientIndex, client.desktopIndex, client.layerIndex);
+    layout.renderLayout();
+    return 0;
+  }
+);
+
+registerShortcut
+(
+  "Tiling-Gaps: Decrease Size",
+  "Tiling-Gaps: Decrease Size",
+  "Meta+-",
+  function ()
+  {
+    var client = layout.getClient(workspace.activeClient.windowId);
+    layout.decreaseSize(client.clientIndex, client.desktopIndex, client.layerIndex);
     layout.renderLayout();
     return 0;
   }
