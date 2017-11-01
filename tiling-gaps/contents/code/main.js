@@ -882,20 +882,20 @@ function IncreaseSize (client, divider)
   var type = client.type;
   if (type.left && !type.right)
   {
-    divider.horizontal += dividerStepSize;
+    divider.vertical += dividerStepSize;
   }
   else if (!type.left && type.right)
   {
-    divider.horizontal -= dividerStepSize;
+    divider.vertical -= dividerStepSize;
   };
   
   if (type.top && !type.bottom)
   {
-    divider.vertical += dividerStepSize;
+    divider.horizontal += dividerStepSize;
   }
   else if (!type.top && type.bottom)
   {
-    divider.vertical -= dividerStepSize;
+    divider.horizontal -= dividerStepSize;
   };
   CheckDivider(divider);
   return 0;
@@ -906,20 +906,20 @@ function DecreaseSize (client, divider)
   var type = client.type;
   if (type.left && !type.right)
   {
-    divider.horizontal -= dividerStepSize;
+    divider.vertical -= dividerStepSize;
   }
   else if (!type.left && type.right)
   {
-    divider.horizontal += dividerStepSize;
+    divider.vertical += dividerStepSize;
   };
   
   if (type.top && !type.bottom)
   {
-    divider.vertical -= dividerStepSize;
+    divider.horizontal -= dividerStepSize;
   }
   else if (!type.top && type.bottom)
   {
-    divider.vertical += dividerStepSize;
+    divider.horizontal += dividerStepSize;
   };
   CheckDivider(divider);
   return 0;
