@@ -519,14 +519,10 @@ function FindLargestType (clients, nclients)
   for (var i = 0; i < nclients; i++)
   {
     var size = clients[i].type.size;
-    if (size > largest)
+    if (size >= largest)
     {
       index = i;
       largest = size;
-    }
-    else if (size === largest && clients[i].type.right) // prefer to find the right tile, when same size
-    {
-      index = i;
     };
   };
   return index;
@@ -540,35 +536,61 @@ function SplitType (client, clients, nclients)
     return 0;
   };
   
-  if (client.minType === 0.5 && nclients === 2)
-  {
-    clients[FindType(typeLH, clients, nclients)].type = typeTLQ;
-    clients[FindType(typeRH, clients, nclients)].type = typeBLQ;
-    client.type = typeRH;
-    return 0;
-  };
-  
   var index = FindLargestType(clients, nclients);
+  
   if (clients[index].type === typeF)
   {
     clients[index].type = typeLH;
     client.type = typeRH;
-  }
-  else if (clients[index].type === typeLH)
-  {
-    clients[index].type = typeTLQ;
-    client.type = typeBLQ;
-  }
-  else if (clients[index].type === typeRH)
-  {
-    clients[index].type = typeTRQ;
-    client.type = typeBRQ;
-  }
-  else
-  {
-    return -1;
+    return 0;
   };
-  return 0;
+  
+  if (clients[index].type === typeLH)
+  {
+    if (clients[index].minType === 0.5)
+    {
+      clients[1-index].type = typeTRQ;
+      client.type = typeBRQ;
+      return 0;
+    }
+    else if (client.minType === 0.5)
+    {
+      clients[index].type = typeTLQ;
+      clients[1-index].type = typeBLQ;
+      client.type = typeRH;
+      return 0;
+    }
+    else
+    {
+      clients[index].type = typeTLQ;
+      client.type = typeBLQ;
+      return 0;
+    };
+  };
+  
+  if (clients[index].type === typeRH)
+  {
+    if (clients[index].minType === 0.5)
+    {
+      clients[1-index].type = typeTLQ;
+      client.type = typeBLQ;
+      return 0;
+    }
+    else if (client.minType === 0.5)
+    {
+      clients[index].type = typeBLQ;
+      clients[1-index].type = typeTLQ;
+      client.type = typeRH;
+      return 0;
+    }
+    else
+    {
+      clients[index].type = typeTRQ;
+      client.type = typeBRQ;
+      return 0;
+    };
+  };
+  return -1;
 };
 
 function CombineType (clientIndex, clients, nclients)
