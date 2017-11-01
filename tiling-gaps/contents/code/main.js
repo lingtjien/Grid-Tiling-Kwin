@@ -5,7 +5,7 @@
 // workspace (contains all client info)
 // options (contains all options)
 
-// var gap = readConfig("gap");
+var gap = readConfig("gap");
 // var dividerBounds = readConfig("dividerBounds"); // from this value to 1-value
 // var moveThreshold = readConfig("moveThreshold"); // move clients outside this fraction of its own size
 // 
@@ -22,7 +22,7 @@
 // var ignoredClients = readConfig("ignoredClients");
 // var ignoredCaptions = readConfig("ignoredCaptions");
 
-var gap = 16;
+// var gap = 16;
 var dividerBounds = 0.2; // from this value to 1-value
 var moveThreshold = 0.5; // move clients outside this fraction of its own size
 
@@ -34,7 +34,6 @@ var margins =
   right: 0,
 };
 
-// smallest minType sizes
 var fullClients =
 [
   "texstudio",
@@ -541,29 +540,35 @@ function SplitType (client, clients, nclients)
     return 0;
   };
   
+  if (client.minType === 0.5 && nclients === 2)
+  {
+    clients[FindType(typeLH, clients, nclients)].type = typeTLQ;
+    clients[FindType(typeRH, clients, nclients)].type = typeBLQ;
+    client.type = typeRH;
+    return 0;
+  };
+  
   var index = FindLargestType(clients, nclients);
   if (clients[index].type === typeF)
   {
     clients[index].type = typeLH;
     client.type = typeRH;
-    return 0;
   }
   else if (clients[index].type === typeLH)
   {
     clients[index].type = typeTLQ;
     client.type = typeBLQ;
-    return 0;
   }
   else if (clients[index].type === typeRH)
   {
     clients[index].type = typeTRQ;
     client.type = typeBRQ;
-    return 0;
   }
   else
   {
     return -1;
   };
+  return 0;
 };
 
 function CombineType (clientIndex, clients, nclients)

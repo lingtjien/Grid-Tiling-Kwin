@@ -43,7 +43,11 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QLineEdit" name="kcfg_topMargin"/>
+       <widget class="QLineEdit" name="kcfg_topMargin">
+        <property name="text">
+         <string>32</string>
+        </property>
+       </widget>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="bottomLabel">
@@ -53,7 +57,11 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QLineEdit" name="kcfg_bottomMargin"/>
+       <widget class="QLineEdit" name="kcfg_bottomMargin">
+        <property name="text">
+         <string>0</string>
+        </property>
+       </widget>
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="leftLabel">
@@ -63,7 +71,11 @@
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QLineEdit" name="kcfg_leftMargin"/>
+       <widget class="QLineEdit" name="kcfg_leftMargin">
+        <property name="text">
+         <string>0</string>
+        </property>
+       </widget>
       </item>
       <item row="3" column="0">
        <widget class="QLabel" name="rightLabel">
@@ -73,7 +85,11 @@
        </widget>
       </item>
       <item row="3" column="1">
-       <widget class="QLineEdit" name="kcfg_rightMargin"/>
+       <widget class="QLineEdit" name="kcfg_rightMargin">
+        <property name="text">
+         <string>0</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
@@ -97,7 +113,11 @@
      </widget>
     </item>
     <item>
-     <widget class="QLineEdit" name="kcfg_fullClients"/>
+     <widget class="QLineEdit" name="kcfg_fullClients">
+      <property name="text">
+       <string>texstudio, inkscape, gimp, designer, creator, kdevelop, kdenlive</string>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -119,7 +139,11 @@
      </widget>
     </item>
     <item>
-     <widget class="QLineEdit" name="kcfg_halfClients"/>
+     <widget class="QLineEdit" name="kcfg_halfClients">
+      <property name="text">
+       <string>kate, spotify</string>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -141,7 +165,11 @@
      </widget>
     </item>
     <item>
-     <widget class="QLineEdit" name="kcfg_ignoredClients"/>
+     <widget class="QLineEdit" name="kcfg_ignoredClients">
+      <property name="text">
+       <string>albert, kazam, krunner, ksmserver, lattedock, pinentry, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, simplescreenrecorder, yakuake</string>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -163,7 +191,11 @@
      </widget>
     </item>
     <item>
-     <widget class="QLineEdit" name="kcfg_ignoredCaptions"/>
+     <widget class="QLineEdit" name="kcfg_ignoredCaptions">
+      <property name="text">
+       <string>File Upload, Move to Trash, Quit GIMP, Preferences (Shift+Ctrl+P), Create a New Image, QEMU</string>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -187,7 +219,7 @@
     <item row="0" column="1">
      <widget class="QLineEdit" name="kcfg_gap">
       <property name="text">
-       <string/>
+       <string>16</string>
       </property>
      </widget>
     </item>
@@ -199,7 +231,11 @@
      </widget>
     </item>
     <item row="1" column="1">
-     <widget class="QLineEdit" name="kcfg_dividerBounds"/>
+     <widget class="QLineEdit" name="kcfg_dividerBounds">
+      <property name="text">
+       <string>0.2</string>
+      </property>
+     </widget>
     </item>
     <item row="2" column="0">
      <widget class="QLabel" name="moveThresholdLabel">
@@ -209,7 +245,11 @@
      </widget>
     </item>
     <item row="2" column="1">
-     <widget class="QLineEdit" name="kcfg_moveThreshold"/>
+     <widget class="QLineEdit" name="kcfg_moveThreshold">
+      <property name="text">
+       <string>0.5</string>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
