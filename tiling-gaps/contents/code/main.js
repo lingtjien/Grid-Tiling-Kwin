@@ -1202,6 +1202,7 @@ registerShortcut
     if (client === -1) {return -1;};
     if (layout.moveNextDesktop(client.clientIndex, client.desktopIndex, client.layerIndex) === -1) {return -1;};
     layout.renderLayout();
+    workspace.currentDesktop = client.desktop;
     return 0;
   }
 );
@@ -1217,6 +1218,7 @@ registerShortcut
     if (client === -1) {return -1;};
     if (layout.movePreviousDesktop(client.clientIndex, client.desktopIndex, client.layerIndex) === -1) {return -1;};
     layout.renderLayout();
+    workspace.currentDesktop = client.desktop;
     return 0;
   }
 );
