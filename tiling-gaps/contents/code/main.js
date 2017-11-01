@@ -444,37 +444,37 @@ function Layout ()
   this.switchClientLeft = function (clientIndex, desktopIndex, layerIndex)
   {
     if (layerIndex >= this.nlayers()) {return -1;};
-    return this.layers[layerIndex].desktops[desktopIndex].switchClientLeft(clientIndex);
+    return this.layers[layerIndex].switchClientLeft(clientIndex, desktopIndex);
   };
   
   this.switchClientRight = function (clientIndex, desktopIndex, layerIndex)
   {
     if (layerIndex >= this.nlayers()) {return -1;};
-    return this.layers[layerIndex].desktops[desktopIndex].switchClientRight(clientIndex);
+    return this.layers[layerIndex].switchClientRight(clientIndex, desktopIndex);
   };
   
   this.switchClientUp = function (clientIndex, desktopIndex, layerIndex)
   {
     if (layerIndex >= this.nlayers()) {return -1;};
-    return this.layers[layerIndex].desktops[desktopIndex].switchClientUp(clientIndex);
+    return this.layers[layerIndex].switchClientUp(clientIndex, desktopIndex);
   };
   
   this.switchClientDown = function (clientIndex, desktopIndex, layerIndex)
   {
     if (layerIndex >= this.nlayers()) {return -1;};
-    return this.layers[layerIndex].desktops[desktopIndex].switchClientDown(clientIndex);
+    return this.layers[layerIndex].switchClientDown(clientIndex, desktopIndex);
   };
   
   this.increaseSize = function (clientIndex, desktopIndex, layerIndex)
   {
     if (layerIndex >= this.nlayers()) {return -1;};
-    return this.layers[layerIndex].desktops[desktopIndex].increaseSize(clientIndex);
+    return this.layers[layerIndex].increaseSize(clientIndex, desktopIndex);
   };
   
   this.decreaseSize = function (clientIndex, desktopIndex, layerIndex)
   {
     if (layerIndex >= this.nlayers()) {return -1;};
-    return this.layers[layerIndex].desktops[desktopIndex].decreaseSize(clientIndex);
+    return this.layers[layerIndex].decreaseSize(clientIndex, desktopIndex);
   };
   
   this.movePreviousDesktop = function (clientIndex, desktopIndex, layerIndex)
@@ -1330,9 +1330,9 @@ registerShortcut
   {
     var client = layout.getClient(workspace.activeClient.windowId);
     var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
-    for (var i = 0; i < desktop.length; i++)
+    for (var i = 0; i < desktop.nclients(); i++)
     {
-      desktop[i].closeWindow();
+      desktop.clients[i].closeWindow();
     };
     layout.renderLayout();
     return 0;
