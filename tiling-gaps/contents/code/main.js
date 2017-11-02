@@ -1363,6 +1363,7 @@ registerShortcut
   {
     noBorder = !noBorder;
     layout.renderLayout();
+    dialog.render();
     return 0;
   }
 );
