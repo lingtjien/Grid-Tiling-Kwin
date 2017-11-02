@@ -556,6 +556,19 @@ function Dialog ()
     return -1;
   };
   
+  this.getClient = function (windowId)
+  {
+    if (this.nclients() === 0) {return -1;};
+    for (var i = 0; i < this.nclients(); i++)
+    {
+      if (this.clients[i].windowId === windowId)
+      {
+        return this.clients[i];
+      };
+    };
+    return -1;
+  };
+  
   this.render = function ()
   {
     for (var i = 0; i < this.nclients(); i++)
@@ -1192,7 +1205,7 @@ workspace.clientActivated.connect // clientAdded does not work for a lot of clie
       dialog.addClient(client);
       addedClients[client.windowId] = true;
       dialog.render();
-      return 0;
+      return -1;
     };
     if (layout.addClient(client) === -1) {return -1;};
     addedClients[client.windowId] = true;
@@ -1350,7 +1363,6 @@ registerShortcut
   {
     noBorder = !noBorder;
     layout.renderLayout();
-    dialog.render();
     return 0;
   }
 );
@@ -1377,6 +1389,13 @@ registerShortcut
   function ()
   {
     var client = layout.getClient(workspace.activeClient.windowId);
+    if (client === -1)
+    {
+      client = dialog.getClient(workspace.activeClient.windowId);
+      if (client === -1) {return -1;};
+      client.closeWindow();
+      return 0;
+    };
     client.closeWindow();
     layout.renderLayout();
     return 0;
@@ -1391,6 +1410,7 @@ registerShortcut
   function ()
   {
     var client = layout.getClient(workspace.activeClient.windowId);
+    if (client === -1) {return -1;};
     var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
     for (var i = 0; i < desktop.nclients(); i++)
     {
