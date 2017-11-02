@@ -558,7 +558,7 @@ function Dialog ()
   
   this.render = function ()
   {
-    for (var i = 0; i < this.nclients; i++)
+    for (var i = 0; i < this.nclients(); i++)
     {
       var client = this.clients[i];
       client.noBorder = noBorder;
@@ -1192,7 +1192,7 @@ workspace.clientActivated.connect // clientAdded does not work for a lot of clie
       dialog.addClient(client);
       addedClients[client.windowId] = true;
       dialog.render();
-      return -1;
+      return 0;
     };
     if (layout.addClient(client) === -1) {return -1;};
     addedClients[client.windowId] = true;
@@ -1350,6 +1350,7 @@ registerShortcut
   {
     noBorder = !noBorder;
     layout.renderLayout();
+    dialog.render();
     return 0;
   }
 );
