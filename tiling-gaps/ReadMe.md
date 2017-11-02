@@ -43,3 +43,8 @@ plasmapkg2 --type kwinscript -r tiling-gaps
 - set shortcut *Tiling-Gaps: Move Previous Desktop* to *Meta+Home*
 - set shortcut *Tiling-Gaps: Increase Size* to *Meta+=*
 - set shortcut *Tiling-Gaps: Decrease Size* to *Meta+-*
+
+## To Do
+- create a ui to configure the parameters
+- make it work for multiple screen setups
+- make it work for activities
