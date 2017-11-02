@@ -528,61 +528,6 @@ function Layout ()
 };
 
 // --------------
-// Dialog Clients
-// --------------
-
-function Dialog ()
-{
-  this.clients = [];
-  this.nclients = function () {return this.clients.length;};
-  
-  this.addClient = function (client)
-  {
-    this.clients.push(client);
-    return 0;
-  };
-  
-  this.removeClient = function (windowId)
-  {
-    if (this.nclients() === 0) {return -1;};
-    for (var i = 0; i < this.nclients(); i++)
-    {
-      if (this.clients[i].windowId === windowId)
-      {
-        this.clients.splice(i, 1);
-        return 0;
-      };
-    };
-    return -1;
-  };
-  
-  this.getClient = function (windowId)
-  {
-    if (this.nclients() === 0) {return -1;};
-    for (var i = 0; i < this.nclients(); i++)
-    {
-      if (this.clients[i].windowId === windowId)
-      {
-        return this.clients[i];
-      };
-    };
-    return -1;
-  };
-  
-  this.render = function ()
-  {
-    for (var i = 0; i < this.nclients(); i++)
-    {
-      var client = this.clients[i];
-      client.noBorder = noBorder;
-      if (noOpacity) {client.opacity = 1;}
-      else {client.opacity = opacity;};
-    };
-    return 0;
-  };
-};
-
-// --------------
 // Type Functions
 // --------------
 
@@ -1145,8 +1090,7 @@ function RenderClients (divider, clients, nclients, desktopIndex, layerIndex)
 
 function CheckClient (client)
 {  
-  if (client.specialWindow) {return -1;};
-  if (client.dialog) {return -2;};
+  if (client.specialWindow || client.dialog) {return -1;};
   
   var clientClass = client.resourceClass.toString();
   var clientName = client.resourceName.toString();
@@ -1191,22 +1135,13 @@ function CheckClient (client)
 
 var addedClients = {}; // windowId of added clients
 var layout = new Layout(); // main class, contains all methods
-var dialog = new Dialog(); // clients which are not tiled but with opacity and borders
 
 workspace.clientActivated.connect // clientAdded does not work for a lot of clients
 (
   function (client)
   {
     if (client === null || client.windowId in addedClients) {return -1;};
-    var check = CheckClient(client);
-    if (check === -1) {return -1;}; // on succes adds minType to client
-    if (check === -2)
-    {
-      dialog.addClient(client);
-      addedClients[client.windowId] = true;
-      dialog.render();
-      return -1;
-    };
+    if (CheckClient(client) === -1) {return -1;}; // on succes adds minType to client
     if (layout.addClient(client) === -1) {return -1;};
     addedClients[client.windowId] = true;
     layout.renderLayout();
@@ -1222,11 +1157,6 @@ workspace.clientRemoved.connect
   {
     if (!(client.windowId in addedClients)) {return -1;};
     delete addedClients[client.windowId];
-    if (client.dialog)
-    {
-      dialog.removeClient(client.windowId);
-      return 0;
-    };
     
     var removed = layout.removeClient(client.windowId);
     if (removed === 0)
@@ -1363,7 +1293,6 @@ registerShortcut
   {
     noBorder = !noBorder;
     layout.renderLayout();
-    dialog.render();
     return 0;
   }
 );
@@ -1377,7 +1306,6 @@ registerShortcut
   {
     noOpacity = !noOpacity;
     layout.renderLayout();
-    dialog.render();
     return 0;
   }
 );
@@ -1390,13 +1318,6 @@ registerShortcut
   function ()
   {
     var client = layout.getClient(workspace.activeClient.windowId);
-    if (client === -1)
-    {
-      client = dialog.getClient(workspace.activeClient.windowId);
-      if (client === -1) {return -1;};
-      client.closeWindow();
-      return 0;
-    };
     client.closeWindow();
     layout.renderLayout();
     return 0;
@@ -1411,7 +1332,6 @@ registerShortcut
   function ()
   {
     var client = layout.getClient(workspace.activeClient.windowId);
-    if (client === -1) {return -1;};
     var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
     for (var i = 0; i < desktop.nclients(); i++)
     {
