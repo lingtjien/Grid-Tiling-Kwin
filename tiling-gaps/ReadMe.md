@@ -6,6 +6,10 @@ plasmapkg2 --type kwinscript -i tiling-gaps
 Uninstall using:
 plasmapkg2 --type kwinscript -r tiling-gaps
 
+## Intro
+
+![Demo](example/tiling-gaps.mp4)
+
 ## Functionality
 - allows to set margins as defined by *topMargin* *bottomMargin* *leftMargin* *rightMargin*
 - allows to set the gap size as defined by *gap*
