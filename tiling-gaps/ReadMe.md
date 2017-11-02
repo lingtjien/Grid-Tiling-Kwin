@@ -13,7 +13,7 @@ plasmapkg2 --type kwinscript -r tiling-gaps
 ## Functionality
 - allows to set margins as defined by *topMargin* *bottomMargin* *leftMargin* *rightMargin*
 - allows to set the gap size as defined by *gap*
-- allows to adjust the opacity *opacity*
+- allows to adjust the opacity as defined by *opacity*
 - allows to adjust default opacity toggle *noOpacity*
 - allows to adjust default borders toggle *noBorders*
 - automatically tile windows, up to a maximum of 4 clients per (internal) virtual desktop
