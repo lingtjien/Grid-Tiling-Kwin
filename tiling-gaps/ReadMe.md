@@ -8,7 +8,7 @@ plasmapkg2 --type kwinscript -r tiling-gaps
 
 ## Intro
 
-![Demo](example/tiling-gaps.mp4)
+!(example/tiling-gaps.mp4)
 
 ## Functionality
 - allows to set margins as defined by *topMargin* *bottomMargin* *leftMargin* *rightMargin*
