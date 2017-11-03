@@ -920,10 +920,9 @@ function DecreaseSize (client, divider)
   return 0;
 };
 
-function GeometryResized (windowId)
+function GeometryResized (client)
 {
-  var client = layout.getClient(windowId);
-  
+//   var client = layout.getClient(windowId);
   var resizedWidth = (client.geometryRender.width !== client.geometry.width);
   var resizedHeight = (client.geometryRender.height !== client.geometry.height);
   if (!resizedWidth && !resizedHeight) {return -1;};
@@ -957,10 +956,9 @@ function GeometryResized (windowId)
   return 0;
 };
 
-function GeometryMoved (windowId)
+function GeometryMoved (client)
 {
-  var client = layout.getClient(windowId);
-  
+//   var client = layout.getClient(windowId);
   var movedX = (client.geometryRender.x !== client.geometry.x && !(client.geometryRender.width !== client.geometry.width));
   var movedY = (client.geometryRender.y !== client.geometry.y && !(client.geometryRender.height !== client.geometry.height));
   if (!movedX && !movedY) {return -1;};
@@ -1167,16 +1165,20 @@ function ConnectClient (client)
   (
     function (client)
     {
-      if (GeometryResized(client.windowId) === -1 && GeometryMoved(client.windowId) === -1) {return -1;};
-      return layout.renderLayout();
+      var client = layout.getClient(client.windowId);
+      if (client === -1) {return -1;};
+      if (GeometryResized(client) === -1 && GeometryMoved(client) === -1) {return -1;};
+      return layout.renderDesktop(client.desktopIndex, client.layerIndex);
     }
   );
   client.clientStepUserMovedResized.connect
   (
     function (client)
     {
-      if (GeometryResized(client.windowId) === -1) {return -1;};
-      return layout.renderLayout();
+      var client = layout.getClient(client.windowId);
+      if (client === -1) {return -1;};
+      if (GeometryResized(client) === -1) {return -1;};
+      return layout.renderDesktop(client.desktopIndex, client.layerIndex);
     }
   );
   return 0;
@@ -1312,6 +1314,7 @@ registerShortcut
   function ()
   {
     var client = layout.getClient(workspace.activeClient.windowId);
+    if (client === -1) {return -1;};
     client.closeWindow();
     layout.renderLayout();
     return 0;
@@ -1326,6 +1329,7 @@ registerShortcut
   function ()
   {
     var client = layout.getClient(workspace.activeClient.windowId);
+    if (client === -1) {return -1;};
     var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
     for (var i = 0; i < desktop.nclients(); i++)
     {
@@ -1344,8 +1348,9 @@ registerShortcut
   function ()
   {
     var client = layout.getClient(workspace.activeClient.windowId);
+    if (client === -1) {return -1;};
     layout.increaseSize(client.clientIndex, client.desktopIndex, client.layerIndex);
-    layout.renderLayout();
+    layout.renderDesktop(client.desktopIndex, client.layerIndex);
     return 0;
   }
 );
@@ -1358,8 +1363,9 @@ registerShortcut
   function ()
   {
     var client = layout.getClient(workspace.activeClient.windowId);
+    if (client === -1) {return -1;};
     layout.decreaseSize(client.clientIndex, client.desktopIndex, client.layerIndex);
-    layout.renderLayout();
+    layout.renderDesktop(client.desktopIndex, client.layerIndex);
     return 0;
   }
 );
