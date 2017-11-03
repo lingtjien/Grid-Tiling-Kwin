@@ -59,30 +59,19 @@ var halfClients =
 // clients that are not tiled
 var ignoredClients =
 [
-  "albert",
-  "kazam",
   "krunner",
-  "ksmserver",
   "lattedock",
-  "pinentry",
   "Plasma",
   "plasma",
   "plasma-desktop",
   "plasmashell",
   "plugin-container",
-  "simplescreenrecorder",
-  "yakuake",
 ];
 
 // client captions that are not tiled
 var ignoredCaptions =
 [
-  "File Upload",
-  "Move to Trash",
-  "Quit GIMP",
   "Preferences (Shift+Ctrl+P)",
-  "Create a New Image",
-  "QEMU",
 ];
 
 var deskArea =
