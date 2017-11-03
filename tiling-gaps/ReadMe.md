@@ -48,3 +48,8 @@ plasmapkg2 --type kwinscript -r tiling-gaps
 - create a ui to configure the parameters
 - make it work for multiple screen setups
 - make it work for activities
+
+## Known Issues
+- Spotify can not be defined as full or half client, because both the client name and class of spotify are blank
+- Not supported by multiple monitors (I don't have more monitors so I can't make it work for multiple monitors but it shouldn't be that hard)
+- I don't use activities, so I don't know how this does with activities
