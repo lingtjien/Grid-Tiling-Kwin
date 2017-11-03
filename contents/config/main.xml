@@ -13,9 +13,17 @@
         <label>divider from this value to 1-value</label>
         <default>0.2</default>
       </entry>
+      <entry name="dividerStepSize" type="double">
+        <label>increment and decrement size of the divider</label>
+        <default>0.05</default>
+      </entry>
       <entry name="moveThreshold" type="double">
         <label>move clients outside this fraction of its own size</label>
         <default>0.5</default>
+      </entry>
+      <entry name="opacity" type="double">
+        <label>opacity of all clients</label>
+        <default>0.9</default>
       </entry>
       <entry name="topMargin" type="int">
         <label>amount of space at the top in px</label>
@@ -33,21 +41,29 @@
         <label>amount of space at the right in px</label>
         <default>0</default>
       </entry>
+        <label>default state of opacity on/off at start</label>
+      <entry name="noOpacity" type="bool">
+        <default>false</default>
+      </entry>
+      <entry name="noBorder" type="bool">
+        <label>default state of borders on/off at start</label>
+        <default>true</default>
+      </entry>
       <entry name="fullClients" type="string">
         <label>clients minimum tiled full</label>
         <default>texstudio, inkscape, gimp, designer, creator, kdevelop, kdenlive</default>
       </entry>
-      <entry name="halfClients" type="string">
         <label>clients minimum tiled half</label>
-        <default>kate, spotify</default>
+      <entry name="halfClients" type="string">
+        <default>chromium, kate, spotify</default>
       </entry>
-      <entry name="ignoredClients" type="string">
         <label>ignored clients</label>
-        <default>albert, kazam, krunner, ksmserver, lattedock, pinentry, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, simplescreenrecorder, yakuake</default>
+      <entry name="ignoredClients" type="string">
+        <default>krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container</default>
       </entry>
       <entry name="ignoredCaptions" type="string">
         <label>ignored captions</label>
-        <default>File Upload, Move to Trash, Quit GIMP, Preferences (Shift+Ctrl+P), Create a New Image, QEMU</default>
+        <default>Preferences (Shift+Ctrl+P)</default>
       </entry>
     </group>
 </kcfg>

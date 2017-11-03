@@ -1,8 +1,8 @@
 [Desktop Entry]
 Name=Tiling-Gaps
 Comment=Automatically tile new windows with gaps
-Type=Service
 Icon=preferences-system-windows-script-test
+Type=Service
 
 X-Plasma-API=javascript
 X-Plasma-MainScript=code/main.js
@@ -12,7 +12,6 @@ X-KDE-PluginInfo-Name=tiling-gaps
 X-KDE-PluginInfo-Version=0.0.1
 
 X-KDE-PluginInfo-License=GPL
-#X-KDE-ServiceTypes=KWin/Script,KCModule
-#X-KDE-Library=kwin/effects/configs/kcm_kwin4_genericscripted
-X-KDE-ServiceTypes=KWin/Script
+X-KDE-Library=kwin/effects/configs/kcm_kwin4_genericscripted
+X-KDE-ServiceTypes=KWin/Script,KCModule
 X-KDE-PluginKeyword=tiling-gaps

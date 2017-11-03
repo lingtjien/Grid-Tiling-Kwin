@@ -5,22 +5,26 @@
 // workspace (contains all client info)
 // options (contains all options)
 
-// var gap = readConfig("gap");
-// var dividerBounds = readConfig("dividerBounds"); // from this value to 1-value
-// var moveThreshold = readConfig("moveThreshold"); // move clients outside this fraction of its own size
+// var gap = readConfig("gap", 16);
+// var dividerBounds = readConfig("dividerBounds", 0.2); // from this value to 1-value
+// var moveThreshold = readConfig("moveThreshold", 0.5); // move clients outside this fraction of its own size
+// var dividerStepSize = readConfig("dividerStepSize", 0.05);
+// var opacity = readConfig("opacity", 0.9);
+// var noOpacity = readConfig("noOpacity", false);
+// var noBorder = readConfig("noBorder", true);
 // 
 // var margins =
 // {
-//   top: readConfig("topMargin"), // latte top dock height
-//   bottom: readConfig("bottomMargin"),
-//   left: readConfig("leftMargin"),
-//   right: readConfig("rightMargin"),
+//   top: readConfig("topMargin", 32), // latte top dock height
+//   bottom: readConfig("bottomMargin", 0),
+//   left: readConfig("leftMargin", 0),
+//   right: readConfig("rightMargin", 0),
 // };
 // 
-// var fullClients = readConfig("fullClients");
-// var halfClients = readConfig("halfClients");
-// var ignoredClients = readConfig("ignoredClients");
-// var ignoredCaptions = readConfig("ignoredCaptions");
+// var fullClients = readConfig("fullClients", "texstudio, inkscape, gimp, designer, creator, kdevelop, kdenlive").toString().split(', ');
+// var halfClients = readConfig("halfClients", "chromium, kate, spotify").toString().split(', ');
+// var ignoredClients = readConfig("ignoredClients", "ksmserver, krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container").toString().split(', ');
+// var ignoredCaptions = readConfig("ignoredCaptions", "Preferences (Shift+Ctrl+P)").toString().split(', ');
 
 var gap = 16;
 var dividerBounds = 0.2; // from this value to 1-value
@@ -59,6 +63,7 @@ var halfClients =
 // clients that are not tiled
 var ignoredClients =
 [
+  "ksmserver",
   "krunner",
   "lattedock",
   "Plasma",
