@@ -6,6 +6,10 @@ plasmapkg2 --type kwinscript -i tiling-gaps
 Uninstall using:
 plasmapkg2 --type kwinscript -r tiling-gaps
 
+## Install
+cp Tiling-Gaps /usr/share/kwin/scripts/tiling-gaps
+cp /usr/share/kwin/scripts/metadata.desktop /usr/share/kservices5/kwin-script-tiling-gaps.desktop 
+
 ## Intro
 
 ![](preview/tiling-gaps.mp4)
