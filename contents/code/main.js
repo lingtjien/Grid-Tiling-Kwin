@@ -1277,7 +1277,7 @@ registerShortcut
 (
   "Tiling-Gaps: Toggle Opacity",
   "Tiling-Gaps: Toggle Opacity",
-  "Meta+B",
+  "Meta+O",
   function ()
   {
     noOpacity = !noOpacity;
@@ -1338,7 +1338,7 @@ registerShortcut
 (
   "Tiling-Gaps: Refresh (Minimize)",
   "Tiling-Gaps: Refresh (Minimize)",
-  "Meta+R",
+  "Meta+N",
   function ()
   {
     return layout.renderLayout();
