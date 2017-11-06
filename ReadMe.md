@@ -36,7 +36,8 @@ ln -s tiling-gaps/metadata.desktop /usr/share/kservices5/kwin-script-tiling-gaps
 - allows to dynamically resize windows up to a minimum as defined by *dividerBounds*
 - allows to dynamically resize windows using global shortcuts and user handling
 - allows to switch windows by dragging them outside of their own size defined by *moveThreshold*
-- also works for applications which enforce their own geometry on startup
+- also works for applications which enforce their own geometry on startup (most of the time)
+- allows to maximize client (with gaps) by global shortcut
 - allows to add to ignored lists (clients, captions) defined by *ignoredClients* and *ignoredCaptions*
 
 *Note: ignored clients does not have to be an exact match, whereas ignored captions do.*
@@ -63,6 +64,7 @@ ln -s tiling-gaps/metadata.desktop /usr/share/kservices5/kwin-script-tiling-gaps
 ## Known Issues
 - Sometimes when you adjust the settings in the menu, you need to turn the script off, apply it, turn it back on and apply it again to register the new values.
 - Some applications do not render correctly on startup sometimes, just use the global shortcut that refreshes the layout
+- Maximized clients are not internally remembered so they are brought back to their tiled since when a refresh is called
 - Spotify can sometimes not be defined as full or half client, because both the client name and class of spotify are blank (random)
 - Not supported by multiple monitors (I don't have more monitors so I can't make it work for multiple monitors but it shouldn't be that hard)
 - I don't use activities, so I don't know how this does with activities

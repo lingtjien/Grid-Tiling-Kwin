@@ -990,6 +990,19 @@ function SetClient (client, x, y, width, height, clientIndex, desktopIndex, laye
   return 0;
 };
 
+function SetClientFull (client)
+{
+  var geometry = 
+  {
+    x: Math.floor(gap+deskArea.xMin),
+    y: Math.floor(gap+deskArea.yMin),
+    width: Math.floor(deskArea.width-2*gap),
+    height: Math.floor(deskArea.height-2*gap),
+  };
+  client.geometry = geometry;
+  return 0;
+};
+
 function RenderClients (divider, clients, nclients, desktopIndex, layerIndex)
 {
   var w = deskArea.width-3*gap; // width
@@ -1314,16 +1327,26 @@ registerShortcut
 
 registerShortcut
 (
-  "Tiling-Gaps: Increase Size",
-  "Tiling-Gaps: Increase Size",
-  "Meta+=",
+  "Tiling-Gaps: Maximize",
+  "Tiling-Gaps: Maximize",
+  "Meta+M",
   function ()
   {
     var client = layout.getClient(workspace.activeClient.windowId);
     if (client === -1) {return -1;};
-    layout.increaseSize(client.clientIndex, client.desktopIndex, client.layerIndex);
-    layout.renderDesktop(client.desktopIndex, client.layerIndex);
+    SetClientFull(client);
     return 0;
+  }
+);
+
+registerShortcut
+(
+  "Tiling-Gaps: Refresh (Minimize)",
+  "Tiling-Gaps: Refresh (Minimize)",
+  "Meta+R",
+  function ()
+  {
+    return layout.renderLayout();
   }
 );
 
@@ -1338,18 +1361,6 @@ registerShortcut
     if (client === -1) {return -1;};
     layout.decreaseSize(client.clientIndex, client.desktopIndex, client.layerIndex);
     layout.renderDesktop(client.desktopIndex, client.layerIndex);
-    return 0;
-  }
-);
-
-registerShortcut
-(
-  "Tiling-Gaps: Refresh",
-  "Tiling-Gaps: Refresh",
-  "Meta+R",
-  function ()
-  {
-    layout.renderLayout();
     return 0;
   }
 );
