@@ -1,17 +1,16 @@
 # Kwin Script made by LinG
 
-Install using:
-plasmapkg2 --type kwinscript -i tiling-gaps
-
-Uninstall using:
-plasmapkg2 --type kwinscript -r tiling-gaps
-
 ## Install
-cp Tiling-Gaps /usr/share/kwin/scripts/tiling-gaps
-cp /usr/share/kwin/scripts/metadata.desktop /usr/share/kservices5/kwin-script-tiling-gaps.desktop 
+### Method 1.
+mkdir /usr/share/kwin/scripts/tiling-gaps
+ln -s contents /usr/share/kwin/scripts/tiling-gaps/contents
+ln -s metadata.desktop /usr/share/kwin/scripts/tiling-gaps/metadata.desktop
+ln -s metadata.desktop /usr/share/kservices5/kwin-script-tiling-gaps.desktop
+### Method 2.
+plasmapkg2 --type kwinscript -i tiling-gaps #use -r to remove
+*Note: this method does not create the kservices and thus the ui is not available*
 
 ## Intro
-
 ![](preview/tiling-gaps.mp4)
 
 ## Functionality
@@ -54,6 +53,6 @@ cp /usr/share/kwin/scripts/metadata.desktop /usr/share/kservices5/kwin-script-ti
 - make it work for activities
 
 ## Known Issues
-- Spotify can not be defined as full or half client, because both the client name and class of spotify are blank
+- Spotify can sometimes not be defined as full or half client, because both the client name and class of spotify are blank (random)
 - Not supported by multiple monitors (I don't have more monitors so I can't make it work for multiple monitors but it shouldn't be that hard)
 - I don't use activities, so I don't know how this does with activities

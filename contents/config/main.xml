@@ -41,8 +41,8 @@
         <label>amount of space at the right in px</label>
         <default>0</default>
       </entry>
-        <label>default state of opacity on/off at start</label>
       <entry name="noOpacity" type="bool">
+        <label>default state of opacity on/off at start</label>
         <default>false</default>
       </entry>
       <entry name="noBorder" type="bool">
@@ -53,17 +53,17 @@
         <label>clients minimum tiled full</label>
         <default>texstudio, inkscape, gimp, designer, creator, kdevelop, kdenlive</default>
       </entry>
-        <label>clients minimum tiled half</label>
       <entry name="halfClients" type="string">
+        <label>clients minimum tiled half</label>
         <default>chromium, kate, spotify</default>
       </entry>
-        <label>ignored clients</label>
       <entry name="ignoredClients" type="string">
-        <default>krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container</default>
+        <label>ignored clients</label>
+        <default></default>
       </entry>
       <entry name="ignoredCaptions" type="string">
         <label>ignored captions</label>
-        <default>Preferences (Shift+Ctrl+P)</default>
+        <default></default>
       </entry>
     </group>
 </kcfg>
