@@ -2,9 +2,6 @@
 // Parameters
 // ----------
 
-// workspace (contains all client info)
-// options (contains all options)
-
 // readConfig returns an object, so needs to be converted if you want to use === instead of ==
 var gap = Number(readConfig("gap", 16));
 var dividerBounds = Number(readConfig("dividerBounds", 0.2)); // from this value to 1-value
@@ -16,7 +13,7 @@ var noBorder = ToBool(readConfig("noBorder", true));
 
 var margins =
 {
-  top: Number(readConfig("topMargin", 32)), // latte top dock height
+  top: Number(readConfig("topMargin", 0)),
   bottom: Number(readConfig("bottomMargin", 0)),
   left: Number(readConfig("leftMargin", 0)),
   right: Number(readConfig("rightMargin", 0)),
@@ -29,14 +26,6 @@ var halfClients = TrimSplitString(readConfig("halfClients", "chromium, kate, spo
 var ignoredClients = TrimSplitString("ksmserver, krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, ".concat(readConfig("ignoredClients", "").toString()));
 
 var ignoredCaptions = TrimSplitString(readConfig("ignoredCaptions", "").toString());
-
-var deskArea =
-{
-  xMin: margins.left,
-  yMin: margins.top,
-  width: workspace.displayWidth-margins.right-margins.left,
-  height: workspace.displayHeight-margins.bottom-margins.top,
-};
 
 // -----------------
 // Library Functions
@@ -180,7 +169,7 @@ function Layer ()
   
   this.addDesktop = function (desktop)
   {
-    if (workspace.desktops-this.ndesktops() < 1) {return -1;};
+    if (workspace.desktops*workspace.numScreens-this.ndesktops() < 1) {return -1;};
     this.desktops.push(desktop);
     return 0;
   };
@@ -966,7 +955,7 @@ function GeometryMoved (client)
 // Client Rendering
 // ----------------
 
-function SetClient (client, x, y, width, height, clientIndex, desktopIndex, layerIndex)
+function SetClient (client, x, y, width, height, desktop, screen, clientIndex, desktopIndex, layerIndex)
 {
   var geometry = 
   {
@@ -980,7 +969,8 @@ function SetClient (client, x, y, width, height, clientIndex, desktopIndex, laye
   if (noOpacity) {client.opacity = 1;}
   else {client.opacity = opacity;};
   
-  client.desktop = desktopIndex+1;
+  client.desktop = desktop;
+  client.screen = screen;
   client.geometry = geometry;
   client.geometryRender = geometry;
   client.clientIndex = clientIndex;
@@ -992,12 +982,13 @@ function SetClient (client, x, y, width, height, clientIndex, desktopIndex, laye
 
 function SetClientFull (client)
 {
+  var area = workspace.clientArea(0, client.screen, client.desktop);
   var geometry = 
   {
-    x: Math.floor(gap+deskArea.xMin),
-    y: Math.floor(gap+deskArea.yMin),
-    width: Math.floor(deskArea.width-2*gap),
-    height: Math.floor(deskArea.height-2*gap),
+    x: Math.floor(gap+area.x+margin.left),
+    y: Math.floor(gap+area.y+margin.top),
+    width: Math.floor(area.width-margins.left-margins.right-2*gap),
+    height: Math.floor(area.height-margins.top-margins.bottom-2*gap),
   };
   client.geometry = geometry;
   return 0;
@@ -1005,18 +996,22 @@ function SetClientFull (client)
 
 function RenderClients (divider, clients, nclients, desktopIndex, layerIndex)
 {
-  var w = deskArea.width-3*gap; // width
-  var h = deskArea.height-3*gap; // height
+  var s = desktopIndex%workspace.numScreens;
+  var d = Math.floor(desktopIndex/workspace.numScreens)+1;
+  var area = workspace.clientArea(0, s, d);
+  
+  var w = area.width-margins.left-margins.right-3*gap; // width
+  var h = area.height-margins.top-margins.bottom-3*gap; // height
   
   var lw = divider.vertical*w; // left width
   var rw = (1-divider.vertical)*w; // right width
   var th = divider.horizontal*h; // top height
   var bh = (1-divider.horizontal)*h; // bottom height
   
-  var sx = gap+deskArea.xMin; // start x
+  var sx = gap+area.x+margins.left; // start x
   var hx = sx+lw+gap; // half x
   
-  var sy = gap+deskArea.yMin; // start y
+  var sy = gap+area.y+margins.top; // start y
   var hy = sy+th+gap; // half left y
   
   for (var i = 0; i < nclients; i++)
@@ -1024,37 +1019,37 @@ function RenderClients (divider, clients, nclients, desktopIndex, layerIndex)
     var client = clients[i];
     if (client.type === typeF)
     {
-      SetClient(client, sx, sy, w+gap, h+gap, i, desktopIndex, layerIndex);
+      SetClient(client, sx, sy, w+gap, h+gap, d, s, i, desktopIndex, layerIndex);
       continue;
     };
     if (client.type === typeLH)
     {
-      SetClient(client, sx, sy, lw, h+gap, i, desktopIndex, layerIndex);
+      SetClient(client, sx, sy, lw, h+gap, d, s, i, desktopIndex, layerIndex);
       continue;
     };
     if (client.type === typeRH)
     {
-      SetClient(client, hx, sy, rw, h+gap, i, desktopIndex, layerIndex);
+      SetClient(client, hx, sy, rw, h+gap, d, s, i, desktopIndex, layerIndex);
       continue;
     };
     if (client.type === typeTLQ)
     {
-      SetClient(client, sx, sy, lw, th, i, desktopIndex, layerIndex);
+      SetClient(client, sx, sy, lw, th, d, s, i, desktopIndex, layerIndex);
       continue;
     };
     if (client.type === typeTRQ)
     {
-      SetClient(client, hx, sy, rw, th, i, desktopIndex, layerIndex);
+      SetClient(client, hx, sy, rw, th, d, s, i, desktopIndex, layerIndex);
       continue;
     };
     if (client.type === typeBRQ)
     {
-      SetClient(client, hx, hy, rw, bh, i, desktopIndex, layerIndex);
+      SetClient(client, hx, hy, rw, bh, d, s, i, desktopIndex, layerIndex);
       continue;
     };
     if (client.type === typeBLQ)
     {
-      SetClient(client, sx, hy, lw, bh, i, desktopIndex, layerIndex);
+      SetClient(client, sx, hy, lw, bh, d, s, i, desktopIndex, layerIndex);
       continue;
     };
   };
