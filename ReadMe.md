@@ -1,16 +1,19 @@
 # Kwin Script made by LinG
 
 ## Install
-### Method 1.
-mkdir /usr/share/kwin/scripts/tiling-gaps
-ln -s contents /usr/share/kwin/scripts/tiling-gaps/contents
-ln -s metadata.desktop /usr/share/kwin/scripts/tiling-gaps/metadata.desktop
-ln -s metadata.desktop /usr/share/kservices5/kwin-script-tiling-gaps.desktop
-### Method 2.
-plasmapkg2 --type kwinscript -i tiling-gaps #use -r to remove
-*Note: this method does not create the kservices and thus the ui is not available*
 
-## Intro
+### Method 1.
+plasmapkg2 --type kwinscript -i tiling-gaps #use -r instead of -i to remove
+mkdir -p ~/.local/share/kservices5
+ln -sf ~/.local/share/kwin/scripts/tiling-gaps/metadata.desktop ~/.local/share/kservices5/kwin-script-tiling-gaps.desktop
+
+### Method 2.
+mkdir /usr/share/kwin/scripts/tiling-gaps
+ln -s tiling-gaps/contents /usr/share/kwin/scripts/tiling-gaps/contents
+ln -s tiling-gaps/metadata.desktop /usr/share/kwin/scripts/tiling-gaps/metadata.desktop
+ln -s tiling-gaps/metadata.desktop /usr/share/kservices5/kwin-script-tiling-gaps.desktop
+
+## Preview
 ![](preview/tiling-gaps.mp4)
 
 ## Functionality
@@ -48,7 +51,6 @@ plasmapkg2 --type kwinscript -i tiling-gaps #use -r to remove
 - set shortcut *Tiling-Gaps: Decrease Size* to *Meta+-*
 
 ## To Do
-- create a ui to configure the parameters
 - make it work for multiple screen setups
 - make it work for activities
 
