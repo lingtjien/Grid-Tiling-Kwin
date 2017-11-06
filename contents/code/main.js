@@ -11,7 +11,7 @@ var opacity = Number(readConfig("opacity", 0.9));
 var noOpacity = ToBool(readConfig("noOpacity", false));
 var noBorder = ToBool(readConfig("noBorder", true));
 
-var margins =
+var margin =
 {
   top: Number(readConfig("topMargin", 0)),
   bottom: Number(readConfig("bottomMargin", 0)),
@@ -983,14 +983,13 @@ function SetClient (client, x, y, width, height, desktop, screen, clientIndex, d
 function SetClientFull (client)
 {
   var area = workspace.clientArea(0, client.screen, client.desktop);
-  var geometry = 
+  client.geometry = 
   {
     x: Math.floor(gap+area.x+margin.left),
     y: Math.floor(gap+area.y+margin.top),
-    width: Math.floor(area.width-margins.left-margins.right-2*gap),
-    height: Math.floor(area.height-margins.top-margins.bottom-2*gap),
+    width: Math.floor(area.width-margin.left-margin.right-2*gap),
+    height: Math.floor(area.height-margin.top-margin.bottom-2*gap),
   };
-  client.geometry = geometry;
   return 0;
 };
 
@@ -1000,18 +999,18 @@ function RenderClients (divider, clients, nclients, desktopIndex, layerIndex)
   var d = Math.floor(desktopIndex/workspace.numScreens)+1;
   var area = workspace.clientArea(0, s, d);
   
-  var w = area.width-margins.left-margins.right-3*gap; // width
-  var h = area.height-margins.top-margins.bottom-3*gap; // height
+  var w = area.width-margin.left-margin.right-3*gap; // width
+  var h = area.height-margin.top-margin.bottom-3*gap; // height
   
   var lw = divider.vertical*w; // left width
   var rw = (1-divider.vertical)*w; // right width
   var th = divider.horizontal*h; // top height
   var bh = (1-divider.horizontal)*h; // bottom height
   
-  var sx = gap+area.x+margins.left; // start x
+  var sx = gap+area.x+margin.left; // start x
   var hx = sx+lw+gap; // half x
   
-  var sy = gap+area.y+margins.top; // start y
+  var sy = gap+area.y+margin.top; // start y
   var hy = sy+th+gap; // half left y
   
   for (var i = 0; i < nclients; i++)
@@ -1210,8 +1209,7 @@ registerShortcut
     client = layout.getClient(workspace.activeClient.windowId);
     if (client === -1) {return -1;};
     if (layout.switchClientUp(client.clientIndex, client.desktopIndex, client.layerIndex) === -1) {return -1;};
-    layout.renderLayout();
-    return 0;
+    return layout.renderLayout();
   }
 );
 
@@ -1225,8 +1223,7 @@ registerShortcut
     client = layout.getClient(workspace.activeClient.windowId);
     if (client === -1) {return -1;};
     if (layout.switchClientDown(client.clientIndex, client.desktopIndex, client.layerIndex) === -1) {return -1;};
-    layout.renderLayout();
-    return 0;
+    return layout.renderLayout();
   }
 );
 
@@ -1240,8 +1237,7 @@ registerShortcut
     client = layout.getClient(workspace.activeClient.windowId);
     if (client === -1) {return -1;};
     if (layout.switchClientLeft(client.clientIndex, client.desktopIndex, client.layerIndex) === -1) {return -1;};
-    layout.renderLayout();
-    return 0;
+    return layout.renderLayout();
   }
 );
 
@@ -1255,8 +1251,7 @@ registerShortcut
     client = layout.getClient(workspace.activeClient.windowId);
     if (client === -1) {return -1;};
     if (layout.switchClientRight(client.clientIndex, client.desktopIndex, client.layerIndex) === -1) {return -1;};
-    layout.renderLayout();
-    return 0;
+    return layout.renderLayout();
   }
 );
 
@@ -1268,8 +1263,7 @@ registerShortcut
   function ()
   {
     noBorder = !noBorder;
-    layout.renderLayout();
-    return 0;
+    return layout.renderLayout();
   }
 );
 
@@ -1281,8 +1275,7 @@ registerShortcut
   function ()
   {
     noOpacity = !noOpacity;
-    layout.renderLayout();
-    return 0;
+    return layout.renderLayout();
   }
 );
 
@@ -1296,8 +1289,7 @@ registerShortcut
     var client = layout.getClient(workspace.activeClient.windowId);
     if (client === -1) {return -1;};
     client.closeWindow();
-    layout.renderLayout();
-    return 0;
+    return layout.renderLayout();
   }
 );
 
@@ -1315,8 +1307,7 @@ registerShortcut
     {
       desktop.clients[i].closeWindow();
     };
-    layout.renderLayout();
-    return 0;
+    return layout.renderLayout();
   }
 );
 
@@ -1329,8 +1320,7 @@ registerShortcut
   {
     var client = layout.getClient(workspace.activeClient.windowId);
     if (client === -1) {return -1;};
-    SetClientFull(client);
-    return 0;
+    return SetClientFull(client);
   }
 );
 
@@ -1355,7 +1345,6 @@ registerShortcut
     var client = layout.getClient(workspace.activeClient.windowId);
     if (client === -1) {return -1;};
     layout.decreaseSize(client.clientIndex, client.desktopIndex, client.layerIndex);
-    layout.renderDesktop(client.desktopIndex, client.layerIndex);
-    return 0;
+    return layout.renderDesktop(client.desktopIndex, client.layerIndex);
   }
 );
