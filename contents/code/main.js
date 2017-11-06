@@ -5,79 +5,41 @@
 // workspace (contains all client info)
 // options (contains all options)
 
-// var gap = readConfig("gap", 16);
-// var dividerBounds = readConfig("dividerBounds", 0.2); // from this value to 1-value
-// var moveThreshold = readConfig("moveThreshold", 0.5); // move clients outside this fraction of its own size
-// var dividerStepSize = readConfig("dividerStepSize", 0.05);
-// var opacity = readConfig("opacity", 0.9);
-// var noOpacity = readConfig("noOpacity", false);
-// var noBorder = readConfig("noBorder", true);
-// 
-// var margins =
-// {
-//   top: readConfig("topMargin", 32), // latte top dock height
-//   bottom: readConfig("bottomMargin", 0),
-//   left: readConfig("leftMargin", 0),
-//   right: readConfig("rightMargin", 0),
-// };
-// 
-// var fullClients = readConfig("fullClients", "texstudio, inkscape, gimp, designer, creator, kdevelop, kdenlive").toString().split(', ');
-// var halfClients = readConfig("halfClients", "chromium, kate, spotify").toString().split(', ');
-// var ignoredClients = readConfig("ignoredClients", "ksmserver, krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container").toString().split(', ');
-// var ignoredCaptions = readConfig("ignoredCaptions", "Preferences (Shift+Ctrl+P)").toString().split(', ');
-
-var gap = 16;
-var dividerBounds = 0.2; // from this value to 1-value
-var moveThreshold = 0.5; // move clients outside this fraction of its own size
-var dividerStepSize = 0.05;
-var opacity = 0.9;
-var noOpacity = false;
-var noBorder = true;
+var gap = readConfig("gap", 16);
+var dividerBounds = readConfig("dividerBounds", 0.2); // from this value to 1-value
+var dividerStepSize = readConfig("dividerStepSize", 0.05);
+var moveThreshold = readConfig("moveThreshold", 0.5); // move clients outside this fraction of its own size
+var opacity = readConfig("opacity", 0.9);
+var noOpacity = readConfig("noOpacity", false);
+var noBorder = readConfig("noBorder", true);
 
 var margins =
 {
-  top: 32, // latte top dock height
-  bottom: 0,
-  left: 0,
-  right: 0,
+  top: readConfig("topMargin", 32), // latte top dock height
+  bottom: readConfig("bottomMargin", 0),
+  left: readConfig("leftMargin", 0),
+  right: readConfig("rightMargin", 0),
 };
 
-var fullClients =
-[
-  "texstudio",
-  "inkscape",
-  "gimp",
-  "designer",
-  "creator",
-  "kdevelop",
-  "kdenlive",
-];
+var fullClients = readConfig("fullClients", "texstudio, inkscape, gimp, designer, creator, kdevelop, kdenlive").toString().split(",");
+for (var i = 0; i < fullClients.length; i++) {fullClients[i] = fullClients[i].trim();};
 
-var halfClients =
-[
-  "kate",
-  "chromium",
-  "spotify",
-];
+var halfClients = readConfig("halfClients", "chromium, kate, spotify").toString().split(",");
+for (var i = 0; i < halfClients.length; i++) {halfClients[i] = halfClients[i].trim();};
 
-// clients that are not tiled
-var ignoredClients =
-[
-  "ksmserver",
-  "krunner",
-  "lattedock",
-  "Plasma",
-  "plasma",
-  "plasma-desktop",
-  "plasmashell",
-  "plugin-container",
-];
+var ignoredClients = "ksmserver, krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, ".concat(readConfig("ignoredClients", "").toString()).split(",");
+for (var i = 0; i < ignoredClients.length; i++)
+{
+  if (ignoredClients[i].trim() === "") {ignoredClients.splice(i, 1); continue;};
+  ignoredClients[i] = ignoredClients[i].trim();
+};
 
-// client captions that are not tiled
-var ignoredCaptions =
-[
-  "Preferences (Shift+Ctrl+P)",
-];
+var ignoredCaptions = readConfig("ignoredCaptions", "").toString().split(",");
+for (var i = 0; i < ignoredCaptions.length; i++)
+{
+  if (ignoredCaptions[i].trim() === "") {ignoredCaptions.splice(i, 1); continue;};
+  ignoredCaptions[i] = ignoredCaptions[i].trim();
+};
 
 var deskArea =
 {
