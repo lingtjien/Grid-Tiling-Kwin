@@ -1341,3 +1341,15 @@ registerShortcut
     return 0;
   }
 );
+
+registerShortcut
+(
+  "Tiling-Gaps: Refresh",
+  "Tiling-Gaps: Refresh",
+  "Meta+R",
+  function ()
+  {
+    layout.renderLayout();
+    return 0;
+  }
+);
