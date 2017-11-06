@@ -39,8 +39,9 @@ ln -s tiling-gaps/metadata.desktop /usr/share/kservices5/kwin-script-tiling-gaps
 - also works for applications which enforce their own geometry on startup
 - allows to add to ignored lists (clients, captions) defined by *ignoredClients* and *ignoredCaptions*
 
-* Note: ignored clients does not have to be an exact match, whereas ignored captions do.
-* Note: internal virtual desktops are defined inside the script and are not the same as the actual virtual desktop. If you fill all your virtual desktops and create a new client than a new layer will be made, which contains a virtual desktop which is different from the one in the layer underneath it.
+*Note: ignored clients does not have to be an exact match, whereas ignored captions do.*
+
+*Note: internal virtual desktops are defined inside the script and are not the same as the actual virtual desktop. If you fill all your virtual desktops and create a new client than a new layer will be made, which contains a virtual desktop which is different from the one in the layer underneath it.*
 
 ## Recommended Setup
 - set window focus policy to *focus follows mouse - mouse precedence*
