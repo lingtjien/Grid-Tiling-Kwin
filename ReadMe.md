@@ -4,13 +4,18 @@
 
 ### Method 1.
 plasmapkg2 --type kwinscript -i tiling-gaps #use -r instead of -i to remove
+
 mkdir -p ~/.local/share/kservices5
+
 ln -sf ~/.local/share/kwin/scripts/tiling-gaps/metadata.desktop ~/.local/share/kservices5/kwin-script-tiling-gaps.desktop
 
 ### Method 2.
 mkdir /usr/share/kwin/scripts/tiling-gaps
+
 ln -s tiling-gaps/contents /usr/share/kwin/scripts/tiling-gaps/contents
+
 ln -s tiling-gaps/metadata.desktop /usr/share/kwin/scripts/tiling-gaps/metadata.desktop
+
 ln -s tiling-gaps/metadata.desktop /usr/share/kservices5/kwin-script-tiling-gaps.desktop
 
 ## Preview
