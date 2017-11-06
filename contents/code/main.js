@@ -5,41 +5,30 @@
 // workspace (contains all client info)
 // options (contains all options)
 
-var gap = readConfig("gap", 16);
-var dividerBounds = readConfig("dividerBounds", 0.2); // from this value to 1-value
-var dividerStepSize = readConfig("dividerStepSize", 0.05);
-var moveThreshold = readConfig("moveThreshold", 0.5); // move clients outside this fraction of its own size
-var opacity = readConfig("opacity", 0.9);
-var noOpacity = readConfig("noOpacity", false);
-var noBorder = readConfig("noBorder", true);
+// readConfig returns an object, so needs to be converted if you want to use === instead of ==
+var gap = Number(readConfig("gap", 16));
+var dividerBounds = Number(readConfig("dividerBounds", 0.2)); // from this value to 1-value
+var dividerStepSize = Number(readConfig("dividerStepSize", 0.05));
+var moveThreshold = Number(readConfig("moveThreshold", 0.5)); // move clients outside this fraction of its own size
+var opacity = Number(readConfig("opacity", 0.9));
+var noOpacity = ToBool(readConfig("noOpacity", false));
+var noBorder = ToBool(readConfig("noBorder", true));
 
 var margins =
 {
-  top: readConfig("topMargin", 32), // latte top dock height
-  bottom: readConfig("bottomMargin", 0),
-  left: readConfig("leftMargin", 0),
-  right: readConfig("rightMargin", 0),
+  top: Number(readConfig("topMargin", 32)), // latte top dock height
+  bottom: Number(readConfig("bottomMargin", 0)),
+  left: Number(readConfig("leftMargin", 0)),
+  right: Number(readConfig("rightMargin", 0)),
 };
 
-var fullClients = readConfig("fullClients", "texstudio, inkscape, gimp, designer, creator, kdevelop, kdenlive").toString().split(",");
-for (var i = 0; i < fullClients.length; i++) {fullClients[i] = fullClients[i].trim();};
+var fullClients = TrimSplitString(readConfig("fullClients", "texstudio, inkscape, gimp, designer, creator, kdevelop, kdenlive").toString());
 
-var halfClients = readConfig("halfClients", "chromium, kate, spotify").toString().split(",");
-for (var i = 0; i < halfClients.length; i++) {halfClients[i] = halfClients[i].trim();};
+var halfClients = TrimSplitString(readConfig("halfClients", "chromium, kate, spotify").toString())
 
-var ignoredClients = "ksmserver, krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, ".concat(readConfig("ignoredClients", "").toString()).split(",");
-for (var i = 0; i < ignoredClients.length; i++)
-{
-  if (ignoredClients[i].trim() === "") {ignoredClients.splice(i, 1); continue;};
-  ignoredClients[i] = ignoredClients[i].trim();
-};
+var ignoredClients = TrimSplitString("ksmserver, krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, ".concat(readConfig("ignoredClients", "").toString()));
 
-var ignoredCaptions = readConfig("ignoredCaptions", "").toString().split(",");
-for (var i = 0; i < ignoredCaptions.length; i++)
-{
-  if (ignoredCaptions[i].trim() === "") {ignoredCaptions.splice(i, 1); continue;};
-  ignoredCaptions[i] = ignoredCaptions[i].trim();
-};
+var ignoredCaptions = TrimSplitString(readConfig("ignoredCaptions", "").toString());
 
 var deskArea =
 {
@@ -47,6 +36,27 @@ var deskArea =
   yMin: margins.top,
   width: workspace.displayWidth-margins.right-margins.left,
   height: workspace.displayHeight-margins.bottom-margins.top,
+};
+
+// -----------------
+// Library Functions
+// -----------------
+
+function TrimSplitString (string)
+{
+  var split = string.split(",");
+  for (var i = 0; i < split.length; i++)
+  {
+    if (split[i].trim() === "") {split.splice(i, 1); continue;};
+    split[i] = split[i].trim();
+  };
+  return split;
+};
+
+function ToBool (value)
+{
+  if (value == false) {return false;}
+  else {return true;};
 };
 
 // --------------
