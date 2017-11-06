@@ -48,7 +48,7 @@ ln -s tiling-gaps/metadata.desktop /usr/share/kservices5/kwin-script-tiling-gaps
 - set shortcuts move between virtual desktops to *Meta+Arrows*
 - set shortcuts *Tiling-Gaps: Switch* to *Meta+Alt+Arrows*
 - set shortcut *Tiling-Gaps: Toggle Opacity* to *Meta+O*
-- set shortcut *Tiling-Gaps: Toggle Borders* to *Meta+P*
+- set shortcut *Tiling-Gaps: Toggle Borders* to *Meta+B*
 - set shortcut *Tilin-Gaps: Close Client* to *Meta+W*
 - set shortcut *Tiling-Gaps: Close Desktop* to *Meta+Q*
 - set shortcut *Tiling-Gaps: Move Next Desktop* to *Meta+End*
