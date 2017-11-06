@@ -58,13 +58,11 @@ ln -s tiling-gaps/metadata.desktop /usr/share/kservices5/kwin-script-tiling-gaps
 - set shortcut *Tiling-Gaps: Decrease Size* to *Meta+-*
 
 ## To Do
-- make it work for multiple screen setups
-- make it work for activities
+- add support for activities
 
 ## Known Issues
-- Sometimes when you adjust the settings in the menu, you need to turn the script off, apply it, turn it back on and apply it again to register the new values.
+- Sometimes when you adjust the settings in the menu, you need to turn the script off, apply it, turn it back on and apply it again to register the new values (or just re-log).
 - Some applications do not render correctly on startup sometimes, just use the global shortcut that refreshes the layout
-- Maximized clients are not internally remembered so they are brought back to their tiled since when a refresh is called
+- Maximized clients are not internally remembered so they are brought back to their tiled size when a refresh is called (not just the global shortcut)
 - Spotify can sometimes not be defined as full or half client, because both the client name and class of spotify are blank (random)
-- Not supported by multiple monitors (I don't have more monitors so I can't make it work for multiple monitors but it shouldn't be that hard)
-- I don't use activities, so I don't know how this does with activities
+- I don't use activities, so I don't know how this does with activities.
