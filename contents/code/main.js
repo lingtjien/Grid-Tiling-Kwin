@@ -1269,7 +1269,7 @@ registerShortcut
 (
   "Tiling-Gaps: Toggle Opacity",
   "Tiling-Gaps: Toggle Opacity",
-  "Meta+O",
+  "Meta+B",
   function ()
   {
     noOpacity = !noOpacity;

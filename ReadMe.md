@@ -64,3 +64,4 @@ ln -s tiling-gaps/metadata.desktop /usr/share/kservices5/kwin-script-tiling-gaps
 - Spotify can sometimes not be defined as full or half client, because both the client name and class of spotify are blank (random)
 - Not supported by multiple monitors (I don't have more monitors so I can't make it work for multiple monitors but it shouldn't be that hard)
 - I don't use activities, so I don't know how this does with activities
+- Sometimes when you adjust the settings in the menu, you need to turn the script off, apply it, turn it back on and apply it again to register the new values.
