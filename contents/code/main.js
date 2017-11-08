@@ -1279,19 +1279,19 @@ registerShortcut
   }
 );
 
-registerShortcut
-(
-  "Tiling-Gaps: Close Client",
-  "Tiling-Gaps: Close Client",
-  "Meta+W",
-  function ()
-  {
-    var client = layout.getClient(workspace.activeClient.windowId);
-    if (client === -1) {return -1;};
-    client.closeWindow();
-    return layout.renderLayout();
-  }
-);
+// registerShortcut
+// (
+//   "Tiling-Gaps: Close Client",
+//   "Tiling-Gaps: Close Client",
+//   "Meta+W",
+//   function ()
+//   {
+//     var client = layout.getClient(workspace.activeClient.windowId);
+//     if (client === -1) {return -1;};
+//     client.closeWindow();
+//     return layout.renderLayout();
+//   }
+// );
 
 registerShortcut
 (
@@ -1332,6 +1332,20 @@ registerShortcut
   function ()
   {
     return layout.renderLayout();
+  }
+);
+
+registerShortcut
+(
+  "Tiling-Gaps: Increase Size",
+  "Tiling-Gaps: Increase Size",
+  "Meta+=",
+  function ()
+  {
+    var client = layout.getClient(workspace.activeClient.windowId);
+    if (client === -1) {return -1;};
+    layout.increaseSize(client.clientIndex, client.desktopIndex, client.layerIndex);
+    return layout.renderDesktop(client.desktopIndex, client.layerIndex);
   }
 );
 
