@@ -50,7 +50,7 @@ ln -s tiling-gaps/metadata.desktop /usr/share/kservices5/kwin-script-tiling-gaps
 - set shortcuts *Tiling-Gaps: Switch* to *Meta+Alt+Arrows*
 - set shortcut *Tiling-Gaps: Toggle Opacity* to *Meta+O*
 - set shortcut *Tiling-Gaps: Toggle Borders* to *Meta+P*
-- set shortcut *Tilin-Gaps: Close Client* to *Meta+W*
+- set shortcut *Close Window* to *Meta+W*
 - set shortcut *Tiling-Gaps: Close Desktop* to *Meta+Q*
 - set shortcut *Tiling-Gaps: Maximize* to *Meta+M*
 - set shortcut *Tiling-Gaps: Refresh (Minimize)* to *Meta+N*
