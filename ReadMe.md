@@ -3,16 +3,18 @@ Made by Lingtjien
 
 ## Install
 
-### Method 1. Local Installation
-*Note: You can replace ln for cp, if you prefer to copy and not have it linked to your cloned repository*
-- mkdir -p ~/.local/share/kwin/scripts/tiling-gaps
-- ln -s contents ~/.local/share/kwin/scripts/tiling-gaps/contents
-- ln -s metadata.desktop ~/.local/share/kwin/scripts/tiling-gaps/metadata.desktop
-- mkdir -p ~/.local/share/kservices5
-- ln -s metadata.desktop ~/.local/share/kservices5/kwin-script-tiling-gaps.desktop
+- Local Installation
+  *Note: You can replace ln for cp, if you prefer to copy and not have it linked to your cloned repository*
+  - mkdir -p ~/.local/share/kwin/scripts/tiling-gaps
+  - ln -s contents ~/.local/share/kwin/scripts/tiling-gaps/contents
+  - ln -s metadata.desktop ~/.local/share/kwin/scripts/tiling-gaps/metadata.desktop
+  - mkdir -p ~/.local/share/kservices5
+  - ln -s metadata.desktop ~/.local/share/kservices5/kwin-script-tiling-gaps.desktop
 
-### Method 2. System Installation
-*replace ~/.local/share for /usr/share* in Method 1
+- System Installation
+  *replace ~/.local/share for /usr/share* in Local Installation Method
+
+*To Remove: just delete the linked or copied files that you created during installation*
 
 ## Preview
 ![](preview/tiling-gaps.mp4)
