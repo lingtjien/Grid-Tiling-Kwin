@@ -1177,7 +1177,7 @@ registerShortcut
     client = layout.getClient(workspace.activeClient.windowId);
     if (client === -1) {return -1;};
     if (layout.moveNextDesktop(client.clientIndex, client.desktopIndex, client.layerIndex) === -1) {return -1;};
-    layout.renderLayout();
+    layout.renderLayer(client.layerIndex);
     workspace.currentDesktop = client.desktop;
     return 0;
   }
@@ -1193,7 +1193,7 @@ registerShortcut
     client = layout.getClient(workspace.activeClient.windowId);
     if (client === -1) {return -1;};
     if (layout.movePreviousDesktop(client.clientIndex, client.desktopIndex, client.layerIndex) === -1) {return -1;};
-    layout.renderLayout();
+    layout.renderLayer(client.layerIndex);
     workspace.currentDesktop = client.desktop;
     return 0;
   }
@@ -1209,7 +1209,7 @@ registerShortcut
     client = layout.getClient(workspace.activeClient.windowId);
     if (client === -1) {return -1;};
     if (layout.switchClientUp(client.clientIndex, client.desktopIndex, client.layerIndex) === -1) {return -1;};
-    return layout.renderLayout();
+    return layout.renderDesktop(client.desktopIndex, client.layerIndex);
   }
 );
 
@@ -1223,7 +1223,7 @@ registerShortcut
     client = layout.getClient(workspace.activeClient.windowId);
     if (client === -1) {return -1;};
     if (layout.switchClientDown(client.clientIndex, client.desktopIndex, client.layerIndex) === -1) {return -1;};
-    return layout.renderLayout();
+    return layout.renderDesktop(client.desktopIndex, client.layerIndex);
   }
 );
 
@@ -1237,7 +1237,7 @@ registerShortcut
     client = layout.getClient(workspace.activeClient.windowId);
     if (client === -1) {return -1;};
     if (layout.switchClientLeft(client.clientIndex, client.desktopIndex, client.layerIndex) === -1) {return -1;};
-    return layout.renderLayout();
+    return layout.renderDesktop(client.desktopIndex, client.layerIndex);
   }
 );
 
@@ -1251,7 +1251,7 @@ registerShortcut
     client = layout.getClient(workspace.activeClient.windowId);
     if (client === -1) {return -1;};
     if (layout.switchClientRight(client.clientIndex, client.desktopIndex, client.layerIndex) === -1) {return -1;};
-    return layout.renderLayout();
+    return layout.renderDesktop(client.desktopIndex, client.layerIndex);
   }
 );
 
