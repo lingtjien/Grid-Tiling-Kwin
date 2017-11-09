@@ -3,7 +3,12 @@ Made by Lingtjien
 
 ## Install
 
-- Local Installation
+- Normal Installation
+	- plasmapkg2 --type kwinscript -i tiling-gaps
+	- mkdir -p ~/.local/share/kservices5
+	- ln -s ~/.local/share/kwin/scripts/tiling-gaps/metadata.desktop ~/.local/share/kservices5/kwin-script-tiling-gaps.desktop
+
+- Local Installation (Advanced)
   *Note: You can replace ln for cp, if you prefer to copy and not have it linked to your cloned repository*
   - mkdir -p ~/.local/share/kwin/scripts/tiling-gaps
   - ln -s contents ~/.local/share/kwin/scripts/tiling-gaps/contents
@@ -60,10 +65,11 @@ Made by Lingtjien
 ## Known Issues
 - Sometimes when you adjust the settings in the menu, you need to turn the script off, apply it, turn it back on and apply it again to register the new values (or just re-log).
 - Some applications do not render correctly on startup sometimes, just use the global shortcut that refreshes the layout
-- Maximized clients are not internally remembered so they are brought back to their tiled size when a refresh is called (not just the global shortcut)
+- Maximized clients are not internally remembered so they are brought back to their tiled size when a refresh is called (not just the global shortcut). If you need proper maximization then just use the normal global shortcut for maximization
 - Spotify can sometimes not be defined as full or half client, because both the client name and class of spotify are blank (random)
 - I don't use activities, so I don't know how this does with activities.
 - I don't use dynamic virtual desktops, no idea what happends. This was made with the intended use of using a set amount of virtual desktops.
 
 ## To Do
 - add support for activities (check this commit: ca244ba0dca1d933eb1329d49450603a0f540b65 and do it similarly but with the layer class instead of the desktop class)
+- make it work for all grid sizes (not just 2x2)
