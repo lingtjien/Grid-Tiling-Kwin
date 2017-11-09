@@ -1,4 +1,5 @@
 # Kwin Script That Automatically Tiles Windows
+Made by Lingtjien
 
 ## Install
 
@@ -64,5 +65,3 @@
 
 ## To Do
 - add support for activities (check this commit: ca244ba0dca1d933eb1329d49450603a0f540b65 and do it similarly but with the layer class instead of the desktop class)
-
-# Made by Lingtjien
