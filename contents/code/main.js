@@ -25,7 +25,7 @@ var halfClients = TrimSplitString(readConfig("halfClients", "chromium, kate, spo
 
 var ignoredClients = TrimSplitString("ksmserver, krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, ".concat(readConfig("ignoredClients", "").toString()));
 
-var ignoredCaptions = TrimSplitString(readConfig("ignoredCaptions", "").toString());
+var ignoredCaptions = TrimSplitString(readConfig("ignoredCaptions", "Trace Bitmap (Shift+Alt+B)").toString());
 
 // -----------------
 // Library Functions
