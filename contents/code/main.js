@@ -472,7 +472,7 @@ function Layout ()
   this.renderLayer = function (layerIndex)
   {
     if (layerIndex >= this.nlayers()) {return -1;};
-    return this.layers[layerIndex].renderLayer();
+    return this.layers[layerIndex].renderLayer(layerIndex);
   };
   
   this.renderDesktop = function (desktopIndex, layerIndex)
