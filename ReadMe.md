@@ -20,7 +20,7 @@ Made by Lingtjien
 - System Installation
   *replace ~/.local/share for /usr/share* in Local Installation Method
 
-*To Remove: just delete the linked or copied files that you created during installation*
+*To Remove: just delete the linked or copied files that you created during installation (to remove installed scripts by plasmapkg2, run the same command again but this time with -r instead of -i to remove (see manual for more info))*
 
 ## Preview
 ![](preview/tiling-gaps.mp4)
