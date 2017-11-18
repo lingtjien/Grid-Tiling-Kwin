@@ -36,7 +36,7 @@ Made by Lingtjien
 - allows to switch between transparant clients (global shortcut)
 - allows to switch between bordered clients (global shortcut)
 - offers global shortcuts to move clients, both between virtual desktops and inside a virtual desktop
-- offers global shortcuts to close a client, or all clients on that (internal) virtual desktop
+- offers global shortcuts to close all clients on a virtual desktop
 - allows to dynamically resize windows up to a minimum as defined by *dividerBounds*
 - allows to dynamically resize windows using global shortcuts and user handling
 - allows to switch windows by dragging them outside of their own size defined by *moveThreshold*
