@@ -1128,7 +1128,6 @@ workspace.clientRemoved.connect
   {
     if (!(client.windowId in addedClients)) {return -1;};
     delete addedClients[client.windowId];
-    
     var removed = layout.removeClient(client.windowId);
     if (removed === 0)
     {
@@ -1300,12 +1299,17 @@ registerShortcut
   "Meta+Q",
   function ()
   {
-    var client = layout.getClient(workspace.activeClient.windowId);
-    if (client === -1) {return -1;};
-    var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
-    for (var i = 0; i < desktop.nclients(); i++)
+    var index = workspace.currentDesktop-1;
+    for (var i = 0; i < layout.nlayers(); i++)
     {
-      desktop.clients[i].closeWindow();
+      var layer = layout.layers[i];
+      if (index >= layer.ndesktops()) {return -1;};
+      var desktop = layer.desktops[index];
+      for (var j = 0; j < desktop.nclients(); j++)
+      {
+        desktop.clients[j].closeWindow();
+      };
+      layout.removeDesktop(index, i);
     };
     return layout.renderLayout();
   }
