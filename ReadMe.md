@@ -31,7 +31,7 @@ Made by Lingtjien
 - allows to adjust the opacity as defined by *opacity*
 - allows to adjust default opacity toggle *noOpacity*
 - allows to adjust default borders toggle *noBorders*
-- automatically tile windows, up to a maximum of 4 clients per (internal) virtual desktop
+- automatically tile windows, up to a maximum of 4 clients per (internal) virtual desktop, new clients are first attempted to be added to your current desktop
 - allows the restriction of minimum tile size of certain clients (full/half clients lists) as defined by *fullClients* and *halfClients*
 - allows to switch between transparant clients (global shortcut)
 - allows to switch between bordered clients (global shortcut)
