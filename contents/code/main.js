@@ -48,6 +48,26 @@ function ToBool (value)
   else {return true;};
 };
 
+function GetDesktopTotal()
+{
+  return workspace.desktops*workspace.numScreens;
+};
+
+function GetDesktopNumber (desktopIndex)
+{
+  return Math.floor(desktopIndex/workspace.numScreens)+1;
+};
+
+function GetScreenNumber (desktopIndex)
+{
+  return desktopIndex%workspace.numScreens;
+};
+
+function GetDesktopIndex ()
+{
+  return workspace.numScreen*(workspace.currentDesktop-1)+workspace.activeScreen;
+};
+
 // --------------
 // Layout Classes
 // --------------
@@ -169,7 +189,7 @@ function Layer ()
   
   this.addDesktop = function (desktop)
   {
-    if (workspace.desktops*workspace.numScreens-this.ndesktops() < 1) {return -1;};
+    if (GetDesktopTotal()-this.ndesktops() < 1) {return -1;};
     this.desktops.push(desktop);
     return 0;
   };
@@ -184,6 +204,8 @@ function Layer ()
   this.addClient = function (client)
   {
     var added = -1;
+    added = this.desktops[GetDesktopIndex()].addClient(client);
+    if (added === 0) {return added;};
     for (var i = 0; i < this.ndesktops(); i++)
     {
       added = this.desktops[i].addClient(client);
@@ -995,8 +1017,8 @@ function SetClientFull (client)
 
 function RenderClients (divider, clients, nclients, desktopIndex, layerIndex)
 {
-  var s = desktopIndex%workspace.numScreens;
-  var d = Math.floor(desktopIndex/workspace.numScreens)+1;
+  var s = GetScreenNumber(desktopIndex);
+  var d = GetDesktopNumber(desktopIndex);
   var area = workspace.clientArea(0, s, d);
   
   var w = area.width-margin.left-margin.right-3*gap; // width
@@ -1299,7 +1321,7 @@ registerShortcut
   "Meta+Q",
   function ()
   {
-    var index = workspace.numScreen*(workspace.currentDesktop-1)+workspace.activeScreen;
+    var index = GetDesktopIndex();
     for (var i = 0; i < layout.nlayers(); i++)
     {
       var layer = layout.layers[i];
