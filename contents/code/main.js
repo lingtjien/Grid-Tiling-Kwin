@@ -204,11 +204,22 @@ function Layer ()
   this.addClient = function (client)
   {
     var added = -1;
+    // try to add to current desktop
+    var index = GetDesktopIndex();
+    while (index >= this.ndesktops())
+    {
+      var desktop = new Desktop();
+      this.addDesktop(desktop);
+    };
+    added = this.desktops[index].addClient(client);
+    if (added === 0) {return added;};
+    // try to add to any of the current desktops
     for (var i = 0; i < this.ndesktops(); i++)
     {
       added = this.desktops[i].addClient(client);
       if (added === 0) {return added;};
     };
+    // make a new desktop (if possible) and add to that
     var desktop = new Desktop();
     if (this.addDesktop(desktop) === -1) {return -1;};
     return this.desktops[this.ndesktops()-1].addClient(client);
