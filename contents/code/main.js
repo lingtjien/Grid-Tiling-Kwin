@@ -23,7 +23,7 @@ var fullClients = TrimSplitString(readConfig("fullClients", "texstudio, inkscape
 
 var halfClients = TrimSplitString(readConfig("halfClients", "chromium, kate, spotify").toString())
 
-var ignoredClients = TrimSplitString("ksmserver, krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, ".concat(readConfig("ignoredClients", "").toString()));
+var ignoredClients = TrimSplitString("ksmserver, krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, ".concat(readConfig("ignoredClients", "wine, overwatch").toString()));
 
 var ignoredCaptions = TrimSplitString(readConfig("ignoredCaptions", "Trace Bitmap (Shift+Alt+B), Document Properties (Shift+Ctrl+D)").toString());
 
@@ -1299,7 +1299,7 @@ registerShortcut
   "Meta+Q",
   function ()
   {
-    var index = workspace.currentDesktop-1;
+    var index = workspace.numScreen*(workspace.currentDesktop-1)+workspace.activeScreen;
     for (var i = 0; i < layout.nlayers(); i++)
     {
       var layer = layout.layers[i];
