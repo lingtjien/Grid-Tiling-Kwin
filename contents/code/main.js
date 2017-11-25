@@ -65,7 +65,7 @@ function GetScreenNumber (desktopIndex)
 
 function GetDesktopIndex ()
 {
-  return workspace.numScreen*(workspace.currentDesktop-1)+workspace.activeScreen;
+  return workspace.numScreens*(workspace.currentDesktop-1)+workspace.activeScreen;
 };
 
 // --------------
@@ -204,8 +204,6 @@ function Layer ()
   this.addClient = function (client)
   {
     var added = -1;
-    added = this.desktops[GetDesktopIndex()].addClient(client);
-    if (added === 0) {return added;};
     for (var i = 0; i < this.ndesktops(); i++)
     {
       added = this.desktops[i].addClient(client);
