@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>330</width>
-    <height>410</height>
+    <height>440</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>330</width>
-    <height>410</height>
+    <height>440</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -23,7 +23,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>220</y>
+     <y>249</y>
      <width>311</width>
      <height>41</height>
     </rect>
@@ -49,7 +49,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>261</y>
+     <y>290</y>
      <width>311</width>
      <height>41</height>
     </rect>
@@ -75,7 +75,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>320</y>
+     <y>350</y>
      <width>311</width>
      <height>41</height>
     </rect>
@@ -101,7 +101,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>360</y>
+     <y>390</y>
      <width>311</width>
      <height>41</height>
     </rect>
@@ -127,12 +127,22 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>190</y>
+     <y>210</y>
      <width>311</width>
-     <height>24</height>
+     <height>20</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="hLayout2">
+    <item>
+     <widget class="QCheckBox" name="kcfg_noBorder">
+      <property name="text">
+       <string>No Border</string>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
     <item>
      <widget class="QCheckBox" name="kcfg_noOpacity">
       <property name="text">
@@ -146,194 +156,227 @@
       </property>
      </widget>
     </item>
-    <item>
-     <widget class="QCheckBox" name="kcfg_noBorder">
-      <property name="text">
-       <string>No Border</string>
-      </property>
-      <property name="checked">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
    </layout>
   </widget>
-  <widget class="QWidget" name="horizontalLayoutWidget_2">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>0</y>
-     <width>311</width>
-     <height>188</height>
+     <x>210</x>
+     <y>10</y>
+     <width>111</width>
+     <height>176</height>
     </rect>
    </property>
-   <layout class="QHBoxLayout" name="hLayout1">
+   <layout class="QVBoxLayout" name="marginsLayout">
     <item>
-     <layout class="QFormLayout" name="formLayout">
-      <item row="0" column="0">
-       <widget class="QLabel" name="gapLabel">
+     <layout class="QHBoxLayout" name="marginsHorizontal">
+      <item>
+       <widget class="QLabel" name="marginsLabel">
+        <property name="layoutDirection">
+         <enum>Qt::LeftToRight</enum>
+        </property>
         <property name="text">
-         <string>Gap Size</string>
+         <string>Margins</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="kcfg_gap">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QFormLayout" name="marginsInnerLayout">
       <item row="1" column="0">
-       <widget class="QLabel" name="dividerBoundsLabel">
+       <widget class="QLabel" name="bottomLabel">
         <property name="text">
-         <string>Divider Bounds</string>
+         <string>Bottom</string>
         </property>
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QLineEdit" name="kcfg_dividerBounds">
+       <widget class="QLineEdit" name="kcfg_bottomMargin">
         <property name="text">
          <string/>
         </property>
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QLabel" name="dividerStepSizeLabel">
+       <widget class="QLabel" name="leftLabel">
         <property name="text">
-         <string>Divider Step Size</string>
+         <string>Left</string>
         </property>
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QLineEdit" name="kcfg_dividerStepSize">
+       <widget class="QLineEdit" name="kcfg_leftMargin">
         <property name="text">
          <string/>
         </property>
        </widget>
       </item>
       <item row="3" column="0">
-       <widget class="QLabel" name="moveThresholdLabel">
+       <widget class="QLabel" name="rightLabel">
         <property name="text">
-         <string>Moving Threshold</string>
+         <string>Right</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="kcfg_topMargin">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="topLabel">
+        <property name="text">
+         <string>Top</string>
         </property>
        </widget>
       </item>
       <item row="3" column="1">
-       <widget class="QLineEdit" name="kcfg_moveThreshold">
+       <widget class="QLineEdit" name="kcfg_rightMargin">
         <property name="text">
          <string/>
         </property>
        </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="opacityLabel">
-        <property name="text">
-         <string>Opacity</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="1">
-       <widget class="QLineEdit" name="kcfg_opacity">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QVBoxLayout" name="marginsLayout">
-      <item>
-       <layout class="QHBoxLayout" name="marginsHorizontal">
-        <item>
-         <spacer name="marginsSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QLabel" name="marginsLabel">
-          <property name="layoutDirection">
-           <enum>Qt::LeftToRight</enum>
-          </property>
-          <property name="text">
-           <string>Margins</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QFormLayout" name="marginsInnerLayout">
-        <item row="1" column="0">
-         <widget class="QLabel" name="bottomLabel">
-          <property name="text">
-           <string>Bottom</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QLineEdit" name="kcfg_bottomMargin">
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="leftLabel">
-          <property name="text">
-           <string>Left</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QLineEdit" name="kcfg_leftMargin">
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="rightLabel">
-          <property name="text">
-           <string>Right</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <widget class="QLineEdit" name="kcfg_rightMargin">
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QLineEdit" name="kcfg_topMargin">
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="topLabel">
-          <property name="text">
-           <string>Top</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
       </item>
      </layout>
     </item>
    </layout>
+  </widget>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>0</y>
+     <width>181</width>
+     <height>186</height>
+    </rect>
+   </property>
+   <layout class="QFormLayout" name="formLayout">
+    <item row="0" column="0">
+     <widget class="QLabel" name="gapLabel">
+      <property name="text">
+       <string>Gap Size</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLineEdit" name="kcfg_gap">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="dividerBoundsLabel">
+      <property name="text">
+       <string>Divider Bounds</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QLineEdit" name="kcfg_dividerBounds">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="dividerStepSizeLabel">
+      <property name="text">
+       <string>Divider Step Size</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QLineEdit" name="kcfg_dividerStepSize">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="moveThresholdLabel">
+      <property name="text">
+       <string>Moving Threshold</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QLineEdit" name="kcfg_moveThreshold">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="opacityLabel">
+      <property name="text">
+       <string>Opacity</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <widget class="QLineEdit" name="kcfg_opacity">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="Line" name="lineDivider0">
+   <property name="geometry">
+    <rect>
+     <x>190</x>
+     <y>0</y>
+     <width>16</width>
+     <height>181</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Vertical</enum>
+   </property>
+  </widget>
+  <widget class="Line" name="lineDivider1">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>190</y>
+     <width>311</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="Line" name="lineDivider2">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>230</y>
+     <width>311</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="Line" name="lineDivider3">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>330</y>
+     <width>311</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
   </widget>
  </widget>
  <resources/>
