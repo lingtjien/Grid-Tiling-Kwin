@@ -4,7 +4,8 @@ Made by Lingtjien
 ## Install
 
 - Normal Installation
-	- plasmapkg2 --type kwinscript -i *Name of this directory*
+	- git clone https://github.com/lingtjien/tiling-gaps-kwin.git
+	- plasmapkg2 --type kwinscript -i tiling-gaps-kwin
 	- mkdir -p ~/.local/share/kservices5
 	- ln -s ~/.local/share/kwin/scripts/tiling-gaps/metadata.desktop ~/.local/share/kservices5/kwin-script-tiling-gaps.desktop
 
