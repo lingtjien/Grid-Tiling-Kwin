@@ -4,16 +4,17 @@ Made by Lingtjien
 ## Install
 
 - Normal Installation
-	- plasmapkg2 --type kwinscript -i *Name of this directory*
-	- mkdir -p ~/.local/share/kservices5
-	- ln -s ~/.local/share/kwin/scripts/tiling-gaps/metadata.desktop ~/.local/share/kservices5/kwin-script-tiling-gaps.desktop
+	- `git clone https://github.com/lingtjien/tiling-gaps-kwin.git`
+	- `plasmapkg2 --type kwinscript -i tiling-gaps-kwin`
+	- `mkdir -p ~/.local/share/kservices5`
+	- `ln -s ~/.local/share/kwin/scripts/tiling-gaps/metadata.desktop ~/.local/share/kservices5/kwin-script-tiling-gaps.desktop`
 
 - Local Installation (Advanced)
-  - mkdir -p ~/.local/share/kwin/scripts/tiling-gaps
-  - ln -s contents ~/.local/share/kwin/scripts/tiling-gaps/contents
-  - ln -s metadata.desktop ~/.local/share/kwin/scripts/tiling-gaps/metadata.desktop
-  - mkdir -p ~/.local/share/kservices5
-  - ln -s metadata.desktop ~/.local/share/kservices5/kwin-script-tiling-gaps.desktop
+	- `mkdir -p ~/.local/share/kwin/scripts/tiling-gaps`
+	- `ln -s contents ~/.local/share/kwin/scripts/tiling-gaps/contents`
+	- `ln -s metadata.desktop ~/.local/share/kwin/scripts/tiling-gaps/metadata.desktop`
+	- `mkdir -p ~/.local/share/kservices5`
+	- `ln -s metadata.desktop ~/.local/share/kservices5/kwin-script-tiling-gaps.desktop`
 
   *Note: You can replace ln for cp, if you prefer to copy and not have it linked to your cloned repository*
 
