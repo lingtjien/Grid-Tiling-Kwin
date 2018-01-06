@@ -3,7 +3,7 @@ Made by Lingtjien
 
 ## Install
 
-- Normal Installation
+- Normal Installation via Git
 	- `git clone https://github.com/lingtjien/tiling-gaps-kwin.git`
 	- `plasmapkg2 --type kwinscript -i tiling-gaps-kwin`
 	- `mkdir -p ~/.local/share/kservices5`
@@ -22,6 +22,11 @@ Made by Lingtjien
   *replace ~/.local/share for /usr/share* in Local Installation Method
 
 *To Remove: just delete the linked or copied files that you created during installation (to remove installed scripts by plasmapkg2, run the same command again but this time with -r instead of -i to remove (see manual for more info))*
+
+## Updating
+
+- Git
+	- `git clone https://github.com/lingtjien/tiling-gaps-kwin.gi && plasmapkg2 --type kwinscript -u tiling-gaps-kwin`
 
 ## Preview
 ![](preview/tiling-gaps.mp4)
