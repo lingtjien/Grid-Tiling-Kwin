@@ -27,6 +27,10 @@ Made by Lingtjien
 
 - Git
 	- `git clone https://github.com/lingtjien/tiling-gaps-kwin.gi && plasmapkg2 --type kwinscript -u tiling-gaps-kwin`
+	
+## Uninstalling
+
+`plasmapkg2 --type kwinscript -r .local/share/kwin/scripts/tiling-gaps`
 
 ## Preview
 ![](preview/tiling-gaps.mp4)
