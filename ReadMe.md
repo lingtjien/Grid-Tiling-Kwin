@@ -3,7 +3,7 @@ Made by Lingtjien
 
 ## Install
 
-Normal Installation via Git
+**Normal Installation via Git**
 
 ```
 git clone https://github.com/lingtjien/tiling-gaps-kwin.git
@@ -12,7 +12,7 @@ mkdir -p ~/.local/share/kservices5
 ln -s ~/.local/share/kwin/scripts/tiling-gaps/metadata.desktop ~/.local/share/kservices5/kwin-script-tiling-gaps.desktop
 ```
 
-Local Installation (Advanced)
+**Local Installation (Advanced)**
 
 ```
 mkdir -p ~/.local/share/kwin/scripts/tiling-gaps
@@ -24,7 +24,7 @@ ln -s metadata.desktop ~/.local/share/kservices5/kwin-script-tiling-gaps.desktop
 
   *Note: You can replace ln for cp, if you prefer to copy and not have it linked to your cloned repository*
 
-System Installation
+**System Installation**
 
   *replace ~/.local/share for /usr/share* in Local Installation Method
 
@@ -32,7 +32,7 @@ System Installation
 
 ## Updating
 
-Git
+**Git**
 
 ```
 git clone https://github.com/lingtjien/tiling-gaps-kwin.gi && plasmapkg2 --type kwinscript -u tiling-gaps-kwin
