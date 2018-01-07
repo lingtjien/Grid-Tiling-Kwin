@@ -45,7 +45,8 @@ plasmapkg2 --type kwinscript -r .local/share/kwin/scripts/tiling-gaps
 ```
 
 ## Preview
-![d1](https://i.imgur.com/ufAJz4S.gif)
+![](preview/tiling-gaps.mp4)
+*Note: GitHub does not support viewing videos in the ReadMe, if you want to see an example just watch the tiling-gaps.mp4 in the preview folder*
 
 ## Functionality
 - allows to set margins as defined by *topMargin* *bottomMargin* *leftMargin* *rightMargin*
