@@ -25,8 +25,6 @@ Made by Lingtjien
 ## Preview
 ![](preview/tiling-gaps.gif)
 
-*Note: GitHub does not support viewing videos in the ReadMe, if you want to see an example just watch the tiling-gaps.mp4 in the preview folder*
-
 ## Functionality
 - allows to set margins as defined by *topMargin* *bottomMargin* *leftMargin* *rightMargin*
 - allows to set the gap size as defined by *gap*
