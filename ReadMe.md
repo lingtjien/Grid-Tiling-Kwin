@@ -24,6 +24,7 @@ Made by Lingtjien
 
 ## Preview
 ![](preview/tiling-gaps.gif)
+
 *Note: GitHub does not support viewing videos in the ReadMe, if you want to see an example just watch the tiling-gaps.mp4 in the preview folder*
 
 ## Functionality
