@@ -23,7 +23,7 @@ Made by Lingtjien
 *To Remove: just delete the linked or copied files that you created during installation (to remove installed scripts by plasmapkg2, run the same command again but this time with -r instead of -i to remove (see manual for more info))*
 
 ## Preview
-![](preview/tiling-gaps.mp4)
+![](preview/tiling-gaps.gif)
 *Note: GitHub does not support viewing videos in the ReadMe, if you want to see an example just watch the tiling-gaps.mp4 in the preview folder*
 
 ## Functionality
