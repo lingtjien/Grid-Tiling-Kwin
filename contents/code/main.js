@@ -11,6 +11,9 @@ var opacity = Number(readConfig("opacity", 0.9));
 var noOpacity = ToBool(readConfig("noOpacity", false));
 var noBorder = ToBool(readConfig("noBorder", true));
 
+var maxRows = 3;
+var maxCols = 2;
+
 var margin =
 {
   top: Number(readConfig("topMargin", 0)),
@@ -68,12 +71,24 @@ function GetDesktopIndex ()
   return workspace.numScreens*(workspace.currentDesktop-1)+workspace.activeScreen;
 };
 
+function GetDesktopRows ()
+{
+  return workspace.desktopGridHeight;
+}
+  
+function GetDesktopCols ()
+{
+  return workspace.desktopGridWidth;
+}
+
 // --------------
 // Layout Classes
 // --------------
 
 function Desktop ()
 {
+  this.rows = 0;
+  this.cols = 0;
   this.clients = [];
   this.nclients = function () {return this.clients.length;};
   
@@ -84,13 +99,44 @@ function Desktop ()
     return sum;
   };
   
+  this.rowsCols = function ()
+  {
+    return this.rows * this.cols;
+  };
+  
   this.addClient = function (client)
   {
     if (this.size()+client.minType > 1) {return -1;};
-    SplitType(client, this.clients, this.nclients());
+  
+    while (this.rowsCols() <== this.nclients())
+    {
+      // first try to add rows
+      if (this.rows < maxRows)
+      {
+        this.rows++;
+      }
+      // then try to add columns
+      else if (this.cols < maxCols)
+      {
+        this.cols++;
+      }
+      // if both fail then return 
+      return -1;
+    }
+    
+    client.row = this.rows;
+    client.col = this.cols;
     this.clients.push(client);
     return 0;
-  };
+  }
+  
+//   this.addClient = function (client)
+//   {
+//     if (this.size()+client.minType > 1) {return -1;};
+//     SplitType(client, this.clients, this.nclients());
+//     this.clients.push(client);
+//     return 0;
+//   };
   
   this.removeClient = function (windowId)
   {
