@@ -51,7 +51,7 @@ function ToBool (value)
   else {return true;};
 };
 
-function GetDesktopTotal()
+function GetDesktopTotal ()
 {
   return workspace.desktops*workspace.numScreens;
 };
@@ -74,12 +74,12 @@ function GetDesktopIndex ()
 function GetDesktopRows ()
 {
   return workspace.desktopGridHeight;
-}
+};
   
 function GetDesktopCols ()
 {
   return workspace.desktopGridWidth;
-}
+};
 
 // --------------
 // Layout Classes
@@ -87,138 +87,146 @@ function GetDesktopCols ()
 
 function Desktop ()
 {
-  this.rows = 0;
-  this.cols = 0;
-  this.clients = [];
-  this.nclients = function () {return this.clients.length;};
+  this.clients = [[]]; // clients are stored per column, with every column being an array
   
-  this.size = function ()
+  this.cols = function ()
+  {
+    return this.clients.length;
+  };
+  
+  this.rows = function (colIndex)
+  {
+    return this.clients[colIndex].length;
+  };
+  
+  this.colSize = function (colIndex)
   {
     var sum = 0;
-    for (var i = 0; i < this.nclients(); i++) {sum += this.clients[i].minType;};
+    for (var i = 0; i < this.rows(i); i++)
+    {
+      sum += this.clients[colIndex][i].minSize;
+    }
     return sum;
   };
   
-  this.rowsCols = function ()
+  this.addCol = function (client)
   {
-    return this.rows * this.cols;
+    this.clients.push([]);
+    this.dividers.addCol();
+    this.addRow(client, this.cols()-1);
+  };
+  
+  this.removeCol = function(colIndex)
+  {
+    this.clients.splice(colIndex, 1);
+    this.removeColDivider(colIndex);
+  };
+  
+  this.addRow = function (client, colIndex)
+  {
+    this.clients[colIndex].push(client);
+    this.addRowDivider(colIndex);
+  };
+  
+  this.removeRow = function (colIndex, rowIndex)
+  {
+    this.clients[colIndex].splice(rowIndex, 1);
+    this.removeRowDivider(colIndex, rowIndex);
   };
   
   this.addClient = function (client)
   {
-    if (this.size()+client.minType > 1) {return -1;};
-  
-    while (this.rowsCols() <== this.nclients())
+    // one devided by the number of columns is the maximum size a column can occupy, subtracting the total size of a column from this leaves us with the size that is left for the potential new client
+    
+    // first try to add new column for client
+    if (1/this.cols() >== client.minSize && this.cols() < maxCols && this.cols() <== this.rows())
     {
-      // first try to add rows
-      if (this.rows < maxRows)
-      {
-        this.rows++;
-      }
-      // then try to add columns
-      else if (this.cols < maxCols)
-      {
-        this.cols++;
-      }
-      // if both fail then return 
-      return -1;
+      this.addCol(client);
+      return 0;
     }
     
-    client.row = this.rows;
-    client.col = this.cols;
-    this.clients.push(client);
-    return 0;
+    // then try to add client to the first column with space
+    for (var i = 0; i < this.cols(); i++)
+    {
+      if (this.rows(i) >== maxRows || 1/this.cols() - this.colSize(i) < client.minSize) continue;
+      this.addRow(client, i);
+      return 0;
+    };
+    
+    // if both fail then return 
+    return -1;
   }
-  
-//   this.addClient = function (client)
-//   {
-//     if (this.size()+client.minType > 1) {return -1;};
-//     SplitType(client, this.clients, this.nclients());
-//     this.clients.push(client);
-//     return 0;
-//   };
   
   this.removeClient = function (windowId)
   {
-    if (this.nclients() === 0) {return -1;};
-    for (var i = 0; i < this.nclients(); i++)
+    for (var i = 0; i < this.cols(); i++)
     {
-      if (this.clients[i].windowId === windowId)
+      for (var j = 0; j < this.rows(i); j++)
       {
-        CombineType(i, this.clients, this.nclients());
-        this.clients.splice(i, 1);
-        return 0;
-      };
+        if (this.clients[i][j].windowId === windowId)
+        {
+          // if it's the only client in that column then remove the column
+          if (this.rows(i) === 1)
+          {
+            this.removeCol(i);
+            return 0;
+          }
+          // else only remove that single client from the column
+          else
+          {
+            this.removeRow(i, j);
+            return 0;
+          };
+        };
+      };  
     };
     return -1;
   };
   
   this.getClient = function (windowId)
   {
-    if (this.nclients() === 0) {return -1;};
-    for (var i = 0; i < this.nclients(); i++)
+    for (var i = 0; i < this.cols(); i++)
     {
-      if (this.clients[i].windowId === windowId)
+      for (var j = 0; j < this.rows(i); j++)
       {
-        return this.clients[i];
-      };
+        if (this.clients[i][j].windowId === windowId)
+        {
+          return this.clients[i][j];
+        };
+      };  
     };
     return -1;
   };
   
-  this.switchClientLeft = function (clientIndex)
+  // dividers, all column have a divider attached to them, which are to the right of the column (or bottom of the row), this means that there is always an extra divider that is to the right (or bottom) of the last client (either row or column), these dividers should be ignored during the rendering.
+  this.dividers = 
+  [{
+    col: 0,
+    row: [0],
+  }];
+  
+  this.addColDivider = function ()
   {
-    if (clientIndex >= this.nclients()) {return -1;};
-    return SwitchClientLeft(clientIndex, this.clients, this.nclients());
+    this.dividers.push
+    ({
+      col: 0,
+      row: [0],
+    });
   };
   
-  this.switchClientRight = function (clientIndex)
+  this.removeColDivider = function (colIndex)
   {
-    if (clientIndex >= this.nclients()) {return -1;};
-    return SwitchClientRight(clientIndex, this.clients, this.nclients());
+    this.dividers.splice(colIndex, 1);
   };
   
-  this.switchClientUp = function (clientIndex)
+  this.addRowDivider = function (colIndex)
   {
-    if (clientIndex >= this.nclients()) {return -1;};
-    return SwitchClientUp(clientIndex, this.clients, this.nclients());
+    this.dividers[colIndex].row.push(0);
   };
   
-  this.switchClientDown = function (clientIndex)
+  this.removeRowDivider = function (rowIndex, colIndex)
   {
-    if (clientIndex >= this.nclients()) {return -1;};
-    return SwitchClientDown(clientIndex, this.clients, this.nclients());
-  };
-  
-  this.increaseSize = function (clientIndex)
-  {
-    if (clientIndex >= this.nclients()) {return -1;};
-    return IncreaseSize(this.clients[clientIndex], this.divider);
-  };
-  
-  this.decreaseSize = function (clientIndex)
-  {
-    if (clientIndex >= this.nclients()) {return -1;};
-    return DecreaseSize(this.clients[clientIndex], this.divider);
-  };
-  
-  // divider
-  this.divider = 
-  {
-    horizontal: 0.5,
-    vertical: 0.5,
-  };
-  
-  this.setDivider = function (horizontal, vertical)
-  {
-    this.divider.horizontal = horizontal;
-    this.divider.vertical = vertical;
-    return 0;
-  };
-  
-  this.getDivider = function ( )
-  {
-    return this.divider;
+    this.dividers[colIndex].row.splice(rowIndex, 1);
   };
   
   // rendering
@@ -338,7 +346,7 @@ function Layer ()
     var client = this.desktops[desktopIndex].clients[clientIndex];
     for (var i = desktopIndex-1; i >= 0; i--)
     {
-      if (this.desktops[i].size()+client.minType > 1) {continue;};
+      if (this.desktops[i].size()+client.minSize > 1) {continue;};
       this.desktops[desktopIndex].removeClient(client.windowId);
       this.desktops[i].addClient(client);
       return 0;
@@ -352,7 +360,7 @@ function Layer ()
     var client = this.desktops[desktopIndex].clients[clientIndex];
     for (var i = desktopIndex+1; i < this.ndesktops(); i++)
     {
-      if (this.desktops[i].size()+client.minType > 1) {continue;};
+      if (this.desktops[i].size()+client.minSize > 1) {continue;};
       this.desktops[desktopIndex].removeClient(client.windowId);
       this.desktops[i].addClient(client);
       return 0;
@@ -620,13 +628,13 @@ function SplitType (client, clients, nclients)
   
   if (clients[index].type === typeLH)
   {
-    if (clients[index].minType === 0.5)
+    if (clients[index].minSize === 0.5)
     {
       clients[1-index].type = typeTRQ;
       client.type = typeBRQ;
       return 0;
     }
-    else if (client.minType === 0.5)
+    else if (client.minSize === 0.5)
     {
       clients[index].type = typeTLQ;
       clients[1-index].type = typeBLQ;
@@ -643,13 +651,13 @@ function SplitType (client, clients, nclients)
   
   if (clients[index].type === typeRH)
   {
-    if (clients[index].minType === 0.5)
+    if (clients[index].minSize === 0.5)
     {
       clients[1-index].type = typeTLQ;
       client.type = typeBLQ;
       return 0;
     }
-    else if (client.minType === 0.5)
+    else if (client.minSize === 0.5)
     {
       clients[index].type = typeBLQ;
       clients[1-index].type = typeTLQ;
@@ -1155,12 +1163,12 @@ function CheckClient (client)
     if (clientName.indexOf(ignoredClients[i]) !== -1) {return -1;};
   };
   
-  var minType = 0.25;
+  var minSize = 0.25;
   for (var i = 0; i < halfClients.length; i++)
   {
     if (clientClass.indexOf(halfClients[i]) !== -1 || clientClass.indexOf(halfClients[i]) !== -1)
     {
-      minType = 0.5;
+      minSize = 0.5;
       break;
     };
   };
@@ -1168,12 +1176,12 @@ function CheckClient (client)
   {
     if (clientClass.indexOf(fullClients[i]) !== -1 || clientName.indexOf(fullClients[i]) !== -1)
     {
-      minType = 1;
+      minSize = 1;
       break;
     };
   };
   
-  client.minType = minType;
+  client.minSize = minSize;
   return client;
 };
 
@@ -1189,7 +1197,7 @@ workspace.clientActivated.connect // clientAdded does not work for a lot of clie
   function (client)
   {
     if (client === null || client.windowId in addedClients) {return -1;};
-    if (CheckClient(client) === -1) {return -1;}; // on succes adds minType to client
+    if (CheckClient(client) === -1) {return -1;}; // on succes adds minSize to client
     if (layout.addClient(client) === -1) {return -1;};
     addedClients[client.windowId] = true;
     layout.renderLayout();
