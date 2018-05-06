@@ -11,9 +11,6 @@ var opacity = Number(readConfig("opacity", 0.9));
 var noOpacity = ToBool(readConfig("noOpacity", false));
 var noBorder = ToBool(readConfig("noBorder", true));
 
-var maxRows = 3;
-var maxCols = 2;
-
 var margin =
 {
   top: Number(readConfig("topMargin", 0)),
@@ -58,7 +55,7 @@ function GetDesktopTotal ()
 
 function GetDesktopNumber (desktopIndex)
 {
-  return Math.floor(desktopIndex/workspace.numScreens)+1;
+  return Math.floor(desktopIndex/workspace.numScreens)+1; // indexing of desktops starts at 1 by Kwin
 };
 
 function GetScreenNumber (desktopIndex)
@@ -85,154 +82,140 @@ function GetDesktopCols ()
 // Layout Classes
 // --------------
 
-function Desktop ()
+function Column ()
 {
-  this.clients = [[]]; // clients are stored per column, with every column being an array
+  this.clients = [];
+  this.dividers = [];
   
-  this.cols = function ()
-  {
-    return this.clients.length;
-  };
+  this.nclients = function () {return this.clients.length;}
+  this.ndividers = function () {return this.dividers.length;};
   
-  this.rows = function (colIndex)
-  {
-    return this.clients[colIndex].length;
-  };
-  
-  this.colSize = function (colIndex)
+  this.size = function ()
   {
     var sum = 0;
-    for (var i = 0; i < this.rows(i); i++)
+    for (var i = 0; i < this.nclients(); i++)
     {
-      sum += this.clients[colIndex][i].minSize;
-    }
+      sum += this.clients[i].minSize;
+    };
     return sum;
   };
   
-  this.addCol = function (client)
+  this.addClient = function (client, maxRows, size) // the size is the total size of a virtual desktop this column can occupy
   {
-    this.clients.push([]);
-    this.dividers.addCol();
-    this.addRow(client, this.cols()-1);
+    if (size - this.size() < client.minSize || this.nclients() >== maxRows) {return -1};
+    this.clients.push(client);
+    if (this.nclients() !== 0) {this.dividers.push(0);}; // do not add a new divider when the first client is added to the column
+    return 0;
   };
-  
-  this.removeCol = function(colIndex)
-  {
-    this.clients.splice(colIndex, 1);
-    this.removeColDivider(colIndex);
-  };
-  
-  this.addRow = function (client, colIndex)
-  {
-    this.clients[colIndex].push(client);
-    this.addRowDivider(colIndex);
-  };
-  
-  this.removeRow = function (colIndex, rowIndex)
-  {
-    this.clients[colIndex].splice(rowIndex, 1);
-    this.removeRowDivider(colIndex, rowIndex);
-  };
-  
-  this.addClient = function (client)
-  {
-    // one devided by the number of columns is the maximum size a column can occupy, subtracting the total size of a column from this leaves us with the size that is left for the potential new client
-    
-    // first try to add new column for client
-    if (1/this.cols() >== client.minSize && this.cols() < maxCols && this.cols() <== this.rows())
-    {
-      this.addCol(client);
-      return 0;
-    }
-    
-    // then try to add client to the first column with space
-    for (var i = 0; i < this.cols(); i++)
-    {
-      if (this.rows(i) >== maxRows || 1/this.cols() - this.colSize(i) < client.minSize) continue;
-      this.addRow(client, i);
-      return 0;
-    };
-    
-    // if both fail then return 
-    return -1;
-  }
   
   this.removeClient = function (windowId)
   {
-    for (var i = 0; i < this.cols(); i++)
+    for (var i = 0; i < this.nclients(); i++)
     {
-      for (var j = 0; j < this.rows(i); j++)
+      if (this.clients[i].windowId === windowId)
       {
-        if (this.clients[i][j].windowId === windowId)
-        {
-          // if it's the only client in that column then remove the column
-          if (this.rows(i) === 1)
-          {
-            this.removeCol(i);
-            return 0;
-          }
-          // else only remove that single client from the column
-          else
-          {
-            this.removeRow(i, j);
-            return 0;
-          };
-        };
-      };  
+        this.clients.splice(i);
+        if (i !== 0) this.dividers.splice(i-1, 1); // the first client does not have a divider, thus it can not be removed
+        return 0;
+      };
     };
     return -1;
   };
   
   this.getClient = function (windowId)
   {
-    for (var i = 0; i < this.cols(); i++)
+    for (var i = 0; i < this.nclients(); i++)
     {
-      for (var j = 0; j < this.rows(i); j++)
-      {
-        if (this.clients[i][j].windowId === windowId)
-        {
-          return this.clients[i][j];
-        };
-      };  
+      if (this.clients[i].windowId === windowId) {return this.clients[i];};
     };
     return -1;
   };
   
-  // dividers, all column have a divider attached to them, which are to the right of the column (or bottom of the row), this means that there is always an extra divider that is to the right (or bottom) of the last client (either row or column), these dividers should be ignored during the rendering.
-  this.dividers = 
-  [{
-    col: 0,
-    row: [0],
-  }];
-  
-  this.addColDivider = function ()
+  // rendering
+  this.renderColumn = function (start, size, desktopIndex, layerIndex)
   {
-    this.dividers.push
-    ({
-      col: 0,
-      row: [0],
-    });
+    
+  };
+};
+
+function Desktop ()
+{
+  this.maxRows = 3;
+  this.maxCols = 2;
+  
+  this.columns = [];
+  this.dividers = [];
+  
+  this.ncolumns = function () {return this.columns.length;};
+  this.ndividers = function () {return this.dividers.length;};
+  
+  this.addColumn = function (column)
+  {
+    if (this.ncolumns() >== this.maxCols) {return -1};
+    this.columns.push(column);
+    if (this.ncolumns() !== 0) {this.dividers.push(0);}; // do not add a new divider when the first column is added to the desktop
+    return 0;
   };
   
-  this.removeColDivider = function (colIndex)
+  this.removeColumn = function (columnIndex)
   {
-    this.dividers.splice(colIndex, 1);
+    if (columnIndex >== this.ncolumns()) {return -1;};
+    this.columns.splice(columnIndex, 1);
+    if (columnIndex !== 0) {this.dividers.splice(i-1, 0);};
+    return 0;
   };
   
-  this.addRowDivider = function (colIndex)
+  this.addClient = function (client)
   {
-    this.dividers[colIndex].row.push(0);
+    // one devided by the number of columns is the maximum size a column can occupy
+    
+    // first try to add to an existing column, but do not add a client when the number of rows in that column is already equal to the total number of columns
+    for (var i = 0; i < this.ncolumns(); i++)
+    {
+      if (this.columns[i].addClient(client, this.maxRows, 1/this.ncolumns()) === 0) {return 0;};
+    };
+    
+    // then try to add a new column for the client
+    var column = new Column();
+    if (column.addClient(client, this.maxRows, 1/(this.ncolumns() + 1)) === -1) {return -1;};
+    if (this.addColumn(column) === -1) {return -1;};
+    
+    return 0;
   };
   
-  this.removeRowDivider = function (rowIndex, colIndex)
+  this.removeClient = function (windowId)
   {
-    this.dividers[colIndex].row.splice(rowIndex, 1);
+    for (var i = 0; i < this.ncolumns(); i++)
+    {
+      if (this.columns[i].removeClient(windowId) === 0)
+      {
+        if (this.columns[i].nclients() === 0) {this.removeColumn(i);};
+        return 0;
+      };
+    };
+    return -1;
+  };
+  
+  this.getClient = function (windowId)
+  {
+    var client = -1;
+    for (var i = 0; i < this.ncolumns(); i++)
+    {
+      client = this.columns[i].getClient(windowId);
+      if (client !== -1) {break;};
+    };
+    return client;
   };
   
   // rendering
   this.renderDesktop = function (desktopIndex, layerIndex)
   {
-    return RenderClients(this.divider, this.clients, this.nclients(), desktopIndex, layerIndex);
+    for (var i = 0; i < this.ncolumns; i++)
+    {
+      if (this.columns[i].renderColumn() === -1) {return -1;};
+    };
+    return 0;
+    return RenderC(this.divider, this.clients, this.nclients(), desktopIndex, layerIndex);
   };
 };
 
@@ -281,17 +264,15 @@ function Layer ()
   
   this.removeClient = function (windowId)
   {
-    var removed = -1;
     for (var i = 0; i < this.ndesktops(); i++)
     {
-      removed = this.desktops[i].removeClient(windowId);
-      if (removed === 0)
+      if (this.desktops[i].removeClient(windowId) === 0)
       {
-        if (this.desktops[i].size() === 0) {removed = this.removeDesktop(i);};
-        break;
+        if (this.desktops[i].ncolumns() === 0) {return this.removeDesktop(i);};
+        return 0;
       };
     };
-    return removed;
+    return -1;
   };
   
   this.getClient = function (windowId)
@@ -305,46 +286,15 @@ function Layer ()
     return client;
   };
   
-  this.switchClientLeft = function (clientIndex, desktopIndex)
+  this.switchClient = function (clientIndexI, clientIndexJ)
   {
-    if (desktopIndex >= this.ndesktops()) {return -1;};
-    return this.desktops[desktopIndex].switchClientLeft(clientIndex);
-  };
-  
-  this.switchClientRight = function (clientIndex, desktopIndex)
-  {
-    if (desktopIndex >= this.ndesktops()) {return -1;};
-    return this.desktops[desktopIndex].switchClientRight(clientIndex);
-  };
-  
-  this.switchClientUp = function (clientIndex, desktopIndex)
-  {
-    if (desktopIndex >= this.ndesktops()) {return -1;};
-    return this.desktops[desktopIndex].switchClientUp(clientIndex);
-  };
-  
-  this.switchClientDown = function (clientIndex, desktopIndex)
-  {
-    if (desktopIndex >= this.ndesktops()) {return -1;};
-    return this.desktops[desktopIndex].switchClientDown(clientIndex);
-  };
-  
-  this.increaseSize = function (clientIndex, desktopIndex)
-  {
-    if (desktopIndex >= this.ndesktops()) {return -1;};
-    return this.desktops[desktopIndex].increaseSize(clientIndex);
-  };
-  
-  this.decreaseSize = function (clientIndex, desktopIndex)
-  {
-    if (desktopIndex >= this.ndesktops()) {return -1;};
-    return this.desktops[desktopIndex].decreaseSize(clientIndex);
+    
   };
   
   this.movePreviousDesktop = function (clientIndex, desktopIndex)
   {
     var client = this.desktops[desktopIndex].clients[clientIndex];
-    for (var i = desktopIndex-1; i >= 0; i--)
+    for (var i = desktopIndex-1; i >== 0; i--)
     {
       if (this.desktops[i].size()+client.minSize > 1) {continue;};
       this.desktops[desktopIndex].removeClient(client.windowId);
@@ -482,28 +432,9 @@ function Layout ()
     return client;
   };
   
-  this.switchClientLeft = function (clientIndex, desktopIndex, layerIndex)
+  this.switchClient = function (clientIndexI, clientIndexJ)
   {
-    if (layerIndex >= this.nlayers()) {return -1;};
-    return this.layers[layerIndex].switchClientLeft(clientIndex, desktopIndex);
-  };
-  
-  this.switchClientRight = function (clientIndex, desktopIndex, layerIndex)
-  {
-    if (layerIndex >= this.nlayers()) {return -1;};
-    return this.layers[layerIndex].switchClientRight(clientIndex, desktopIndex);
-  };
-  
-  this.switchClientUp = function (clientIndex, desktopIndex, layerIndex)
-  {
-    if (layerIndex >= this.nlayers()) {return -1;};
-    return this.layers[layerIndex].switchClientUp(clientIndex, desktopIndex);
-  };
-  
-  this.switchClientDown = function (clientIndex, desktopIndex, layerIndex)
-  {
-    if (layerIndex >= this.nlayers()) {return -1;};
-    return this.layers[layerIndex].switchClientDown(clientIndex, desktopIndex);
+    
   };
   
   this.increaseSize = function (clientIndex, desktopIndex, layerIndex)
@@ -567,402 +498,18 @@ function Layout ()
   };
 };
 
-// --------------
-// Type Functions
-// --------------
-
-var typeF = {left: true, right: true, top: true, bottom: true, size: 1}; // full
-var typeLH = {left: true, right: false, top: true, bottom: true, size: 0.5}; // left half
-var typeRH = {left: false, right: true, top: true, bottom: true, size: 0.5}; // right half
-var typeTLQ = {left: true, right: false, top: true, bottom: false, size: 0.25}; // top left quarter
-var typeTRQ = {left: false, right: true, top: true, bottom: false, size: 0.25}; // top right quarter
-var typeBRQ = {left: false, right: true, top: false, bottom: true, size: 0.25}; // bottom right quarter
-var typeBLQ = {left: true, right: false, top: false, bottom: true, size: 0.25}; // bottom left quarter
-
-function FindType (type, clients, nclients)
-{
-  var found = -1;
-  for (var i = 0; i < nclients; i++)
-  {
-    if (clients[i].type === type)
-    {
-      found = i;
-      break;
-    };
-  };
-  return found;
-};
-
-function FindLargestType (clients, nclients)
-{
-  var index = -1;
-  var largest = 0;
-  for (var i = 0; i < nclients; i++)
-  {
-    var size = clients[i].type.size;
-    if (size >= largest)
-    {
-      index = i;
-      largest = size;
-    };
-  };
-  return index;
-};
-
-function SplitType (client, clients, nclients)
-{
-  if (nclients === 0)
-  {
-    client.type = typeF;
-    return 0;
-  };
-  
-  var index = FindLargestType(clients, nclients);
-  
-  if (clients[index].type === typeF)
-  {
-    clients[index].type = typeLH;
-    client.type = typeRH;
-    return 0;
-  };
-  
-  if (clients[index].type === typeLH)
-  {
-    if (clients[index].minSize === 0.5)
-    {
-      clients[1-index].type = typeTRQ;
-      client.type = typeBRQ;
-      return 0;
-    }
-    else if (client.minSize === 0.5)
-    {
-      clients[index].type = typeTLQ;
-      clients[1-index].type = typeBLQ;
-      client.type = typeRH;
-      return 0;
-    }
-    else
-    {
-      clients[index].type = typeTLQ;
-      client.type = typeBLQ;
-      return 0;
-    };
-  };
-  
-  if (clients[index].type === typeRH)
-  {
-    if (clients[index].minSize === 0.5)
-    {
-      clients[1-index].type = typeTLQ;
-      client.type = typeBLQ;
-      return 0;
-    }
-    else if (client.minSize === 0.5)
-    {
-      clients[index].type = typeBLQ;
-      clients[1-index].type = typeTLQ;
-      client.type = typeRH;
-      return 0;
-    }
-    else
-    {
-      clients[index].type = typeTRQ;
-      client.type = typeBRQ;
-      return 0;
-    };
-  };
-  return -1;
-};
-
-function CombineType (clientIndex, clients, nclients)
-{
-  var type = clients[clientIndex].type;
-  if (type === typeLH)
-  {
-    if (nclients === 2)
-    {
-      clients[FindType(typeRH, clients, nclients)].type = typeF;
-    }
-    else if (nclients === 3)
-    {
-      clients[FindType(typeTRQ, clients, nclients)].type = typeLH;
-      clients[FindType(typeBRQ, clients, nclients)].type = typeRH;
-    };
-  }
-  else if (type === typeRH)
-  {
-    if (nclients === 2)
-    {
-      clients[FindType(typeLH, clients, nclients)].type = typeF;
-    }
-    else if (nclients === 3)
-    {
-      clients[FindType(typeTLQ, clients, nclients)].type = typeLH;
-      clients[FindType(typeBLQ, clients, nclients)].type = typeRH;
-    };
-  }
-  else if (type === typeTLQ)
-  {
-    clients[FindType(typeBLQ, clients, nclients)].type = typeLH;
-  }
-  else if (type === typeTRQ)
-  {
-    clients[FindType(typeBRQ, clients, nclients)].type = typeRH;
-  }
-  else if (type === typeBRQ)
-  {
-    clients[FindType(typeTRQ, clients, nclients)].type = typeRH;
-  }
-  else if (type === typeBLQ)
-  {
-    clients[FindType(typeTLQ, clients, nclients)].type = typeLH;
-  }
-  else
-  {
-    return -1;
-  };
-};
-
-// -------------
-// Client Moving
-// -------------
-
-function MoveClientLeft (clientIndex, clients, nclients)
-{
-  if (clients[clientIndex].type === typeRH) {clients[clientIndex].type = typeLH; return 0;};
-  if (clients[clientIndex].type === typeTRQ) {clients[clientIndex].type = typeTLQ; return 0;};
-  if (clients[clientIndex].type === typeBRQ) {clients[clientIndex].type = typeBLQ; return 0;};
-  return -1;
-};
-
-function MoveClientRight (clientIndex, clients, nclients)
-{
-  if (clients[clientIndex].type === typeLH) {clients[clientIndex].type = typeRH; return 0;};
-  if (clients[clientIndex].type === typeTLQ) {clients[clientIndex].type = typeTRQ; return 0;};
-  if (clients[clientIndex].type === typeBLQ) {clients[clientIndex].type = typeBRQ; return 0;};
-  return -1;
-};
-
-function MoveClientUp (clientIndex, clients, nclients)
-{
-  if (clients[clientIndex].type === typeBLQ) {clients[clientIndex].type = typeTLQ; return 0;};
-  if (clients[clientIndex].type === typeBRQ) {clients[clientIndex].type = typeTRQ; return 0;};
-  return -1;
-};
-
-function MoveClientDown (clientIndex, clients, nclients)
-{
-  if (clients[clientIndex].type === typeTLQ) {clients[clientIndex].type = typeBLQ; return 0;};
-  if (clients[clientIndex].type === typeTRQ) {clients[clientIndex].type = typeBRQ; return 0;};
-  return -1;
-};
-
-function MoveAllClientsLeft (clients, nclients)
-{
-  for (var i = 0; i < nclients; i++)
-  {
-    MoveClientLeft(i, clients, nclients);
-  };
-  return 0;
-};
-
-function MoveAllClientsRight (clients, nclients)
-{
-  for (var i = 0; i < nclients; i++)
-  {
-    MoveClientRight(i, clients, nclients);
-  };
-  return 0;
-};
-
-function MoveAllClientsUp (clients, nclients)
-{
-  for (var i = 0; i < nclients; i++)
-  {
-    MoveClientUp(i, clients, nclients);
-  };
-  return 0;
-};
-
-function MoveAllClientsDown (clients, nclients)
-{
-  for (var i = 0; i < nclients; i++)
-  {
-    MoveClientDown(i, clients, nclients);
-  };
-  return 0;
-};
-
-function SwitchClientLeft (clientIndex, clients, nclients)
-{
-  if (clientIndex >= nclients || clients[clientIndex].type.left) {return -1;};
-  
-  var type = clients[clientIndex].type;
-  if (type.size === 0.5)
-  {
-    MoveAllClientsRight(clients, nclients);
-    MoveClientLeft(clientIndex, clients, nclients);
-  }
-  else if (type.size === 0.25)
-  {
-    var index = FindType(typeLH, clients, nclients);
-    if (index !== -1)
-    {
-      MoveAllClientsLeft(clients, nclients);
-      MoveClientRight(index, clients, nclients);
-    }
-    else if (type === typeTRQ)
-    {
-      MoveClientRight(FindType(typeTLQ, clients, nclients), clients, nclients);
-      MoveClientLeft(clientIndex, clients, nclients);
-    }
-    else if (type === typeBRQ)
-    {
-      MoveClientRight(FindType(typeBLQ, clients, nclients), clients, nclients);
-      MoveClientLeft(clientIndex, clients, nclients);
-    };
-  }
-  else
-  {
-    return -1;
-  };
-  return 0;
-};
-
-function SwitchClientRight (clientIndex, clients, nclients)
-{
-  if (clientIndex >= nclients || clients[clientIndex].type.right) {return -1;};
-  
-  var type = clients[clientIndex].type;
-  if (type.size === 0.5)
-  {
-    MoveAllClientsLeft(clients, nclients);
-    MoveClientRight(clientIndex, clients, nclients);
-  }
-  else if (type.size === 0.25)
-  {
-    var index = FindType(typeRH, clients, nclients);
-    if (index !== -1)
-    {
-      MoveAllClientsRight(clients, nclients);
-      MoveClientLeft(index, clients, nclients);
-    }
-    else if (type === typeTLQ)
-    {
-      MoveClientLeft(FindType(typeTRQ, clients, nclients), clients, nclients);
-      MoveClientRight(clientIndex, clients, nclients);
-    }
-    else if (type === typeBLQ)
-    {
-      MoveClientLeft(FindType(typeBRQ, clients, nclients), clients, nclients);
-      MoveClientRight(clientIndex, clients, nclients);
-    };
-  }
-  else
-  {
-    return -1;
-  };
-  return 0;
-};
-
-function SwitchClientUp (clientIndex, clients, nclients)
-{
-  if (clientIndex >= nclients || clients[clientIndex].type.top) {return -1;};
-  
-  var type = clients[clientIndex].type;
-  if (type === typeBLQ)
-  {
-    MoveClientDown(FindType(typeTLQ, clients, nclients), clients, nclients);
-    MoveClientUp(clientIndex, clients, nclients);
-  }
-  else if (type === typeBRQ)
-  {
-    MoveClientDown(FindType(typeTRQ, clients, nclients), clients, nclients);
-    MoveClientUp(clientIndex, clients, nclients);
-  }
-  else
-  {
-    return -1;
-  };
-  return 0;
-};
-
-function SwitchClientDown (clientIndex, clients, nclients)
-{
-  if (clientIndex >= nclients || clients[clientIndex].type.bottom) {return -1;};
-  
-  var type = clients[clientIndex].type;
-  if (type === typeTLQ)
-  {
-    MoveClientUp(FindType(typeBLQ, clients, nclients), clients, nclients);
-    MoveClientDown(clientIndex, clients, nclients);
-  }
-  else if (type === typeTRQ)
-  {
-    MoveClientUp(FindType(typeBRQ, clients, nclients), clients, nclients);
-    MoveClientDown(clientIndex, clients, nclients);
-  }
-  else
-  {
-    return -1;
-  };
-  return 0;
-};
+// ---------------
+// General Methods
+// ---------------
 
 function CheckDivider (divider)
 {
+  // Needs different inplementation
+  
   if (divider.horizontal < dividerBounds) {divider.horizontal = dividerBounds;};
   if (divider.horizontal > 1-dividerBounds) {divider.horizontal = 1-dividerBounds;};
   if (divider.vertical < dividerBounds) {divider.vertical = dividerBounds;};
   if (divider.vertical > 1-dividerBounds) {divider.vertical = 1-dividerBounds;};
-  return 0;
-};
-
-function IncreaseSize (client, divider)
-{
-  var type = client.type;
-  if (type.left && !type.right)
-  {
-    divider.vertical += dividerStepSize;
-  }
-  else if (!type.left && type.right)
-  {
-    divider.vertical -= dividerStepSize;
-  };
-  
-  if (type.top && !type.bottom)
-  {
-    divider.horizontal += dividerStepSize;
-  }
-  else if (!type.top && type.bottom)
-  {
-    divider.horizontal -= dividerStepSize;
-  };
-  CheckDivider(divider);
-  return 0;
-};
-
-function DecreaseSize (client, divider)
-{
-  var type = client.type;
-  if (type.left && !type.right)
-  {
-    divider.vertical -= dividerStepSize;
-  }
-  else if (!type.left && type.right)
-  {
-    divider.vertical += dividerStepSize;
-  };
-  
-  if (type.top && !type.bottom)
-  {
-    divider.horizontal -= dividerStepSize;
-  }
-  else if (!type.top && type.bottom)
-  {
-    divider.horizontal += dividerStepSize;
-  };
-  CheckDivider(divider);
   return 0;
 };
 
