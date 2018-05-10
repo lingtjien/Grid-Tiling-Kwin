@@ -4,6 +4,7 @@ Made by Lingtjien
 ## Install
 
 - Normal Installation
+
 ```
 - plasmapkg2 --type kwinscript -i *Name of this directory*
 - mkdir -p ~/.local/share/kservices5
@@ -11,6 +12,7 @@ Made by Lingtjien
 ```
 
 - Local Installation (Advanced)
+
 ```
 - mkdir -p ~/.local/share/kwin/scripts/tiling-gaps
 - ln -s contents ~/.local/share/kwin/scripts/tiling-gaps/contents
@@ -26,48 +28,49 @@ Made by Lingtjien
 
 ## Uninstall  
 
-To Remove: just delete the linked or copied files that you created during installation (to remove installed scripts by plasmapkg2, run the same command again but this time with -r instead of -i to remove (see manual of plasmapkg2 for more info))*
+- delete the linked or copied files that you created during installation 
+- to remove installed scripts by plasmapkg2, run the same command again but this time with `-r` instead of `-i` to remove (see manual of plasmapkg2 for more info)`
 
 ## Preview
 ![](preview/tiling-gaps.gif)
 
 ## Functionality
-- allows to set margins as defined by *topMargin* *bottomMargin* *leftMargin* *rightMargin*
-- allows to set the gap size as defined by *gap*
-- allows to adjust the opacity as defined by *opacity*
-- allows to adjust default opacity toggle *noOpacity*
-- allows to adjust default borders toggle *noBorders*
+- allows to set margins as defined by `topMargin` `bottomMargin` `leftMargin` `rightMargin`
+- allows to set the gap size as defined by `gap`
+- allows to adjust the opacity as defined by `opacity`
+- allows to adjust default opacity toggle `noOpacity`
+- allows to adjust default borders toggle `noBorders`
 - automatically tile windows, up to a maximum of 4 clients per (internal) virtual desktop, new clients are first attempted to be added to your current desktop
-- allows the restriction of minimum tile size of certain clients (full/half clients lists) as defined by *fullClients* and *halfClients*
+- allows the restriction of minimum tile size of certain clients (full/half clients lists) as defined by `fullClients` and `halfClients`
 - allows to switch between transparant clients (global shortcut)
 - allows to switch between bordered clients (global shortcut)
 - offers global shortcuts to move clients, both between virtual desktops and inside a virtual desktop
 - offers global shortcuts to close all clients on a virtual desktop
-- allows to dynamically resize windows up to a minimum as defined by *dividerBounds*
+- allows to dynamically resize windows up to a minimum as defined by `dividerBounds`
 - allows to dynamically resize windows using global shortcuts and user handling
-- allows to switch windows by dragging them outside of their own size defined by *moveThreshold*
+- allows to switch windows by dragging them outside of their own size defined by `moveThreshold`
 - also works for applications which enforce their own geometry on startup (most of the time)
 - allows to maximize client (with gaps) by global shortcut
-- allows to add to ignored lists (clients, captions) defined by *ignoredClients* and *ignoredCaptions*
+- allows to add to ignored lists (clients, captions) defined by `ignoredClients` and `ignoredCaptions`
 
 *Note: ignored clients does not have to be an exact match, whereas ignored captions do.*
 
 *Note: internal virtual desktops are defined inside the script and are not the same as the actual virtual desktop. If you fill all your virtual desktops and create a new client than a new layer will be made, which contains a virtual desktop which is different from the one in the layer underneath it.*
 
 ## Recommended Setup
-- set window focus policy to *focus follows mouse - mouse precedence*
-- set shortcuts move between virtual desktops to *Meta+Arrows*
-- set shortcuts *Tiling-Gaps: Switch* to *Meta+Alt+Arrows*
-- set shortcut *Tiling-Gaps: Toggle Opacity* to *Meta+O*
-- set shortcut *Tiling-Gaps: Toggle Borders* to *Meta+P*
-- set shortcut *Close Window* to *Meta+W*
-- set shortcut *Tiling-Gaps: Close Desktop* to *Meta+Q*
-- set shortcut *Tiling-Gaps: Maximize* to *Meta+M*
-- set shortcut *Tiling-Gaps: Refresh (Minimize)* to *Meta+N*
-- set shortcut *Tiling-Gaps: Move Next Desktop* to *Meta+End*
-- set shortcut *Tiling-Gaps: Move Previous Desktop* to *Meta+Home*
-- set shortcut *Tiling-Gaps: Increase Size* to *Meta+=*
-- set shortcut *Tiling-Gaps: Decrease Size* to *Meta+-*
+- set window focus policy to **focus follows mouse - mouse precedence**
+- set shortcuts move between virtual desktops to **Meta+Arrows**
+- set shortcuts **Tiling-Gaps: Switch** to **Meta+Alt+Arrows**
+- set shortcut **Tiling-Gaps: Toggle Opacity** to **Meta+O**
+- set shortcut **Tiling-Gaps: Toggle Borders** to **Meta+P**
+- set shortcut **Close Window** to **Meta+W**
+- set shortcut **Tiling-Gaps: Close Desktop** to **Meta+Q**
+- set shortcut **Tiling-Gaps: Maximize** to **Meta+M**
+- set shortcut **Tiling-Gaps: Refresh (Minimize)** to **Meta+N**
+- set shortcut **Tiling-Gaps: Move Next Desktop** to **Meta+End**
+- set shortcut **Tiling-Gaps: Move Previous Desktop** to **Meta+Home**
+- set shortcut **Tiling-Gaps: Increase Size** to **Meta+=**
+- set shortcut **Tiling-Gaps: Decrease Size** to **Meta+-**
 
 ## Known Issues
 - Sometimes when you adjust the settings in the menu, you need to turn the script off, apply it, turn it back on and apply it again to register the new values (or just re-log).
