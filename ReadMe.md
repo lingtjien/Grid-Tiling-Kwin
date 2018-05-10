@@ -28,7 +28,7 @@ ln -s metadata.desktop ~/.local/share/kservices5/kwin-script-tiling-gaps.desktop
 ## Uninstall  
 
 - delete the linked or copied files that you created during installation 
-- to remove installed scripts by plasmapkg2, run the same command again but this time with `-r` instead of `-i` to remove (see manual of plasmapkg2 for more info)`
+- to remove installed scripts by plasmapkg2, run the same command again but this time with `-r` instead of `-i` to remove (see manual of plasmapkg2 for more info)
 
 ## Preview
 ![](preview/tiling-gaps.gif)
