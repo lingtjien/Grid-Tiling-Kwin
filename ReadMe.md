@@ -4,23 +4,29 @@ Made by Lingtjien
 ## Install
 
 - Normal Installation
-	- plasmapkg2 --type kwinscript -i *Name of this directory*
-	- mkdir -p ~/.local/share/kservices5
-	- ln -s ~/.local/share/kwin/scripts/tiling-gaps/metadata.desktop ~/.local/share/kservices5/kwin-script-tiling-gaps.desktop
+```
+- plasmapkg2 --type kwinscript -i *Name of this directory*
+- mkdir -p ~/.local/share/kservices5
+- ln -s ~/.local/share/kwin/scripts/tiling-gaps/metadata.desktop ~/.local/share/kservices5/kwin-script-tiling-gaps.desktop
+```
 
 - Local Installation (Advanced)
-  - mkdir -p ~/.local/share/kwin/scripts/tiling-gaps
-  - ln -s contents ~/.local/share/kwin/scripts/tiling-gaps/contents
-  - ln -s metadata.desktop ~/.local/share/kwin/scripts/tiling-gaps/metadata.desktop
-  - mkdir -p ~/.local/share/kservices5
-  - ln -s metadata.desktop ~/.local/share/kservices5/kwin-script-tiling-gaps.desktop
+```
+- mkdir -p ~/.local/share/kwin/scripts/tiling-gaps
+- ln -s contents ~/.local/share/kwin/scripts/tiling-gaps/contents
+- ln -s metadata.desktop ~/.local/share/kwin/scripts/tiling-gaps/metadata.desktop
+- mkdir -p ~/.local/share/kservices5
+- ln -s metadata.desktop ~/.local/share/kservices5/kwin-script-tiling-gaps.desktop
+```
 
-  *Note: You can replace ln for cp, if you prefer to copy and not have it linked to your cloned repository*
+*Note: You can replace ln for cp, if you prefer to copy and not have it linked to your cloned repository*
 
 - System Installation
-  *replace ~/.local/share for /usr/share* in Local Installation Method
+  - *replace ~/.local/share for /usr/share* in Local Installation Method
 
-*To Remove: just delete the linked or copied files that you created during installation (to remove installed scripts by plasmapkg2, run the same command again but this time with -r instead of -i to remove (see manual for more info))*
+## Uninstall  
+
+To Remove: just delete the linked or copied files that you created during installation (to remove installed scripts by plasmapkg2, run the same command again but this time with -r instead of -i to remove (see manual of plasmapkg2 for more info))*
 
 ## Preview
 ![](preview/tiling-gaps.gif)
@@ -74,3 +80,4 @@ Made by Lingtjien
 ## To Do
 - add support for activities (check this commit: ca244ba0dca1d933eb1329d49450603a0f540b65 and do it similarly but with the layer class instead of the desktop class)
 - make it work for all grid sizes (not just 2x2)
+- run the code through ESlint to check and integrate it into workflow
