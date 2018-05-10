@@ -1,5 +1,4 @@
 # Kwin Script That Automatically Tiles Windows
-Made by Lingtjien
 
 ## Install
 
@@ -84,3 +83,4 @@ Made by Lingtjien
 - add support for activities (check this commit: ca244ba0dca1d933eb1329d49450603a0f540b65 and do it similarly but with the layer class instead of the desktop class)
 - make it work for all grid sizes (not just 2x2)
 - run the code through ESlint to check and integrate it into workflow
+- rename project to kwin-grid-tiling (seems more appropriate...) oh and also adjust the readme
