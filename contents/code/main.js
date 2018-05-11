@@ -140,7 +140,7 @@ function Column ()
     var current = 0;
     var previous = 0;
     var divider = 0;
-    for (var i = 0; i < this.nclients; i++)
+    for (var i = 0; i < this.nclients(); i++)
     { 
       if (i !== 0) {divider = this.dividers[i-1];};
       previous = current;
@@ -237,7 +237,7 @@ function Desktop ()
     var currentAddedWidth = 0;
     var previousAddedWidth = 0;
     var divider = 0;
-    for (var i = 0; i < this.ncolumns; i++)
+    for (var i = 0; i < this.ncolumns(); i++)
     { 
       if (i !== 0) {divider = this.dividers[i-1];};
       previousAddedWidth = currentAddedWidth;
