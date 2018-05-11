@@ -90,7 +90,7 @@ function Column ()
   this.nclients = function () {return this.clients.length;}
   this.ndividers = function () {return this.dividers.length;};
   
-  this.size = function ()
+  this.minSize = function ()
   {
     var sum = 0;
     for (var i = 0; i < this.nclients(); i++)
@@ -102,7 +102,7 @@ function Column ()
   
   this.addClient = function (client, maxRows, size) // the size is the total size of a virtual desktop this column can occupy
   {
-    if (size - this.size() < client.minSize || this.nclients() >= maxRows) {return -1};
+    if (size - this.minSize() < client.minSize || this.nclients() >= maxRows) {return -1};
     this.clients.push(client);
     if (this.nclients() !== 0) {this.dividers.push(0);}; // do not add a new divider when the first client is added to the column
     return 0;
@@ -132,7 +132,7 @@ function Column ()
   };
   
   // rendering
-  this.renderColumn = function (x, width, areaY, areaHeight, columnIndex, desktopIndex, layerIndex)
+  this.render = function (x, width, areaY, areaHeight, columnIndex, desktopIndex, layerIndex)
   {
     var y = areaY + margin.top + gap;
     var clientHeight = (areaHeight - margin.top - margin.bottom - ((this.nclients() + 1) * gap)) / this.nclients();
@@ -189,7 +189,7 @@ function Desktop ()
     // first try to add to an existing column, but do not add a client when the number of rows in that column is already equal to the total number of columns
     for (var i = 0; i < this.ncolumns(); i++)
     {
-//       if (this.columns[i].nclients() === this.ncolumns()) {continue;};
+      if (this.columns[i].nclients() >= this.ncolumns()) {continue;};
       if (this.columns[i].addClient(client, this.maxRows, 1/this.ncolumns()) === 0) {return 0;};
     };
     
@@ -226,9 +226,9 @@ function Desktop ()
   };
   
   // rendering
-  this.renderDesktop = function (desktopIndex, layerIndex)
+  this.render = function (desktopIndex, layerIndex)
   {
-    var render = 0;
+    var check = 0;
     
     var area = workspace.clientArea(0, GetScreenNumber(desktopIndex), GetDesktopNumber(desktopIndex));
     
@@ -245,10 +245,10 @@ function Desktop ()
       currentAddedWidth = columnWidth * divider;
       
       var width = -previousAddedWidth + columnWidth + currentAddedWidth;
-      render += this.columns[i].renderColumn(x, width, area.y, area.height, i, desktopIndex, layerIndex);
+      succes += this.columns[i].render(x, width, area.y, area.height, i, desktopIndex, layerIndex);
       x += width + gap;
     };
-    return render;
+    return check;
   };
   
 };
@@ -355,14 +355,14 @@ function Layer ()
   };
   
   // rendering
-  this.renderLayer = function (layerIndex)
+  this.render = function (layerIndex)
   {
-    var render = 0;
+    var check = 0;
     for (var i = 0; i < this.ndesktops(); i++)
     {
-      render += this.desktops[i].renderDesktop(i, layerIndex);
+      check += this.desktops[i].render(i, layerIndex);
     };
-    return render;
+    return check;
   };
   
 };
@@ -383,25 +383,6 @@ function Layout ()
     if (layerIndex >= this.nlayers()) {return -1;};
     this.layers.splice(layerIndex, 1);
     return 0;
-  };
-  
-  this.addDesktop = function (desktop)
-  {
-    var added = -1;
-    for (var i = 0; i < this.nlayers(); i++)
-    {
-      added = this.layers[i].addDesktop(desktop);
-      if (added === 0) {return added};
-    };
-    var layer = new Layer();
-    this.addLayer(layer);
-    return this.layers[this.nlayers() - 1].addDesktop(desktop);
-  };
-  
-  this.removeDesktop = function (desktopIndex, layerIndex)
-  {
-    if (layerIndex >= this.nlayers()) {return -1;};
-    return this.layers[layerIndex].removeDesktop(desktopIndex);
   };
   
   this.addClient = function (client)
@@ -456,14 +437,14 @@ function Layout ()
   };
   
   // rendering
-  this.renderLayout = function ()
+  this.render = function ()
   {
-    var render = 0;
+    var check = 0;
     for (var i = 0; i < this.nlayers(); i++)
     {
-      render += this.layers[i].renderLayer(i);
+      check += this.layers[i].render(i);
     };
-    return render;
+    return check;
   };
   
 };
@@ -495,19 +476,6 @@ function SetClient (client, x, y, width, height, desktop, screen, clientIndex, c
   client.desktopIndex = desktopIndex;
   client.layerIndex = layerIndex;
   
-  return 0;
-};
-
-function SetClientFull (client)
-{
-  var area = workspace.clientArea(0, client.screen, client.desktop);
-  client.geometry = 
-  {
-    x: Math.floor(gap+area.x+margin.left),
-    y: Math.floor(gap+area.y+margin.top),
-    width: Math.floor(area.width-margin.left-margin.right-2*gap),
-    height: Math.floor(area.height-margin.top-margin.bottom-2*gap),
-  };
   return 0;
 };
 
@@ -571,7 +539,7 @@ workspace.clientActivated.connect // clientAdded does not work for a lot of clie
     if (CheckClient(client) === -1) {return -1;}; // on succes adds minSize to client
     if (layout.addClient(client) === -1) {return -1;};
     addedClients[client.windowId] = true;
-    layout.renderLayout();
+    layout.render();
     workspace.currentDesktop = client.desktop;
     ConnectClient(client); // connect client signals
     return 0;
@@ -587,7 +555,7 @@ workspace.clientRemoved.connect
     var removed = layout.removeClient(client.windowId);
     if (removed === 0)
     {
-      layout.renderLayout();
+      layout.render();
     };
     return removed;
   }
@@ -632,7 +600,7 @@ registerShortcut
     client = layout.getClient(workspace.activeClient.windowId);
     if (client === -1) {return -1;};
     if (layout.moveNextDesktop(client.clientIndex, client.desktopIndex, client.layerIndex) === -1) {return -1;};
-    layout.renderLayer(client.layerIndex);
+    layout.layers[client.layerIndex].render(client.layerIndex);
     workspace.currentDesktop = client.desktop;
     return 0;
   }
@@ -648,7 +616,7 @@ registerShortcut
     client = layout.getClient(workspace.activeClient.windowId);
     if (client === -1) {return -1;};
     if (layout.movePreviousDesktop(client.clientIndex, client.desktopIndex, client.layerIndex) === -1) {return -1;};
-    layout.renderLayer(client.layerIndex);
+    layout.layers[client.layerIndex].render(client.layerIndex);
     workspace.currentDesktop = client.desktop;
     return 0;
   }
@@ -662,7 +630,7 @@ registerShortcut
   function ()
   {
     noBorder = !noBorder;
-    return layout.renderLayout();
+    return layout.render();
   }
 );
 
@@ -674,23 +642,9 @@ registerShortcut
   function ()
   {
     noOpacity = !noOpacity;
-    return layout.renderLayout();
+    return layout.render();
   }
 );
-
-// registerShortcut
-// (
-//   "Tiling-Gaps: Close Client",
-//   "Tiling-Gaps: Close Client",
-//   "Meta+W",
-//   function ()
-//   {
-//     var client = layout.getClient(workspace.activeClient.windowId);
-//     if (client === -1) {return -1;};
-//     client.closeWindow();
-//     return layout.renderLayout();
-//   }
-// );
 
 registerShortcut
 (
@@ -711,7 +665,7 @@ registerShortcut
       };
       layout.removeDesktop(index, i);
     };
-    return layout.renderLayout();
+    return layout.render();
   }
 );
 
@@ -724,7 +678,16 @@ registerShortcut
   {
     var client = layout.getClient(workspace.activeClient.windowId);
     if (client === -1) {return -1;};
-    return SetClientFull(client);
+    
+    var area = workspace.clientArea(0, client.screen, client.desktop);
+    client.geometry = 
+    {
+      x: Math.floor(gap+area.x+margin.left),
+      y: Math.floor(gap+area.y+margin.top),
+      width: Math.floor(area.width-margin.left-margin.right-2*gap),
+      height: Math.floor(area.height-margin.top-margin.bottom-2*gap),
+    };
+    return 0;
   }
 );
 
@@ -735,6 +698,6 @@ registerShortcut
   "Meta+N",
   function ()
   {
-    return layout.renderLayout();
+    return layout.render();
   }
 );
