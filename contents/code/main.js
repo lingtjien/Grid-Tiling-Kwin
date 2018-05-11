@@ -102,7 +102,7 @@ function Column ()
   
   this.addClient = function (client, maxRows, size) // the size is the total size of a virtual desktop this column can occupy
   {
-    if (size - this.size() < client.minSize || this.nclients() >== maxRows) {return -1};
+    if (size - this.size() < client.minSize || this.nclients() >= maxRows) {return -1};
     this.clients.push(client);
     if (this.nclients() !== 0) {this.dividers.push(0);}; // do not add a new divider when the first client is added to the column
     return 0;
@@ -168,7 +168,7 @@ function Desktop ()
   
   this.addColumn = function (column)
   {
-    if (this.ncolumns() >== this.maxCols) {return -1};
+    if (this.ncolumns() >= this.maxCols) {return -1};
     this.columns.push(column);
     if (this.ncolumns() !== 0) {this.dividers.push(0);}; // do not add a new divider when the first column is added to the desktop
     return 0;
@@ -176,7 +176,7 @@ function Desktop ()
   
   this.removeColumn = function (columnIndex)
   {
-    if (columnIndex >== this.ncolumns()) {return -1;};
+    if (columnIndex >= this.ncolumns()) {return -1;};
     this.columns.splice(columnIndex, 1);
     if (columnIndex !== 0) {this.dividers.splice(i-1, 1);};
     return 0;
@@ -322,7 +322,7 @@ function Layer ()
   this.movePreviousDesktop = function (clientIndex, desktopIndex)
   {
     var client = this.desktops[desktopIndex].clients[clientIndex];
-    for (var i = desktopIndex-1; i >== 0; i--)
+    for (var i = desktopIndex-1; i >= 0; i--)
     {
       if (this.desktops[i].size()+client.minSize > 1) {continue;};
       this.desktops[desktopIndex].removeClient(client.windowId);
