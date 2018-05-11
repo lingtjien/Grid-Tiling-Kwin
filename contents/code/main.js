@@ -135,7 +135,7 @@ function Column ()
   this.renderColumn = function (x, width, areaY, areaHeight, columnIndex, desktopIndex, layerIndex)
   {
     var y = areaY + margin.top + gap;
-    var clientHeight = (areaHeight - areaY - margin.top - margin.bottom - ((this.nclients() + 1) * gap)) / this.nclients();
+    var clientHeight = (areaHeight - margin.top - margin.bottom - ((this.nclients() + 1) * gap)) / this.nclients();
     
     var current = 0;
     var previous = 0;
@@ -178,7 +178,7 @@ function Desktop ()
   {
     if (columnIndex >= this.ncolumns()) {return -1;};
     this.columns.splice(columnIndex, 1);
-    if (columnIndex !== 0) {this.dividers.splice(i-1, 1);};
+    if (columnIndex !== 0) {this.dividers.splice(columnIndex-1, 1);};
     return 0;
   };
   
@@ -189,6 +189,7 @@ function Desktop ()
     // first try to add to an existing column, but do not add a client when the number of rows in that column is already equal to the total number of columns
     for (var i = 0; i < this.ncolumns(); i++)
     {
+//       if (this.columns[i].nclients() === this.ncolumns()) {continue;};
       if (this.columns[i].addClient(client, this.maxRows, 1/this.ncolumns()) === 0) {return 0;};
     };
     
@@ -232,7 +233,7 @@ function Desktop ()
     var area = workspace.clientArea(0, GetScreenNumber(desktopIndex), GetDesktopNumber(desktopIndex));
     
     var x = area.x + margin.left + gap; // first x coordinate
-    var columnWidth = (area.width - area.x - margin.left - margin.right - ((this.ncolumns() + 1) * gap)) / this.ncolumns(); // width per column
+    var columnWidth = (area.width - margin.left - margin.right - ((this.ncolumns() + 1) * gap)) / this.ncolumns(); // width per column
     
     var currentAddedWidth = 0;
     var previousAddedWidth = 0;
