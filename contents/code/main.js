@@ -114,7 +114,7 @@ function Column ()
     {
       if (this.clients[i].windowId === windowId)
       {
-        this.clients.splice(i);
+        this.clients.splice(i, 1);
         if (i !== 0) this.dividers.splice(i-1, 1); // the first client does not have a divider, thus it can not be removed
         return 0;
       };
@@ -132,10 +132,27 @@ function Column ()
   };
   
   // rendering
-  this.renderColumn = function (start, size, desktopIndex, layerIndex)
+  this.renderColumn = function (x, width, areaY, areaHeight, columnIndex, desktopIndex, layerIndex)
   {
+    var y = areaY + margin.top + gap;
+    var clientHeight = (areaHeight - areaY - margin.top - margin.bottom - ((this.nclients() + 1) * gap)) / this.nclients();
     
+    var current = 0;
+    var previous = 0;
+    var divider = 0;
+    for (var i = 0; i < this.nclients; i++)
+    { 
+      if (i !== 0) {divider = this.dividers[i-1];};
+      previous = current;
+      current = clientHeight * divider;
+      
+      var height = -previous + clientHeight + current;
+      SetClient (this.clients[i], x, y, width, height, GetDesktopNumber(desktopIndex), GetScreenNumber(desktopIndex), i, columnIndex, desktopIndex, layerIndex);
+      y += height + gap;
+    };
+    return 0;
   };
+  
 };
 
 function Desktop ()
@@ -161,7 +178,7 @@ function Desktop ()
   {
     if (columnIndex >== this.ncolumns()) {return -1;};
     this.columns.splice(columnIndex, 1);
-    if (columnIndex !== 0) {this.dividers.splice(i-1, 0);};
+    if (columnIndex !== 0) {this.dividers.splice(i-1, 1);};
     return 0;
   };
   
@@ -210,13 +227,29 @@ function Desktop ()
   // rendering
   this.renderDesktop = function (desktopIndex, layerIndex)
   {
+    var render = 0;
+    
+    var area = workspace.clientArea(0, GetScreenNumber(desktopIndex), GetDesktopNumber(desktopIndex));
+    
+    var x = area.x + margin.left + gap; // first x coordinate
+    var columnWidth = (area.width - area.x - margin.left - margin.right - ((this.ncolumns() + 1) * gap)) / this.ncolumns(); // width per column
+    
+    var currentAddedWidth = 0;
+    var previousAddedWidth = 0;
+    var divider = 0;
     for (var i = 0; i < this.ncolumns; i++)
-    {
-      if (this.columns[i].renderColumn() === -1) {return -1;};
+    { 
+      if (i !== 0) {divider = this.dividers[i-1];};
+      previousAddedWidth = currentAddedWidth;
+      currentAddedWidth = columnWidth * divider;
+      
+      var width = -previousAddedWidth + columnWidth + currentAddedWidth;
+      render += this.columns[i].renderColumn(x, width, area.y, area.height, i, desktopIndex, layerIndex);
+      x += width + gap;
     };
-    return 0;
-    return RenderC(this.divider, this.clients, this.nclients(), desktopIndex, layerIndex);
+    return render;
   };
+  
 };
 
 function Layer ()
@@ -286,11 +319,6 @@ function Layer ()
     return client;
   };
   
-  this.switchClient = function (clientIndexI, clientIndexJ)
-  {
-    
-  };
-  
   this.movePreviousDesktop = function (clientIndex, desktopIndex)
   {
     var client = this.desktops[desktopIndex].clients[clientIndex];
@@ -325,35 +353,17 @@ function Layer ()
     return -1;
   };
   
-  // divider
-  this.setDivider = function (horizontal, vertical, desktopIndex)
-  {
-    if (desktopIndex >= this.ndesktops()) {return -1;};
-    return this.desktops[desktopIndex].setDivider(horizontal, vertical);
-  };
-  
-  this.getDivider = function (desktopIndex)
-  {
-    if (desktopIndex >= this.ndesktops()) {return -1;};
-    return this.desktops[desktopIndex].getDivider();
-  };
-  
   // rendering
   this.renderLayer = function (layerIndex)
   {
-    var render = -1;
+    var render = 0;
     for (var i = 0; i < this.ndesktops(); i++)
     {
-      render = this.desktops[i].renderDesktop(i, layerIndex);
+      render += this.desktops[i].renderDesktop(i, layerIndex);
     };
     return render;
   };
   
-  this.renderDesktop = function (desktopIndex, layerIndex)
-  {
-    if (desktopIndex >= this.ndesktops()) {return -1;};
-    return this.desktops[desktopIndex].renderDesktop(desktopIndex, layerIndex);
-  };
 };
 
 function Layout ()
@@ -432,23 +442,6 @@ function Layout ()
     return client;
   };
   
-  this.switchClient = function (clientIndexI, clientIndexJ)
-  {
-    
-  };
-  
-  this.increaseSize = function (clientIndex, desktopIndex, layerIndex)
-  {
-    if (layerIndex >= this.nlayers()) {return -1;};
-    return this.layers[layerIndex].increaseSize(clientIndex, desktopIndex);
-  };
-  
-  this.decreaseSize = function (clientIndex, desktopIndex, layerIndex)
-  {
-    if (layerIndex >= this.nlayers()) {return -1;};
-    return this.layers[layerIndex].decreaseSize(clientIndex, desktopIndex);
-  };
-  
   this.movePreviousDesktop = function (clientIndex, desktopIndex, layerIndex)
   {
     if (layerIndex >= this.nlayers()) {return -1;};
@@ -461,133 +454,24 @@ function Layout ()
     return this.layers[layerIndex].moveNextDesktop(clientIndex, desktopIndex);
   };
   
-  // divider
-  this.setDivider = function (horizontal, vertical, desktopIndex, layerIndex)
-  {
-    if (layerIndex >= this.nlayers()) {return -1;};
-    return this.layers[layerIndex].setDivider(horizontal, vertical, desktopIndex);
-  };
-  
-  this.getDivider = function (desktopIndex, layerIndex)
-  {
-    if (layerIndex >= this.nlayers()) {return -1;};
-    return this.layers[layerIndex].getDivider(desktopIndex);
-  };
-  
   // rendering
   this.renderLayout = function ()
   {
-    var render = -1;
+    var render = 0;
     for (var i = 0; i < this.nlayers(); i++)
     {
-      render = this.layers[i].renderLayer(i);
+      render += this.layers[i].renderLayer(i);
     };
     return render;
   };
   
-  this.renderLayer = function (layerIndex)
-  {
-    if (layerIndex >= this.nlayers()) {return -1;};
-    return this.layers[layerIndex].renderLayer(layerIndex);
-  };
-  
-  this.renderDesktop = function (desktopIndex, layerIndex)
-  {
-    if (layerIndex >= this.nlayers()) {return -1;};
-    return this.layers[layerIndex].renderDesktop(desktopIndex, layerIndex);
-  };
-};
-
-// ---------------
-// General Methods
-// ---------------
-
-function CheckDivider (divider)
-{
-  // Needs different inplementation
-  
-  if (divider.horizontal < dividerBounds) {divider.horizontal = dividerBounds;};
-  if (divider.horizontal > 1-dividerBounds) {divider.horizontal = 1-dividerBounds;};
-  if (divider.vertical < dividerBounds) {divider.vertical = dividerBounds;};
-  if (divider.vertical > 1-dividerBounds) {divider.vertical = 1-dividerBounds;};
-  return 0;
-};
-
-function GeometryResized (client)
-{
-//   var client = layout.getClient(windowId);
-  var resizedWidth = (client.geometryRender.width !== client.geometry.width);
-  var resizedHeight = (client.geometryRender.height !== client.geometry.height);
-  if (!resizedWidth && !resizedHeight) {return -1;};
-  var diffWidth = client.geometry.width-client.geometryRender.width;
-  var diffHeight = client.geometry.height-client.geometryRender.height;
-  var divider = layout.getDivider(client.desktopIndex, client.layerIndex);
-  
-  if (resizedWidth)
-  {
-    if (client.type.left && !client.type.right)
-    {
-      divider.vertical += diffWidth/(workspace.displayWidth);
-    };
-    if (!client.type.left && client.type.right)
-    {
-      divider.vertical -= diffWidth/(workspace.displayWidth);
-    };
-  };
-  if (resizedHeight)
-  {
-    if (client.type.top && !client.type.bottom)
-    {
-      divider.horizontal += diffHeight/(workspace.displayHeight);
-    };
-    if (!client.type.top && client.type.bottom)
-    {
-      divider.horizontal -= diffHeight/(workspace.displayHeight);
-    };
-  };
-  CheckDivider(divider);
-  return 0;
-};
-
-function GeometryMoved (client)
-{
-//   var client = layout.getClient(windowId);
-  var movedX = (client.geometryRender.x !== client.geometry.x && !(client.geometryRender.width !== client.geometry.width));
-  var movedY = (client.geometryRender.y !== client.geometry.y && !(client.geometryRender.height !== client.geometry.height));
-  if (!movedX && !movedY) {return -1;};
-  var diffX = client.geometry.x-client.geometryRender.x;
-  var diffY = client.geometry.y-client.geometryRender.y;
-  
-  if (movedX)
-  {
-    if (diffX > moveThreshold*client.width)
-    {
-      layout.switchClientRight(client.clientIndex, client.desktopIndex, client.layerIndex);
-    }
-    else if (diffX < -moveThreshold*client.width)
-    {
-      layout.switchClientLeft(client.clientIndex, client.desktopIndex, client.layerIndex);
-    };
-  };
-  if (movedY)
-  {
-    if (diffY > moveThreshold*client.height)
-    {
-      layout.switchClientDown(client.clientIndex, client.desktopIndex, client.layerIndex);
-    }
-    else if (diffY < -moveThreshold*client.height)
-    {
-      layout.switchClientUp(client.clientIndex, client.desktopIndex, client.layerIndex);
-    };
-  };
-  return 0;
 };
 
 // ----------------
 // Client Rendering
 // ----------------
 
-function SetClient (client, x, y, width, height, desktop, screen, clientIndex, desktopIndex, layerIndex)
+function SetClient (client, x, y, width, height, desktop, screen, clientIndex, columnIndex, desktopIndex, layerIndex)
 {
   var geometry = 
   {
@@ -606,6 +490,7 @@ function SetClient (client, x, y, width, height, desktop, screen, clientIndex, d
   client.geometry = geometry;
   client.geometryRender = geometry;
   client.clientIndex = clientIndex;
+  client.columnIndex = columnIndex;
   client.desktopIndex = desktopIndex;
   client.layerIndex = layerIndex;
   
@@ -621,68 +506,6 @@ function SetClientFull (client)
     y: Math.floor(gap+area.y+margin.top),
     width: Math.floor(area.width-margin.left-margin.right-2*gap),
     height: Math.floor(area.height-margin.top-margin.bottom-2*gap),
-  };
-  return 0;
-};
-
-function RenderClients (divider, clients, nclients, desktopIndex, layerIndex)
-{
-  var s = GetScreenNumber(desktopIndex);
-  var d = GetDesktopNumber(desktopIndex);
-  var area = workspace.clientArea(0, s, d);
-  
-  var w = area.width-margin.left-margin.right-3*gap; // width
-  var h = area.height-margin.top-margin.bottom-3*gap; // height
-  
-  var lw = divider.vertical*w; // left width
-  var rw = (1-divider.vertical)*w; // right width
-  var th = divider.horizontal*h; // top height
-  var bh = (1-divider.horizontal)*h; // bottom height
-  
-  var sx = gap+area.x+margin.left; // start x
-  var hx = sx+lw+gap; // half x
-  
-  var sy = gap+area.y+margin.top; // start y
-  var hy = sy+th+gap; // half left y
-  
-  for (var i = 0; i < nclients; i++)
-  {
-    var client = clients[i];
-    if (client.type === typeF)
-    {
-      SetClient(client, sx, sy, w+gap, h+gap, d, s, i, desktopIndex, layerIndex);
-      continue;
-    };
-    if (client.type === typeLH)
-    {
-      SetClient(client, sx, sy, lw, h+gap, d, s, i, desktopIndex, layerIndex);
-      continue;
-    };
-    if (client.type === typeRH)
-    {
-      SetClient(client, hx, sy, rw, h+gap, d, s, i, desktopIndex, layerIndex);
-      continue;
-    };
-    if (client.type === typeTLQ)
-    {
-      SetClient(client, sx, sy, lw, th, d, s, i, desktopIndex, layerIndex);
-      continue;
-    };
-    if (client.type === typeTRQ)
-    {
-      SetClient(client, hx, sy, rw, th, d, s, i, desktopIndex, layerIndex);
-      continue;
-    };
-    if (client.type === typeBRQ)
-    {
-      SetClient(client, hx, hy, rw, bh, d, s, i, desktopIndex, layerIndex);
-      continue;
-    };
-    if (client.type === typeBLQ)
-    {
-      SetClient(client, sx, hy, lw, bh, d, s, i, desktopIndex, layerIndex);
-      continue;
-    };
   };
   return 0;
 };
@@ -832,62 +655,6 @@ registerShortcut
 
 registerShortcut
 (
-  "Tiling-Gaps: Switch Up",
-  "Tiling-Gaps: Switch Up",
-  "Meta+Alt+Up",
-  function ()
-  {
-    client = layout.getClient(workspace.activeClient.windowId);
-    if (client === -1) {return -1;};
-    if (layout.switchClientUp(client.clientIndex, client.desktopIndex, client.layerIndex) === -1) {return -1;};
-    return layout.renderDesktop(client.desktopIndex, client.layerIndex);
-  }
-);
-
-registerShortcut
-(
-  "Tiling-Gaps: Switch Down",
-  "Tiling-Gaps: Switch Down",
-  "Meta+Alt+Down",
-  function ()
-  {
-    client = layout.getClient(workspace.activeClient.windowId);
-    if (client === -1) {return -1;};
-    if (layout.switchClientDown(client.clientIndex, client.desktopIndex, client.layerIndex) === -1) {return -1;};
-    return layout.renderDesktop(client.desktopIndex, client.layerIndex);
-  }
-);
-
-registerShortcut
-(
-  "Tiling-Gaps: Switch Left",
-  "Tiling-Gaps: Switch Left",
-  "Meta+Alt+Left",
-  function ()
-  {
-    client = layout.getClient(workspace.activeClient.windowId);
-    if (client === -1) {return -1;};
-    if (layout.switchClientLeft(client.clientIndex, client.desktopIndex, client.layerIndex) === -1) {return -1;};
-    return layout.renderDesktop(client.desktopIndex, client.layerIndex);
-  }
-);
-
-registerShortcut
-(
-  "Tiling-Gaps: Switch Right",
-  "Tiling-Gaps: Switch Right",
-  "Meta+Alt+Right",
-  function ()
-  {
-    client = layout.getClient(workspace.activeClient.windowId);
-    if (client === -1) {return -1;};
-    if (layout.switchClientRight(client.clientIndex, client.desktopIndex, client.layerIndex) === -1) {return -1;};
-    return layout.renderDesktop(client.desktopIndex, client.layerIndex);
-  }
-);
-
-registerShortcut
-(
   "Tiling-Gaps: Toggle Border",
   "Tiling-Gaps: Toggle Border",
   "Meta+P",
@@ -968,33 +735,5 @@ registerShortcut
   function ()
   {
     return layout.renderLayout();
-  }
-);
-
-registerShortcut
-(
-  "Tiling-Gaps: Increase Size",
-  "Tiling-Gaps: Increase Size",
-  "Meta+=",
-  function ()
-  {
-    var client = layout.getClient(workspace.activeClient.windowId);
-    if (client === -1) {return -1;};
-    layout.increaseSize(client.clientIndex, client.desktopIndex, client.layerIndex);
-    return layout.renderDesktop(client.desktopIndex, client.layerIndex);
-  }
-);
-
-registerShortcut
-(
-  "Tiling-Gaps: Decrease Size",
-  "Tiling-Gaps: Decrease Size",
-  "Meta+-",
-  function ()
-  {
-    var client = layout.getClient(workspace.activeClient.windowId);
-    if (client === -1) {return -1;};
-    layout.decreaseSize(client.clientIndex, client.desktopIndex, client.layerIndex);
-    return layout.renderDesktop(client.desktopIndex, client.layerIndex);
   }
 );
