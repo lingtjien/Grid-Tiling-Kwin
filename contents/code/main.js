@@ -100,9 +100,8 @@ function Column ()
     return sum;
   };
   
-  this.addClient = function (client, maxRows, size) // the size is the total size of a virtual desktop this column can occupy
+  this.addClient = function (client) // the size is the total size of a virtual desktop this column can occupy
   {
-    if (size - this.minSize() < client.minSize || this.nclients() >= maxRows) {return -1};
     this.clients.push(client);
     if (this.nclients() !== 0) {this.dividers.push(0);}; // do not add a new divider when the first client is added to the column
     return 0;
@@ -147,7 +146,29 @@ function Column ()
       current = clientHeight * divider;
       
       var height = -previous + clientHeight + current;
-      SetClient (this.clients[i], x, y, width, height, GetDesktopNumber(desktopIndex), GetScreenNumber(desktopIndex), i, columnIndex, desktopIndex, layerIndex);
+      
+      // rendering the client
+      var geometry = 
+      {
+        x: Math.floor(x),
+        y: Math.floor(y),
+        width: Math.floor(width),
+        height: Math.floor(height),
+      };
+      
+      this.clients[i].noBorder = noBorder;
+      if (noOpacity) {this.clients[i].opacity = 1;}
+      else {this.clients[i].opacity = opacity;};
+      
+      this.clients[i].desktop = GetDesktopNumber(desktopIndex);
+      this.clients[i].screen = GetScreenNumber(desktopIndex);
+      this.clients[i].geometry = geometry;
+      this.clients[i].geometryRender = geometry;
+      this.clients[i].clientIndex = i;
+      this.clients[i].columnIndex = columnIndex;
+      this.clients[i].desktopIndex = desktopIndex;
+      this.clients[i].layerIndex = layerIndex;
+      
       y += height + gap;
     };
     return 0;
@@ -157,8 +178,8 @@ function Column ()
 
 function Desktop ()
 {
-  this.maxRows = 3;
-  this.maxCols = 2;
+  this.maxRows = 5;
+  this.maxCols = 4;
   
   this.columns = [];
   this.dividers = [];
@@ -184,18 +205,27 @@ function Desktop ()
   
   this.addClient = function (client)
   {
-    // one devided by the number of columns is the maximum size a column can occupy
+    var smallestColumn = null;
     
-    // first try to add to an existing column, but do not add a client when the number of rows in that column is already equal to the total number of columns
+    // try to add to an existing column
     for (var i = 0; i < this.ncolumns(); i++)
     {
-      if (this.columns[i].nclients() >= this.ncolumns()) {continue;};
-      if (this.columns[i].addClient(client, this.maxRows, 1/this.ncolumns()) === 0) {return 0;};
+      if (this.columns[i].minSize() + client.minSize >= 1/this.ncolumns() || this.columns[i].nclients() >= this.maxRows) {continue;}; // check if the client fits
+      if (this.columns[i].nclients() < this.ncolumns()) // add the client if the number of rows is smaller than the number of columns
+      {
+        return this.columns[i].addClient(client);
+      }
+      else if (this.ncolumns() >= this.maxCols)
+      {
+        if (i < smallestColumn) {smallestColumn = i;};
+      };
     };
+    
+    if (smallestColumn !== null) {return this.columns[smallestColumn].addClient(client);};
     
     // then try to add a new column for the client
     var column = new Column();
-    if (column.addClient(client, this.maxRows, 1/(this.ncolumns() + 1)) === -1) {return -1;};
+    if (column.addClient(client) === -1) {return -1;};
     if (this.addColumn(column) === -1) {return -1;};
     
     return 0;
@@ -245,7 +275,7 @@ function Desktop ()
       currentAddedWidth = columnWidth * divider;
       
       var width = -previousAddedWidth + columnWidth + currentAddedWidth;
-      succes += this.columns[i].render(x, width, area.y, area.height, i, desktopIndex, layerIndex);
+      check += this.columns[i].render(x, width, area.y, area.height, i, desktopIndex, layerIndex);
       x += width + gap;
     };
     return check;
@@ -449,36 +479,6 @@ function Layout ()
   
 };
 
-// ----------------
-// Client Rendering
-// ----------------
-
-function SetClient (client, x, y, width, height, desktop, screen, clientIndex, columnIndex, desktopIndex, layerIndex)
-{
-  var geometry = 
-  {
-    x: Math.floor(x),
-    y: Math.floor(y),
-    width: Math.floor(width),
-    height: Math.floor(height),
-  };
-  
-  client.noBorder = noBorder;
-  if (noOpacity) {client.opacity = 1;}
-  else {client.opacity = opacity;};
-  
-  client.desktop = desktop;
-  client.screen = screen;
-  client.geometry = geometry;
-  client.geometryRender = geometry;
-  client.clientIndex = clientIndex;
-  client.columnIndex = columnIndex;
-  client.desktopIndex = desktopIndex;
-  client.layerIndex = layerIndex;
-  
-  return 0;
-};
-
 // ---------------
 // Client Validity
 // ---------------
@@ -502,23 +502,24 @@ function CheckClient (client)
     if (clientName.indexOf(ignoredClients[i]) !== -1) {return -1;};
   };
   
-  var minSize = 0.25;
-  for (var i = 0; i < halfClients.length; i++)
-  {
-    if (clientClass.indexOf(halfClients[i]) !== -1 || clientClass.indexOf(halfClients[i]) !== -1)
-    {
-      minSize = 0.5;
-      break;
-    };
-  };
-  for (var i = 0; i < fullClients.length; i++)
-  {
-    if (clientClass.indexOf(fullClients[i]) !== -1 || clientName.indexOf(fullClients[i]) !== -1)
-    {
-      minSize = 1;
-      break;
-    };
-  };
+  var minSize = 0;
+//   var minSize = 0.25;
+//   for (var i = 0; i < halfClients.length; i++)
+//   {
+//     if (clientClass.indexOf(halfClients[i]) !== -1 || clientClass.indexOf(halfClients[i]) !== -1)
+//     {
+//       minSize = 0.5;
+//       break;
+//     };
+//   };
+//   for (var i = 0; i < fullClients.length; i++)
+//   {
+//     if (clientClass.indexOf(fullClients[i]) !== -1 || clientName.indexOf(fullClients[i]) !== -1)
+//     {
+//       minSize = 1;
+//       break;
+//     };
+//   };
   
   client.minSize = minSize;
   return client;
