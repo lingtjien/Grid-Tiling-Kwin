@@ -205,8 +205,16 @@ function Desktop ()
   
   this.addClient = function (client)
   {
-    var smallestColumn = null;
+    // try to add to the smallest existing column
+    var space = -1;
+    for (var i = 0; i < this.ncolumns(); i++)
+    {
+      if (this.columns[i].minSize() + client.minSize >= 1/this.ncolumns() || this.columns[i].nclients() >= this.maxRows) {continue;}; // check if the column has enough space
+      
+    }
     
+    
+    var smallestColumn = null;
     // try to add to an existing column
     for (var i = 0; i < this.ncolumns(); i++)
     {
