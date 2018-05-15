@@ -90,12 +90,12 @@ function Column ()
   this.nclients = function () {return this.clients.length;}
   this.ndividers = function () {return this.dividers.length;};
   
-  this.minSize = function ()
+  this.minSpace = function ()
   {
     var sum = 0;
     for (var i = 0; i < this.nclients(); i++)
     {
-      sum += this.clients[i].minSize;
+      sum += this.clients[i].minSpace;
     };
     return sum;
   };
@@ -190,6 +190,13 @@ function Desktop ()
   this.addColumn = function (column)
   {
     if (this.ncolumns() >= this.maxCols) {return -1};
+    
+    // check if adding a new column won't decrease the size of the clients inside any of the existing columns below their minSpace
+    for (var i = 0; i < this.ncolumns(); i++)
+    {
+      if (this.columns[i].minSpace > 1 / (this.ncolumns() + 1)) {return -1;};
+    };
+    
     this.columns.push(column);
     if (this.ncolumns() !== 0) {this.dividers.push(0);}; // do not add a new divider when the first column is added to the desktop
     return 0;
@@ -203,38 +210,35 @@ function Desktop ()
     return 0;
   };
   
-  this.addClient = function (client)
+  this.smallestColumn = function ()
   {
-    // try to add to the smallest existing column
-    var space = -1;
+    var index = -1;
+    var space = 1;
     for (var i = 0; i < this.ncolumns(); i++)
     {
-      if (this.columns[i].minSize() + client.minSize >= 1/this.ncolumns() || this.columns[i].nclients() >= this.maxRows) {continue;}; // check if the column has enough space
-      
-    }
-    
-    
-    var smallestColumn = null;
-    // try to add to an existing column
-    for (var i = 0; i < this.ncolumns(); i++)
-    {
-      if (this.columns[i].minSize() + client.minSize >= 1/this.ncolumns() || this.columns[i].nclients() >= this.maxRows) {continue;}; // check if the client fits
-      if (this.columns[i].nclients() < this.ncolumns()) // add the client if the number of rows is smaller than the number of columns
+      var minSpace = this.columns[i].minSpace();
+      if (minSpace < space)
       {
-        return this.columns[i].addClient(client);
-      }
-      else if (this.ncolumns() >= this.maxCols)
-      {
-        if (i < smallestColumn) {smallestColumn = i;};
+        index = i;
+        space = minSpace;
       };
     };
-    
-    if (smallestColumn !== null) {return this.columns[smallestColumn].addClient(client);};
+    return index;
+  };
+  
+  this.addClient = function (client)
+  {
+    var index = this.smallestColumn();
+    if (index !== -1)
+    {
+      if (this.columns[index].minSpace() + client.minSpace > 1 / this.ncolumns() || this.columns[index].nclients() >= this.maxRows || this.columns[index].nclients() >= this.maxRows) {continue;}; // check if the client fits
+      return this.columns[index].addClient(client);
+    };
     
     // then try to add a new column for the client
     var column = new Column();
-    if (column.addClient(client) === -1) {return -1;};
     if (this.addColumn(column) === -1) {return -1;};
+    this.columns[this.ncolumns()-1].addClient(client);
     
     return 0;
   };
@@ -363,7 +367,7 @@ function Layer ()
     var client = this.desktops[desktopIndex].clients[clientIndex];
     for (var i = desktopIndex-1; i >= 0; i--)
     {
-      if (this.desktops[i].size()+client.minSize > 1) {continue;};
+      if (this.desktops[i].size()+client.minSpace > 1) {continue;};
       this.desktops[desktopIndex].removeClient(client.windowId);
       this.desktops[i].addClient(client);
       return 0;
@@ -377,7 +381,7 @@ function Layer ()
     var client = this.desktops[desktopIndex].clients[clientIndex];
     for (var i = desktopIndex+1; i < this.ndesktops(); i++)
     {
-      if (this.desktops[i].size()+client.minSize > 1) {continue;};
+      if (this.desktops[i].size()+client.minSpace > 1) {continue;};
       this.desktops[desktopIndex].removeClient(client.windowId);
       this.desktops[i].addClient(client);
       return 0;
@@ -510,13 +514,13 @@ function CheckClient (client)
     if (clientName.indexOf(ignoredClients[i]) !== -1) {return -1;};
   };
   
-  var minSize = 0;
-//   var minSize = 0.25;
+  var minSpace = 0;
+//   var minSpace = 0.25;
 //   for (var i = 0; i < halfClients.length; i++)
 //   {
 //     if (clientClass.indexOf(halfClients[i]) !== -1 || clientClass.indexOf(halfClients[i]) !== -1)
 //     {
-//       minSize = 0.5;
+//       minSpace = 0.5;
 //       break;
 //     };
 //   };
@@ -524,12 +528,12 @@ function CheckClient (client)
 //   {
 //     if (clientClass.indexOf(fullClients[i]) !== -1 || clientName.indexOf(fullClients[i]) !== -1)
 //     {
-//       minSize = 1;
+//       minSpace = 1;
 //       break;
 //     };
 //   };
   
-  client.minSize = minSize;
+  client.minSpace = minSpace;
   return client;
 };
 
@@ -545,7 +549,7 @@ workspace.clientActivated.connect // clientAdded does not work for a lot of clie
   function (client)
   {
     if (client === null || client.windowId in addedClients) {return -1;};
-    if (CheckClient(client) === -1) {return -1;}; // on succes adds minSize to client
+    if (CheckClient(client) === -1) {return -1;}; // on succes adds minSpace to client
     if (layout.addClient(client) === -1) {return -1;};
     addedClients[client.windowId] = true;
     layout.render();
