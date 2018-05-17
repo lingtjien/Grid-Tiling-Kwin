@@ -130,6 +130,27 @@ function Column ()
     return -1;
   };
   
+  this.changeDivider = function (change, clientIndex)
+  {
+    if (clientIndex >= this.nclients()) {return -1;};
+    
+    if (clientIndex !== this.nclients()-1)
+    {
+      this.dividers[clientIndex] += change;
+      if (this.dividers[clientIndex] > dividerBounds) {this.dividers[clientIndex] = dividerBounds};
+      if (this.dividers[clientIndex] < -dividerBounds) {this.dividers[clientIndex] = -dividerBounds};
+    };
+    
+    if (clientIndex !== 0)
+    {
+      this.dividers[clientIndex-1] -= change;
+      if (this.dividers[clientIndex-1] > dividerBounds) {this.dividers[clientIndex-1] = dividerBounds};
+      if (this.dividers[clientIndex-1] < -dividerBounds) {this.dividers[clientIndex-1] = -dividerBounds};
+    };
+    
+    return 0;
+  };
+  
   // rendering
   this.render = function (x, width, areaY, areaHeight, columnIndex, desktopIndex, layerIndex)
   {
@@ -276,6 +297,27 @@ function Desktop ()
       if (client !== -1) {break;};
     };
     return client;
+  };
+  
+  this.changeDivider = function (change, columnIndex)
+  {
+    if (columnIndex >= this.ncolumns()) {return -1;};
+    
+    if (columnIndex !== this.ncolumns()-1)
+    {
+      this.dividers[columnIndex] += change;
+      if (this.dividers[columnIndex] > dividerBounds) {this.dividers[columnIndex] = dividerBounds;};
+      if (this.dividers[columnIndex] < -dividerBounds) {this.dividers[columnIndex] = -dividerBounds;};
+    };
+    
+    if (columnIndex !== 0)
+    {
+      this.dividers[columnIndex-1] -= change;
+      if (this.dividers[columnIndex-1] > dividerBounds) {this.dividers[columnIndex-1] = dividerBounds;};
+      if (this.dividers[columnIndex-1] < -dividerBounds) {this.dividers[columnIndex-1] = -dividerBounds;};
+    };
+    
+    return 0;
   };
   
   // rendering
@@ -726,5 +768,37 @@ registerShortcut
   function ()
   {
     return layout.render();
+  }
+);
+
+registerShortcut
+(
+  "Tiling-Gaps: Increase Size",
+  "Tiling-Gaps: Increase Size",
+  "Meta+=",
+  function ()
+  {
+    var client = layout.getClient(workspace.activeClient.windowId);
+    if (client === -1) {return -1;};
+    layout.layers[client.layerIndex].desktops[client.desktopIndex].columns[client.columnIndex].changeDivider(dividerStepSize, client.clientIndex)
+    layout.layers[client.layerIndex].desktops[client.desktopIndex].changeDivider(dividerStepSize, client.columnIndex)
+    
+    return layout.layers[client.layerIndex].desktops[client.desktopIndex].render(client.desktopIndex, client.layerIndex);
+  }
+);
+
+registerShortcut
+(
+  "Tiling-Gaps: Decrease Size",
+  "Tiling-Gaps: Decrease Size",
+  "Meta+-",
+  function ()
+  {
+    var client = layout.getClient(workspace.activeClient.windowId);
+    if (client === -1) {return -1;};
+    layout.layers[client.layerIndex].desktops[client.desktopIndex].columns[client.columnIndex].changeDivider(-dividerStepSize, client.clientIndex)
+    layout.layers[client.layerIndex].desktops[client.desktopIndex].changeDivider(-dividerStepSize, client.columnIndex)
+    
+    return layout.layers[client.layerIndex].desktops[client.desktopIndex].render(client.desktopIndex, client.layerIndex);
   }
 );
