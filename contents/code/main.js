@@ -156,7 +156,7 @@ function Column ()
   {
     var y = areaY + margin.top + gap;
     var clientHeight = (areaHeight - margin.top - margin.bottom - ((this.nclients() + 1) * gap)) / this.nclients();
-    // HERE RENDERING WITH DIVIDERS
+    
     var current = 0;
     var previous = 0;
     var divider = 0;
@@ -722,17 +722,23 @@ registerShortcut
   "Meta+Q",
   function ()
   {
-    var index = GetDesktopIndex();
-    for (var i = 0; i < layout.nlayers(); i++)
+    // looping is done backwards as the array is decreased in size in every iteration thus forward looping will result in skipping elements
+    var j = GetDesktopIndex();
+    for (var i = layout.nlayers()-1; i >= 0; i--)
     {
       var layer = layout.layers[i];
-      if (index >= layer.ndesktops()) {return -1;};
-      var desktop = layer.desktops[index];
-      for (var j = 0; j < desktop.nclients(); j++)
+      if (j >= layer.ndesktops()) {continue;};
+      var desktop = layer.desktops[j];
+      for (var k = desktop.ncolumns()-1; k >= 0 ; k--)
       {
-        desktop.clients[j].closeWindow();
+        var column = desktop.columns[k];
+        for (var l = column.nclients()-1; l >= 0 ; l--)
+        {
+          column.clients[l].closeWindow();
+        };
+        layout.layers[i].desktops[j].removeColumn(k);
       };
-      layout.removeDesktop(index, i);
+      layout.layers[i].removeDesktop(j);
     };
     return layout.render();
   }
@@ -780,10 +786,11 @@ registerShortcut
   {
     var client = layout.getClient(workspace.activeClient.windowId);
     if (client === -1) {return -1;};
-    layout.layers[client.layerIndex].desktops[client.desktopIndex].columns[client.columnIndex].changeDivider(dividerStepSize, client.clientIndex)
-    layout.layers[client.layerIndex].desktops[client.desktopIndex].changeDivider(dividerStepSize, client.columnIndex)
+    var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
+    desktop.columns[client.columnIndex].changeDivider(dividerStepSize, client.clientIndex)
+    desktop.changeDivider(dividerStepSize, client.columnIndex)
     
-    return layout.layers[client.layerIndex].desktops[client.desktopIndex].render(client.desktopIndex, client.layerIndex);
+    return desktop.render(client.desktopIndex, client.layerIndex);
   }
 );
 
@@ -796,9 +803,10 @@ registerShortcut
   {
     var client = layout.getClient(workspace.activeClient.windowId);
     if (client === -1) {return -1;};
-    layout.layers[client.layerIndex].desktops[client.desktopIndex].columns[client.columnIndex].changeDivider(-dividerStepSize, client.clientIndex)
-    layout.layers[client.layerIndex].desktops[client.desktopIndex].changeDivider(-dividerStepSize, client.columnIndex)
+    var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
+    desktop.columns[client.columnIndex].changeDivider(-dividerStepSize, client.clientIndex)
+    desktop.changeDivider(-dividerStepSize, client.columnIndex)
     
-    return layout.layers[client.layerIndex].desktops[client.desktopIndex].render(client.desktopIndex, client.layerIndex);
+    return desktop.render(client.desktopIndex, client.layerIndex);
   }
 );
