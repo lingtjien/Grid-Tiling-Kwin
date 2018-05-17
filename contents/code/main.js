@@ -135,17 +135,17 @@ function Column ()
   {
     var y = areaY + margin.top + gap;
     var clientHeight = (areaHeight - margin.top - margin.bottom - ((this.nclients() + 1) * gap)) / this.nclients();
-    
+    // HERE RENDERING WITH DIVIDERS
     var current = 0;
     var previous = 0;
     var divider = 0;
     for (var i = 0; i < this.nclients(); i++)
     { 
-      if (i !== 0) {divider = this.dividers[i-1];};
-      previous = current;
-      current = clientHeight * divider;
+      if (i === this.nclients()-1) {divider = 0;}
+      else {divider = this.dividers[i];};
       
-      var height = -previous + clientHeight + current;
+      current = clientHeight * divider;
+      var height = clientHeight + current - previous;
       
       // rendering the client
       var geometry = 
@@ -170,6 +170,8 @@ function Column ()
       this.clients[i].layerIndex = layerIndex;
       
       y += height + gap;
+      
+      previous = current;
     };
     return 0;
   };
@@ -178,8 +180,8 @@ function Column ()
 
 function Desktop ()
 {
-  this.maxRows = 5;
-  this.maxCols = 4;
+  this.maxRows = 2;
+  this.maxCols = 3;
   
   this.columns = [];
   this.dividers = [];
@@ -221,6 +223,14 @@ function Desktop ()
       {
         index = i;
         space = minSpace;
+      }
+      else if (minSpace === space)
+      {
+        if (this.columns[i].nclients() < this.columns[index].nclients())
+        {
+          index = i;
+          space = minSpace;
+        };
       };
     };
     return index;
@@ -229,13 +239,14 @@ function Desktop ()
   this.addClient = function (client)
   {
     var index = this.smallestColumn();
-    if (index !== -1)
+    if (index !== -1 && this.columns[index].minSpace() + client.minSpace <= 1 / this.ncolumns() && this.columns[index].nclients() < this.maxRows)
     {
-      if (this.columns[index].minSpace() + client.minSpace > 1 / this.ncolumns() || this.columns[index].nclients() >= this.maxRows || this.columns[index].nclients() >= this.maxRows) {continue;}; // check if the client fits
-      return this.columns[index].addClient(client);
+      if (this.ncolumns() >= this.maxCols || this.ncolumns() > this.columns[index].nclients())
+      {
+        return this.columns[index].addClient(client);
+      };
     };
     
-    // then try to add a new column for the client
     var column = new Column();
     if (this.addColumn(column) === -1) {return -1;};
     this.columns[this.ncolumns()-1].addClient(client);
@@ -277,18 +288,21 @@ function Desktop ()
     var x = area.x + margin.left + gap; // first x coordinate
     var columnWidth = (area.width - margin.left - margin.right - ((this.ncolumns() + 1) * gap)) / this.ncolumns(); // width per column
     
-    var currentAddedWidth = 0;
-    var previousAddedWidth = 0;
+    var current = 0;
+    var previous = 0;
     var divider = 0;
     for (var i = 0; i < this.ncolumns(); i++)
     { 
-      if (i !== 0) {divider = this.dividers[i-1];};
-      previousAddedWidth = currentAddedWidth;
-      currentAddedWidth = columnWidth * divider;
+      if (i === this.ncolumns()-1) {divider = 0;}
+      else {divider = this.dividers[i];};
       
-      var width = -previousAddedWidth + columnWidth + currentAddedWidth;
+      current = columnWidth * divider;
+      var width = -previous + columnWidth + current;
+      
       check += this.columns[i].render(x, width, area.y, area.height, i, desktopIndex, layerIndex);
+      
       x += width + gap;
+      previous = current;
     };
     return check;
   };
