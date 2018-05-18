@@ -132,6 +132,7 @@ function Column ()
   
   this.switchClient = function (direction, clientIndex)
   {
+    if (clientIndex < 0 || clientIndex >= this.nclients()) {return -1;};
     var client = this.clients[clientIndex];
     var i = clientIndex + direction; // target to switch client with
     if (i < 0 || i >= this.nclients()) {return -1;};
@@ -142,7 +143,7 @@ function Column ()
   
   this.changeDivider = function (change, clientIndex)
   {
-    if (clientIndex >= this.nclients()) {return -1;};
+    if (clientIndex < 0 || clientIndex >= this.nclients()) {return -1;};
     
     if (clientIndex !== this.nclients()-1)
     {
@@ -237,7 +238,7 @@ function Desktop ()
   
   this.removeColumn = function (columnIndex)
   {
-    if (columnIndex >= this.ncolumns()) {return -1;};
+    if (columnIndex < 0 || columnIndex >= this.ncolumns()) {return -1;};
     this.columns.splice(columnIndex, 1);
     if (columnIndex !== 0) {this.dividers.splice(columnIndex-1, 1);};
     return 0;
@@ -311,6 +312,7 @@ function Desktop ()
   
   this.switchColumn = function (direction, columnIndex)
   {
+    if (columnIndex < 0 || columnIndex >= this.ncolumns()) {return -1;};
     var column = this.columns[columnIndex];
     var i = columnIndex + direction; // target to switch client with
     if (i < 0 || i >= this.ncolumns()) {return -1;};
@@ -321,7 +323,7 @@ function Desktop ()
   
   this.changeDivider = function (change, columnIndex)
   {
-    if (columnIndex >= this.ncolumns()) {return -1;};
+    if (columnIndex < 0 || columnIndex >= this.ncolumns()) {return -1;};
     
     if (columnIndex !== this.ncolumns()-1)
     {
@@ -385,7 +387,7 @@ function Layer ()
   
   this.removeDesktop = function (desktopIndex)
   {
-    if (desktopIndex >= this.ndesktops()) {return -1;};
+    if (desktopIndex < 0 || desktopIndex >= this.ndesktops()) {return -1;};
     this.desktops.splice(desktopIndex, 1);
     return 0;
   };
@@ -440,6 +442,7 @@ function Layer ()
   
   this.movePreviousDesktop = function (clientIndex, desktopIndex)
   {
+    if (desktopIndex < 0 || desktopIndex >= this.ndesktops()) {return -1;};
     var client = this.desktops[desktopIndex].clients[clientIndex];
     for (var i = desktopIndex-1; i >= 0; i--)
     {
@@ -453,6 +456,7 @@ function Layer ()
   
   this.moveNextDesktop = function (clientIndex, desktopIndex)
   {
+    if (desktopIndex < 0 || desktopIndex >= this.ndesktops()) {return -1;};
     // client needs to be a copy, not a reference to the same
     var client = this.desktops[desktopIndex].clients[clientIndex];
     for (var i = desktopIndex+1; i < this.ndesktops(); i++)
