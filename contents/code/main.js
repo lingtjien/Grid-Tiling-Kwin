@@ -309,10 +309,14 @@ function Desktop ()
     return client;
   };
   
-  this.switchClient = function (clientIndex, columnIndex)
+  this.switchColumn = function (direction, columnIndex)
   {
-    // move client left right
-    
+    var column = this.columns[columnIndex];
+    var i = columnIndex + direction; // target to switch client with
+    if (i < 0 || i >= this.ncolumns()) {return -1;};
+    this.columns[columnIndex] = this.columns[i];
+    this.columns[i] = column;
+    return 0;
   };
   
   this.changeDivider = function (change, columnIndex)
@@ -685,7 +689,7 @@ registerShortcut
     client = layout.getClient(workspace.activeClient.windowId);
     if (client === -1) {return -1;};
     var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
-    if (desktop.columns[client.columnIndex].switchClient(-1, client.clientIndex, client.columnIndex) === -1) {return -1;};
+    if (desktop.columns[client.columnIndex].switchClient(-1, client.clientIndex) === -1) {return -1;};
     
     return desktop.render(client.desktopIndex, client.layerIndex);
   }
@@ -701,8 +705,40 @@ registerShortcut
     client = layout.getClient(workspace.activeClient.windowId);
     if (client === -1) {return -1;};
     var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
-    if (desktop.columns[client.columnIndex].switchClient(1, client.clientIndex, client.columnIndex) === -1) {return -1;};
+    if (desktop.columns[client.columnIndex].switchClient(1, client.clientIndex) === -1) {return -1;};
   
+    return desktop.render(client.desktopIndex, client.layerIndex);
+  }
+);
+
+registerShortcut
+(
+  "Tiling-Gaps: Switch Left",
+  "Tiling-Gaps: Switch Left",
+  "Meta+Alt+Left",
+  function ()
+  {
+    client = layout.getClient(workspace.activeClient.windowId);
+    if (client === -1) {return -1;};
+    var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
+    if (desktop.switchColumn(-1, client.columnIndex) === -1) {return -1;};
+  
+    return desktop.render(client.desktopIndex, client.layerIndex);
+  }
+);
+
+registerShortcut
+(
+  "Tiling-Gaps: Switch Right",
+  "Tiling-Gaps: Switch Right",
+  "Meta+Alt+Right",
+  function ()
+  {
+    client = layout.getClient(workspace.activeClient.windowId);
+    if (client === -1) {return -1;};
+    var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
+    if (desktop.switchColumn(1, client.columnIndex) === -1) {return -1;};
+    
     return desktop.render(client.desktopIndex, client.layerIndex);
   }
 );
