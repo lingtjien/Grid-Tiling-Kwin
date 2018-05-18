@@ -130,6 +130,16 @@ function Column ()
     return -1;
   };
   
+  this.switchClient = function (direction, clientIndex)
+  {
+    var client = this.clients[clientIndex];
+    var i = clientIndex + direction; // target to switch client with
+    if (i < 0 || i >= this.nclients()) {return -1;};
+    this.clients[clientIndex] = this.clients[i];
+    this.clients[i] = client;
+    return 0;
+  };
+  
   this.changeDivider = function (change, clientIndex)
   {
     if (clientIndex >= this.nclients()) {return -1;};
@@ -297,6 +307,12 @@ function Desktop ()
       if (client !== -1) {break;};
     };
     return client;
+  };
+  
+  this.switchClient = function (clientIndex, columnIndex)
+  {
+    // move client left right
+    
   };
   
   this.changeDivider = function (change, columnIndex)
@@ -658,6 +674,38 @@ function ConnectClient (client)
 // ------------------
 // Creating Shortcuts
 // ------------------
+
+registerShortcut
+(
+  "Tiling-Gaps: Switch Up",
+  "Tiling-Gaps: Switch Up",
+  "Meta+Alt+Up",
+  function ()
+  {
+    client = layout.getClient(workspace.activeClient.windowId);
+    if (client === -1) {return -1;};
+    var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
+    if (desktop.columns[client.columnIndex].switchClient(-1, client.clientIndex, client.columnIndex) === -1) {return -1;};
+    
+    return desktop.render(client.desktopIndex, client.layerIndex);
+  }
+);
+
+registerShortcut
+(
+  "Tiling-Gaps: Switch Down",
+  "Tiling-Gaps: Switch Down",
+  "Meta+Alt+Down",
+  function ()
+  {
+    client = layout.getClient(workspace.activeClient.windowId);
+    if (client === -1) {return -1;};
+    var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
+    if (desktop.columns[client.columnIndex].switchClient(1, client.clientIndex, client.columnIndex) === -1) {return -1;};
+  
+    return desktop.render(client.desktopIndex, client.layerIndex);
+  }
+);
 
 registerShortcut
 (
