@@ -736,9 +736,9 @@ registerShortcut
         {
           column.clients[l].closeWindow();
         };
-        layout.layers[i].desktops[j].removeColumn(k);
+        desktop.removeColumn(k);
       };
-      layout.layers[i].removeDesktop(j);
+      layer.removeDesktop(j);
     };
     return layout.render();
   }
