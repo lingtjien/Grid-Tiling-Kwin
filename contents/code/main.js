@@ -157,18 +157,20 @@ function Column ()
     return 0;
   };
   
-  this.changeDivider = function (change, clientIndex)
+  this.changeDivider = function (direction, change, clientIndex)
   {
     if (clientIndex < 0 || clientIndex >= this.nclients()) {return -1;}
     
-    if (clientIndex !== this.nclients() - 1)
+    // changes the divider that is for the client itself
+    if (clientIndex !== this.nclients() - 1 && (direction === 'single' || direction === 'both'))
     {
       this.dividers[clientIndex] += change;
       if (this.dividers[clientIndex] > dividerBounds) {this.dividers[clientIndex] = dividerBounds;}
       if (this.dividers[clientIndex] < -dividerBounds) {this.dividers[clientIndex] = -dividerBounds;}
     }
     
-    if (clientIndex !== 0)
+    // changes the divider that is for the client before this one
+    if (clientIndex !== 0 && direction === 'both')
     {
       this.dividers[clientIndex - 1] -= change;
       if (this.dividers[clientIndex - 1] > dividerBounds) {this.dividers[clientIndex - 1] = dividerBounds;}
@@ -337,18 +339,20 @@ function Desktop ()
     return 0;
   };
   
-  this.changeDivider = function (change, columnIndex)
+  this.changeDivider = function (direction, change, columnIndex)
   {
     if (columnIndex < 0 || columnIndex >= this.ncolumns()) {return -1;}
     
-    if (columnIndex !== this.ncolumns() - 1)
+    // changes the divider that is for the client itself
+    if (columnIndex !== this.ncolumns() - 1 && (direction === 'single' || direction === 'both'))
     {
       this.dividers[columnIndex] += change;
       if (this.dividers[columnIndex] > dividerBounds) {this.dividers[columnIndex] = dividerBounds;}
       if (this.dividers[columnIndex] < -dividerBounds) {this.dividers[columnIndex] = -dividerBounds;}
     }
     
-    if (columnIndex !== 0)
+    // changes the divider that is for the client before this one
+    if (columnIndex !== 0 && direction === 'both')
     {
       this.dividers[columnIndex - 1] -= change;
       if (this.dividers[columnIndex - 1] > dividerBounds) {this.dividers[columnIndex - 1] = dividerBounds;}
@@ -576,7 +580,25 @@ var Client =
 {
   resized: function (client)
   {
+    var diff =
+    {
+      width: client.geometry.width - client.geometryRender.width,
+      height: client.geometry.height - client.geometryRender.height
+    };
+    if (diff.width === 0 && diff.height === 0) {return -1;}
     
+    var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
+    if (diff.width !== 0)
+    {
+      desktop.changeDivider('single', diff.width / workspace.displayWidth, client.clientIndex);
+    }
+    
+    if (diff.height !== 0)
+    {
+      desktop.columns[client.columnIndex].changeDivider('single', diff.height / workspace.displayHeight, client.clientIndex);
+    }
+    
+    return 0;
   },
   validate: function (client)
   {
@@ -598,7 +620,7 @@ var Client =
       if (clientName.indexOf(ignoredClients[i]) !== -1) {return -1;}
     }
     
-    var minSpace = 1;
+    var minSpace = 0;
     
     client.minSpace = minSpace;
     return 0;
@@ -643,15 +665,18 @@ function ConnectClient (client)
   {
     client = layout.getClient(client.windowId);
     if (client === -1) {return -1;}
-    if (GeometryResized(client) === -1 && GeometryMoved(client) === -1) {return -1;}
-    return layout.renderDesktop(client.desktopIndex, client.layerIndex);
+//     if (Client.resized(client) === -1 && GeometryMoved(client) === -1) {return -1;}
+    if (Client.resized(client) === -1) {return -1;}
+    
+    return layout.layers[client.layerIndex].desktops[client.desktopIndex].render(client.desktopIndex, client.layerIndex);
   });
   client.clientStepUserMovedResized.connect (function (client)
   {
     client = layout.getClient(client.windowId);
     if (client === -1) {return -1;}
-    if (GeometryResized(client) === -1) {return -1;}
-    return layout.renderDesktop(client.desktopIndex, client.layerIndex);
+    if (Client.resized(client) === -1) {return -1;}
+    
+    return layout.layers[client.layerIndex].desktops[client.desktopIndex].render(client.desktopIndex, client.layerIndex);
   });
   return 0;
 }
@@ -813,7 +838,7 @@ registerShortcut ('Tiling-Gaps: Increase Size', 'Tiling-Gaps: Increase Size', 'M
   var client = layout.getClient(workspace.activeClient.windowId);
   if (client === -1) {return -1;}
   var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
-  desktop.columns[client.columnIndex].changeDivider(dividerStepSize, client.clientIndex);
+  desktop.columns[client.columnIndex].changeDivider('both', dividerStepSize, client.clientIndex);
   desktop.changeDivider(dividerStepSize, client.columnIndex);
   
   return desktop.render(client.desktopIndex, client.layerIndex);
@@ -824,7 +849,7 @@ registerShortcut ('Tiling-Gaps: Decrease Size', 'Tiling-Gaps: Decrease Size', 'M
   var client = layout.getClient(workspace.activeClient.windowId);
   if (client === -1) {return -1;}
   var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
-  desktop.columns[client.columnIndex].changeDivider(-dividerStepSize, client.clientIndex);
+  desktop.columns[client.columnIndex].changeDivider('both', -dividerStepSize, client.clientIndex);
   desktop.changeDivider(-dividerStepSize, client.columnIndex);
   
   return desktop.render(client.desktopIndex, client.layerIndex);
