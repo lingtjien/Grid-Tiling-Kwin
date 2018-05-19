@@ -2,7 +2,7 @@
 // Library Functions
 // -----------------
 
-var Library = 
+var Library =
 {
   trimSplitString: function (string)
   {
@@ -188,7 +188,7 @@ function Column ()
     var previous = 0;
     var divider = 0;
     for (var i = 0; i < this.nclients(); i++)
-    { 
+    {
       if (i === this.nclients()-1) {divider = 0;}
       else {divider = this.dividers[i];}
       
@@ -196,7 +196,7 @@ function Column ()
       var height = clientHeight + current - previous;
       
       // rendering the client
-      var geometry = 
+      var geometry =
       {
         x: Math.floor(x),
         y: Math.floor(y),
@@ -463,7 +463,7 @@ function Layer ()
     if (desktopIndex < 0 || desktopIndex >= this.ndesktops()) {return -1;}
     
     var client = this.desktops[desktopIndex].columns[columnIndex].clients[clientIndex];
-    var index = 
+    var index =
     {
       row: Converter.indexToRow(desktopIndex),
       column: Converter.indexToColumn(desktopIndex),
@@ -508,7 +508,7 @@ function Layout ()
   this.layers = [];
   this.nlayers = function () {return this.layers.length;};
   
-  this.addLayer = function (layer) 
+  this.addLayer = function (layer)
   {
     this.layers.push(layer);
     return 0;
@@ -570,7 +570,7 @@ function Layout ()
     }
     return check;
   };
-  
+
 }
 
 // ---------------
@@ -578,7 +578,7 @@ function Layout ()
 // ---------------
 
 function CheckClient (client)
-{  
+{
   if (client.specialWindow || client.dialog) {return -1;}
   
   var clientClass = client.resourceClass.toString();
@@ -791,7 +791,7 @@ registerShortcut (' Tiling-Gaps: Maximize', 'Tiling-Gaps: Maximize', 'Meta+M', f
   if (client === -1) {return -1;}
   
   var area = workspace.clientArea(0, client.screen, client.desktop);
-  client.geometry = 
+  client.geometry =
   {
     x: Math.floor(gap+area.x+margin.left),
     y: Math.floor(gap+area.y+margin.top),
