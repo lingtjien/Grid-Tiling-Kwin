@@ -568,35 +568,38 @@ function Layout ()
 
 }
 
-// ---------------
-// Client Validity
-// ---------------
+// ------------------
+// Methods on clients
+// ------------------
 
-function CheckClient (client)
+var Client =
 {
-  if (client.specialWindow || client.dialog) {return -1;}
-  
-  var clientClass = client.resourceClass.toString();
-  var clientName = client.resourceName.toString();
-  var clientCaption = client.caption.toString();
-  
-  var i;
-  for (i = 0; i < ignoredCaptions.length; i++)
+  validate: function (client)
   {
-    if (ignoredCaptions[i] === clientCaption) {return -1;}
+    if (client.specialWindow || client.dialog) {return -1;}
+    
+    var clientClass = client.resourceClass.toString();
+    var clientName = client.resourceName.toString();
+    var clientCaption = client.caption.toString();
+    
+    var i;
+    for (i = 0; i < ignoredCaptions.length; i++)
+    {
+      if (ignoredCaptions[i] === clientCaption) {return -1;}
+    }
+    
+    for (i = 0; i < ignoredClients.length; i++)
+    {
+      if (clientClass.indexOf(ignoredClients[i]) !== -1) {return -1;}
+      if (clientName.indexOf(ignoredClients[i]) !== -1) {return -1;}
+    }
+    
+    var minSpace = 1;
+    
+    client.minSpace = minSpace;
+    return 0;
   }
-  
-  for (i = 0; i < ignoredClients.length; i++)
-  {
-    if (clientClass.indexOf(ignoredClients[i]) !== -1) {return -1;}
-    if (clientName.indexOf(ignoredClients[i]) !== -1) {return -1;}
-  }
-  
-  var minSpace = 1;
-  
-  client.minSpace = minSpace;
-  return 0;
-}
+};
 
 // ---------------------------
 // Connecting The KWin Signals
@@ -609,7 +612,7 @@ var layout = new Layout(); // main class, contains all methods
 workspace.clientActivated.connect (function (client)
 {
   if (client === null || client.windowId in addedClients) {return -1;}
-  if (CheckClient(client) !== 0) {return -1;} // on succes adds minSpace to client
+  if (Client.validate(client) !== 0) {return -1;} // on succes adds minSpace to client
   if (layout.addClient(client) !== 0) {return -1;}
   addedClients[client.windowId] = true;
   layout.render();
