@@ -84,3 +84,4 @@ ln -s metadata.desktop ~/.local/share/kservices5/kwin-script-tiling-gaps.desktop
 - make it work for all grid sizes (not just 2x2)
 - run the code through ESlint to check and integrate it into workflow
 - rename project to kwin-grid-tiling (seems more appropriate...) oh and also adjust the readme
+- use imports to split the code into multiple files for readability if possible

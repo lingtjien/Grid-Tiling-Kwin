@@ -1,3 +1,26 @@
+// -----------------
+// Library Functions
+// -----------------
+
+var Library = 
+{
+  trimSplitString: function (string)
+  {
+    var split = string.split(",");
+    for (var i = 0; i < split.length; i++)
+    {
+      if (split[i].trim() === "") {split.splice(i, 1); continue;};
+      split[i] = split[i].trim();
+    };
+    return split;
+  },
+  toBool: function (value)
+  {
+    if (value == false) {return false;} // QVariant can be compared with == but not === as it is a type of itself
+    else {return true;};
+  },
+};
+
 // ----------
 // Parameters
 // ----------
@@ -8,8 +31,8 @@ var dividerBounds = Number(readConfig("dividerBounds", 0.2)); // from this value
 var dividerStepSize = Number(readConfig("dividerStepSize", 0.05));
 var moveThreshold = Number(readConfig("moveThreshold", 0.5)); // move clients outside this fraction of its own size
 var opacity = Number(readConfig("opacity", 0.9));
-var noOpacity = ToBool(readConfig("noOpacity", false));
-var noBorder = ToBool(readConfig("noBorder", true));
+var noOpacity = Library.toBool(readConfig("noOpacity", false));
+var noBorder = Library.toBool(readConfig("noBorder", true));
 
 var margin =
 {
@@ -19,63 +42,57 @@ var margin =
   right: Number(readConfig("rightMargin", 0)),
 };
 
-var fullClients = TrimSplitString(readConfig("fullClients", "texstudio, inkscape, gimp, designer, creator, kdevelop, kdenlive").toString());
+var fullClients = Library.trimSplitString(readConfig("fullClients", "texstudio, inkscape, gimp, designer, creator, kdevelop, kdenlive").toString());
 
-var halfClients = TrimSplitString(readConfig("halfClients", "chromium, kate, spotify").toString())
+var halfClients = Library.trimSplitString(readConfig("halfClients", "chromium, kate, spotify").toString())
 
-var ignoredClients = TrimSplitString("ksmserver, krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, ".concat(readConfig("ignoredClients", "wine, overwatch").toString()));
+var ignoredClients = Library.trimSplitString("ksmserver, krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, ".concat(readConfig("ignoredClients", "wine, overwatch").toString()));
 
-var ignoredCaptions = TrimSplitString(readConfig("ignoredCaptions", "Trace Bitmap (Shift+Alt+B), Document Properties (Shift+Ctrl+D)").toString());
+var ignoredCaptions = Library.trimSplitString(readConfig("ignoredCaptions", "Trace Bitmap (Shift+Alt+B), Document Properties (Shift+Ctrl+D)").toString());
 
-// -----------------
-// Library Functions
-// -----------------
+// ------------------------------------------
+// Desktop Screen Row Column Index Converters
+// ------------------------------------------
 
-function TrimSplitString (string)
+var Converter =
 {
-  var split = string.split(",");
-  for (var i = 0; i < split.length; i++)
+  rows: function ()
   {
-    if (split[i].trim() === "") {split.splice(i, 1); continue;};
-    split[i] = split[i].trim();
-  };
-  return split;
-};
-
-function ToBool (value)
-{
-  if (value == false) {return false;}
-  else {return true;};
-};
-
-function GetDesktopTotal ()
-{
-  return workspace.desktops*workspace.numScreens;
-};
-
-function GetDesktopNumber (desktopIndex)
-{
-  return Math.floor(desktopIndex/workspace.numScreens)+1; // indexing of desktops starts at 1 by Kwin
-};
-
-function GetScreenNumber (desktopIndex)
-{
-  return desktopIndex%workspace.numScreens;
-};
-
-function GetDesktopIndex ()
-{
-  return workspace.numScreens*(workspace.currentDesktop-1)+workspace.activeScreen;
-};
-
-function GetDesktopRows ()
-{
-  return workspace.desktopGridHeight;
-};
-  
-function GetDesktopCols ()
-{
-  return workspace.desktopGridWidth;
+    return workspace.desktopGridHeight;
+  },
+  cols: function ()
+  {
+    return workspace.desktopGridWidth*workspace.numScreens; // addional screens add extra columns
+  },
+  size: function ()
+  {
+    return this.rows() * this.cols();
+  },
+  rowColumnToIndex: function (rowIndex, columnIndex) // returns the desktopIndex based on a rowIndex and columnIndex
+  {
+    if (rowIndex < 0 || rowIndex >= this.rows() || columnIndex < 0 || columnIndex >= this.cols()) {return -1;};
+    return rowIndex * this.cols() + columnIndex;
+  },
+  indexToRow: function (desktopIndex)
+  {
+    return Math.floor(desktopIndex / this.cols());
+  },
+  indexToColumn: function (desktopIndex)
+  {
+    return desktopIndex % this.cols();
+  },
+  desktop: function (desktopIndex)
+  {
+    return Math.floor(desktopIndex / workspace.numScreens) + 1; // indexing of desktops starts at 1 by Kwin
+  },
+  screen: function (desktopIndex)
+  {
+    return desktopIndex % workspace.numScreens;
+  },
+  currentIndex: function ()
+  {
+    return workspace.numScreens * (workspace.currentDesktop - 1) + workspace.activeScreen;
+  },
 };
 
 // --------------
@@ -114,7 +131,7 @@ function Column ()
       if (this.clients[i].windowId === windowId)
       {
         this.clients.splice(i, 1);
-        if (i !== 0) this.dividers.splice(i-1, 1); // the first client does not have a divider, thus it can not be removed
+        if (i !== 0) {this.dividers.splice(i-1, 1);}; // the first client does not have a divider, thus it can not be removed
         return 0;
       };
     };
@@ -192,8 +209,8 @@ function Column ()
       if (noOpacity) {this.clients[i].opacity = 1;}
       else {this.clients[i].opacity = opacity;};
       
-      this.clients[i].desktop = GetDesktopNumber(desktopIndex);
-      this.clients[i].screen = GetScreenNumber(desktopIndex);
+      this.clients[i].desktop = Converter.desktop(desktopIndex);
+      this.clients[i].screen = Converter.screen(desktopIndex);
       this.clients[i].geometry = geometry;
       this.clients[i].geometryRender = geometry;
       this.clients[i].clientIndex = i;
@@ -347,7 +364,7 @@ function Desktop ()
   {
     var check = 0;
     
-    var area = workspace.clientArea(0, GetScreenNumber(desktopIndex), GetDesktopNumber(desktopIndex));
+    var area = workspace.clientArea(0, Converter.screen(desktopIndex), Converter.desktop(desktopIndex));
     
     var x = area.x + margin.left + gap; // first x coordinate
     var columnWidth = (area.width - margin.left - margin.right - ((this.ncolumns() + 1) * gap)) / this.ncolumns(); // width per column
@@ -356,7 +373,7 @@ function Desktop ()
     var previous = 0;
     var divider = 0;
     for (var i = 0; i < this.ncolumns(); i++)
-    { 
+    {
       if (i === this.ncolumns()-1) {divider = 0;}
       else {divider = this.dividers[i];};
       
@@ -380,7 +397,7 @@ function Layer ()
   
   this.addDesktop = function (desktop)
   {
-    if (GetDesktopTotal()-this.ndesktops() < 1) {return -1;};
+    if (Converter.size() - this.ndesktops() < 1) {return -1;};
     this.desktops.push(desktop);
     return 0;
   };
@@ -396,7 +413,7 @@ function Layer ()
   {
     var added = -1;
     // try to add to current desktop
-    var index = GetDesktopIndex();
+    var index = Converter.currentIndex();
     while (index >= this.ndesktops())
     {
       var desktop = new Desktop();
@@ -440,40 +457,60 @@ function Layer ()
     return client;
   };
   
-  this.movePreviousDesktop = function (clientIndex, desktopIndex)
+  this.moveDesktopColumn = function (direction, clientIndex, columnIndex, desktopIndex)
   {
     if (desktopIndex < 0 || desktopIndex >= this.ndesktops()) {return -1;};
-    var client = this.desktops[desktopIndex].clients[clientIndex];
-    for (var i = desktopIndex-1; i >= 0; i--)
+    
+    var client = this.desktops[desktopIndex].columns[columnIndex].clients[clientIndex];
+    var i = Converter.indexToRow(desktopIndex);
+    var j = Converter.indexToColumn(desktopIndex);
+    
+    var fail = true;
+    while (fail)
     {
-      if (this.desktops[i].size()+client.minSpace > 1) {continue;};
-      this.desktops[desktopIndex].removeClient(client.windowId);
-      this.desktops[i].addClient(client);
-      return 0;
+      j += direction;
+      var index = Converter.rowColumnToIndex(i, j);
+      
+      if (index < 0) {return -1;};
+      while (index >= this.ndesktops())
+      {
+        var desktop = new Desktop();
+        if (this.addDesktop(desktop) === -1) {return -1;};
+      };
+      
+      fail = (this.desktops[index].addClient(client) !== 0);
     };
-    return -1;
+    
+    this.desktops[desktopIndex].columns[columnIndex].removeClient(client.windowId);
+    return 0;
   };
   
-  this.moveNextDesktop = function (clientIndex, desktopIndex)
+  this.moveDesktopRow = function (direction, clientIndex, columnIndex, desktopIndex)
   {
     if (desktopIndex < 0 || desktopIndex >= this.ndesktops()) {return -1;};
-    // client needs to be a copy, not a reference to the same
-    var client = this.desktops[desktopIndex].clients[clientIndex];
-    for (var i = desktopIndex+1; i < this.ndesktops(); i++)
+    
+    var client = this.desktops[desktopIndex].columns[columnIndex].clients[clientIndex];
+    var i = Converter.indexToRow(desktopIndex);
+    var j = Converter.indexToColumn(desktopIndex);
+    
+    var fail = true;
+    while (fail)
     {
-      if (this.desktops[i].size()+client.minSpace > 1) {continue;};
-      this.desktops[desktopIndex].removeClient(client.windowId);
-      this.desktops[i].addClient(client);
-      return 0;
+      i += direction;
+      var index = Converter.rowColumnToIndex(i, j);
+      
+      if (index < 0) {return -1;};
+      while (index >= this.ndesktops())
+      {
+        var desktop = new Desktop();
+        if (this.addDesktop(desktop) === -1) {return -1;};
+      };
+      
+      fail = (this.desktops[index].addClient(client) !== 0);
     };
-    var desktop = new Desktop();
-    if (this.addDesktop(desktop) !== -1)
-    {
-      this.desktops[desktopIndex].removeClient(client.windowId);
-      this.desktops[this.ndesktops()-1].addClient(client);
-      return 0;
-    };
-    return -1;
+    
+    this.desktops[desktopIndex].columns[columnIndex].removeClient(client.windowId);
+    return 0;
   };
   
   // rendering
@@ -544,18 +581,6 @@ function Layout ()
       if (client !== -1) {break;};
     };
     return client;
-  };
-  
-  this.movePreviousDesktop = function (clientIndex, desktopIndex, layerIndex)
-  {
-    if (layerIndex >= this.nlayers()) {return -1;};
-    return this.layers[layerIndex].movePreviousDesktop(clientIndex, desktopIndex);
-  };
-  
-  this.moveNextDesktop = function (clientIndex, desktopIndex, layerIndex)
-  {
-    if (layerIndex >= this.nlayers()) {return -1;};
-    return this.layers[layerIndex].moveNextDesktop(clientIndex, desktopIndex);
   };
   
   // rendering
@@ -749,15 +774,37 @@ registerShortcut
 
 registerShortcut
 (
-  "Tiling-Gaps: Move Next Desktop",
-  "Tiling-Gaps: Move Next Desktop",
+  "Tiling-Gaps: Move Right Desktop",
+  "Tiling-Gaps: Move Right Desktop",
   "Meta+End",
   function ()
   {
     client = layout.getClient(workspace.activeClient.windowId);
     if (client === -1) {return -1;};
-    if (layout.moveNextDesktop(client.clientIndex, client.desktopIndex, client.layerIndex) === -1) {return -1;};
-    layout.layers[client.layerIndex].render(client.layerIndex);
+    var layer = layout.layers[client.layerIndex];
+    
+    layer.moveDesktopColumn(1, client.clientIndex, client.columnIndex, client.desktopIndex);
+    
+    layer.render(client.layerIndex);
+    workspace.currentDesktop = client.desktop; // switch to the new desktop
+    return 0;
+  }
+);
+
+registerShortcut
+(
+  "Tiling-Gaps: Move Left Desktop",
+  "Tiling-Gaps: Move Left Desktop",
+  "Meta+Home",
+  function ()
+  {
+    client = layout.getClient(workspace.activeClient.windowId);
+    if (client === -1) {return -1;};
+    var layer = layout.layers[client.layerIndex];
+    
+    layer.moveDesktopColumn(-1, client.clientIndex, client.columnIndex, client.desktopIndex);
+    
+    layer.render(client.layerIndex);
     workspace.currentDesktop = client.desktop;
     return 0;
   }
@@ -765,15 +812,37 @@ registerShortcut
 
 registerShortcut
 (
-  "Tiling-Gaps: Move Previous Desktop",
-  "Tiling-Gaps: Move Previous Desktop",
-  "Meta+Home",
+  "Tiling-Gaps: Move Up Desktop",
+  "Tiling-Gaps: Move Up Desktop",
+  "Meta+PgUp",
   function ()
   {
     client = layout.getClient(workspace.activeClient.windowId);
     if (client === -1) {return -1;};
-    if (layout.movePreviousDesktop(client.clientIndex, client.desktopIndex, client.layerIndex) === -1) {return -1;};
-    layout.layers[client.layerIndex].render(client.layerIndex);
+    var layer = layout.layers[client.layerIndex];
+    
+    layer.moveDesktopRow(-1, client.clientIndex, client.columnIndex, client.desktopIndex);
+    
+    layer.render(client.layerIndex);
+    workspace.currentDesktop = client.desktop;
+    return 0;
+  }
+);
+
+registerShortcut
+(
+  "Tiling-Gaps: Move Down Desktop",
+  "Tiling-Gaps: Move Down Desktop",
+  "Meta+PgDown",
+  function ()
+  {
+    client = layout.getClient(workspace.activeClient.windowId);
+    if (client === -1) {return -1;};
+    var layer = layout.layers[client.layerIndex];
+    
+    layer.moveDesktopRow(1, client.clientIndex, client.columnIndex, client.desktopIndex);
+    
+    layer.render(client.layerIndex);
     workspace.currentDesktop = client.desktop;
     return 0;
   }
@@ -811,7 +880,7 @@ registerShortcut
   function ()
   {
     // looping is done backwards as the array is decreased in size in every iteration thus forward looping will result in skipping elements
-    var j = GetDesktopIndex();
+    var j = Converter.currentIndex();
     for (var i = layout.nlayers()-1; i >= 0; i--)
     {
       var layer = layout.layers[i];
@@ -898,3 +967,4 @@ registerShortcut
     return desktop.render(client.desktopIndex, client.layerIndex);
   }
 );
+
