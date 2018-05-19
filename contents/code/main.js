@@ -272,7 +272,7 @@ function Desktop ()
         index = i;
         space = minSpace;
       }
-      else if (minSpace === space)
+      else if (minSpace === space && index !== -1)
       {
         if (this.columns[i].nclients() < this.columns[index].nclients())
         {
