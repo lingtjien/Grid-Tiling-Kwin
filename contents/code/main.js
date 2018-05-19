@@ -245,7 +245,7 @@ function Desktop ()
     // check if adding a new column won't decrease the size of the clients inside any of the existing columns below their minSpace
     for (var i = 0; i < this.ncolumns(); i++)
     {
-      if (this.columns[i].minSpace > 1 / (this.ncolumns() + 1)) {return -1;};
+      if (this.columns[i].minSpace() > 1 / (this.ncolumns() + 1)) {return -1;};
     };
     
     this.columns.push(column);
