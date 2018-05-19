@@ -61,7 +61,7 @@ var Converter =
   },
   cols: function ()
   {
-    return workspace.desktopGridWidth*workspace.numScreens; // addional screens add extra columns
+    return workspace.desktopGridWidth * workspace.numScreens; // addional screens add extra columns
   },
   size: function ()
   {
@@ -130,7 +130,7 @@ function Column ()
       if (this.clients[i].windowId === windowId)
       {
         this.clients.splice(i, 1);
-        if (i !== 0) {this.dividers.splice(i-1, 1);} // the first client does not have a divider, thus it can not be removed
+        if (i !== 0) {this.dividers.splice(i - 1, 1);} // the first client does not have a divider, thus it can not be removed
         return 0;
       }
     }
@@ -161,7 +161,7 @@ function Column ()
   {
     if (clientIndex < 0 || clientIndex >= this.nclients()) {return -1;}
     
-    if (clientIndex !== this.nclients()-1)
+    if (clientIndex !== this.nclients() - 1)
     {
       this.dividers[clientIndex] += change;
       if (this.dividers[clientIndex] > dividerBounds) {this.dividers[clientIndex] = dividerBounds;}
@@ -170,9 +170,9 @@ function Column ()
     
     if (clientIndex !== 0)
     {
-      this.dividers[clientIndex-1] -= change;
-      if (this.dividers[clientIndex-1] > dividerBounds) {this.dividers[clientIndex-1] = dividerBounds;}
-      if (this.dividers[clientIndex-1] < -dividerBounds) {this.dividers[clientIndex-1] = -dividerBounds;}
+      this.dividers[clientIndex - 1] -= change;
+      if (this.dividers[clientIndex - 1] > dividerBounds) {this.dividers[clientIndex - 1] = dividerBounds;}
+      if (this.dividers[clientIndex - 1] < -dividerBounds) {this.dividers[clientIndex - 1] = -dividerBounds;}
     }
     
     return 0;
@@ -189,7 +189,7 @@ function Column ()
     var divider = 0;
     for (var i = 0; i < this.nclients(); i++)
     {
-      if (i === this.nclients()-1) {divider = 0;}
+      if (i === this.nclients() - 1) {divider = 0;}
       else {divider = this.dividers[i];}
       
       current = clientHeight * divider;
@@ -256,7 +256,7 @@ function Desktop ()
   {
     if (columnIndex < 0 || columnIndex >= this.ncolumns()) {return -1;}
     this.columns.splice(columnIndex, 1);
-    if (columnIndex !== 0) {this.dividers.splice(columnIndex-1, 1);}
+    if (columnIndex !== 0) {this.dividers.splice(columnIndex - 1, 1);}
     return 0;
   };
   
@@ -297,7 +297,7 @@ function Desktop ()
     
     var column = new Column();
     if (this.addColumn(column) === -1) {return -1;}
-    this.columns[this.ncolumns()-1].addClient(client);
+    this.columns[this.ncolumns() - 1].addClient(client);
     
     return 0;
   };
@@ -341,7 +341,7 @@ function Desktop ()
   {
     if (columnIndex < 0 || columnIndex >= this.ncolumns()) {return -1;}
     
-    if (columnIndex !== this.ncolumns()-1)
+    if (columnIndex !== this.ncolumns() - 1)
     {
       this.dividers[columnIndex] += change;
       if (this.dividers[columnIndex] > dividerBounds) {this.dividers[columnIndex] = dividerBounds;}
@@ -350,9 +350,9 @@ function Desktop ()
     
     if (columnIndex !== 0)
     {
-      this.dividers[columnIndex-1] -= change;
-      if (this.dividers[columnIndex-1] > dividerBounds) {this.dividers[columnIndex-1] = dividerBounds;}
-      if (this.dividers[columnIndex-1] < -dividerBounds) {this.dividers[columnIndex-1] = -dividerBounds;}
+      this.dividers[columnIndex - 1] -= change;
+      if (this.dividers[columnIndex - 1] > dividerBounds) {this.dividers[columnIndex - 1] = dividerBounds;}
+      if (this.dividers[columnIndex - 1] < -dividerBounds) {this.dividers[columnIndex - 1] = -dividerBounds;}
     }
     
     return 0;
@@ -373,7 +373,7 @@ function Desktop ()
     var divider = 0;
     for (var i = 0; i < this.ncolumns(); i++)
     {
-      if (i === this.ncolumns()-1) {divider = 0;}
+      if (i === this.ncolumns() - 1) {divider = 0;}
       else {divider = this.dividers[i];}
       
       current = columnWidth * divider;
@@ -430,7 +430,7 @@ function Layer ()
     // make a new desktop (if possible) and add to that
     desktop = new Desktop();
     if (this.addDesktop(desktop) !== 0) {return -1;}
-    return this.desktops[this.ndesktops()-1].addClient(client);
+    return this.desktops[this.ndesktops() - 1].addClient(client);
   };
   
   this.removeClient = function (windowId)
@@ -528,7 +528,7 @@ function Layout ()
     }
     var layer = new Layer();
     this.addLayer(layer);
-    return this.layers[this.nlayers()-1].addClient(client);
+    return this.layers[this.nlayers() - 1].addClient(client);
   };
   
   this.removeClient = function (windowId)
@@ -574,6 +574,10 @@ function Layout ()
 
 var Client =
 {
+  resized: function (client)
+  {
+    
+  },
   validate: function (client)
   {
     if (client.specialWindow || client.dialog) {return -1;}
@@ -764,15 +768,15 @@ registerShortcut ('Tiling-Gaps: Close Desktop', 'Tiling-Gaps: Close Desktop', 'M
 {
   // looping is done backwards as the array is decreased in size in every iteration thus forward looping will result in skipping elements
   var j = Converter.currentIndex();
-  for (var i = layout.nlayers()-1; i >= 0; i--)
+  for (var i = layout.nlayers() - 1; i >= 0; i--)
   {
     var layer = layout.layers[i];
     if (j >= layer.ndesktops()) {continue;}
     var desktop = layer.desktops[j];
-    for (var k = desktop.ncolumns()-1; k >= 0 ; k--)
+    for (var k = desktop.ncolumns() - 1; k >= 0 ; k--)
     {
       var column = desktop.columns[k];
-      for (var l = column.nclients()-1; l >= 0 ; l--)
+      for (var l = column.nclients() - 1; l >= 0 ; l--)
       {
         column.clients[l].closeWindow();
       }
@@ -791,10 +795,10 @@ registerShortcut ('Tiling-Gaps: Maximize', 'Tiling-Gaps: Maximize', 'Meta+M', fu
   var area = workspace.clientArea(0, client.screen, client.desktop);
   client.geometry =
   {
-    x: Math.floor(gap+area.x+margin.left),
-    y: Math.floor(gap+area.y+margin.top),
-    width: Math.floor(area.width-margin.left-margin.right-2*gap),
-    height: Math.floor(area.height-margin.top-margin.bottom-2*gap)
+    x: Math.floor(gap + area.x + margin.left),
+    y: Math.floor(gap + area.y + margin.top),
+    width: Math.floor(area.width - margin.left - margin.right - 2 * gap),
+    height: Math.floor(area.height - margin.top - margin.bottom - 2 * gap)
   };
   return 0;
 });
