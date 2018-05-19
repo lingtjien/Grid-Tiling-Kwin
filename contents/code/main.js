@@ -457,56 +457,31 @@ function Layer ()
     return client;
   };
   
-  this.moveDesktopColumn = function (direction, clientIndex, columnIndex, desktopIndex)
+  this.moveDesktop = function (direction , amount, clientIndex, columnIndex, desktopIndex)
   {
     if (desktopIndex < 0 || desktopIndex >= this.ndesktops()) {return -1;};
     
     var client = this.desktops[desktopIndex].columns[columnIndex].clients[clientIndex];
-    var i = Converter.indexToRow(desktopIndex);
-    var j = Converter.indexToColumn(desktopIndex);
+    var index = 
+    {
+      row: Converter.indexToRow(desktopIndex),
+      column: Converter.indexToColumn(desktopIndex),
+    }
     
     var fail = true;
     while (fail)
     {
-      j += direction;
-      var index = Converter.rowColumnToIndex(i, j);
+      index[direction] += amount;
+      var i = Converter.rowColumnToIndex(index.row, index.column);
       
-      if (index < 0) {return -1;};
-      while (index >= this.ndesktops())
+      if (i < 0) {return -1;};
+      while (i >= this.ndesktops())
       {
         var desktop = new Desktop();
         if (this.addDesktop(desktop) === -1) {return -1;};
       };
       
-      fail = (this.desktops[index].addClient(client) !== 0);
-    };
-    
-    this.desktops[desktopIndex].columns[columnIndex].removeClient(client.windowId);
-    return 0;
-  };
-  
-  this.moveDesktopRow = function (direction, clientIndex, columnIndex, desktopIndex)
-  {
-    if (desktopIndex < 0 || desktopIndex >= this.ndesktops()) {return -1;};
-    
-    var client = this.desktops[desktopIndex].columns[columnIndex].clients[clientIndex];
-    var i = Converter.indexToRow(desktopIndex);
-    var j = Converter.indexToColumn(desktopIndex);
-    
-    var fail = true;
-    while (fail)
-    {
-      i += direction;
-      var index = Converter.rowColumnToIndex(i, j);
-      
-      if (index < 0) {return -1;};
-      while (index >= this.ndesktops())
-      {
-        var desktop = new Desktop();
-        if (this.addDesktop(desktop) === -1) {return -1;};
-      };
-      
-      fail = (this.desktops[index].addClient(client) !== 0);
+      fail = (this.desktops[i].addClient(client) !== 0);
     };
     
     this.desktops[desktopIndex].columns[columnIndex].removeClient(client.windowId);
@@ -783,7 +758,7 @@ registerShortcut
     if (client === -1) {return -1;};
     var layer = layout.layers[client.layerIndex];
     
-    layer.moveDesktopColumn(1, client.clientIndex, client.columnIndex, client.desktopIndex);
+    layer.moveDesktop("column", 1, client.clientIndex, client.columnIndex, client.desktopIndex);
     
     layer.render(client.layerIndex);
     workspace.currentDesktop = client.desktop; // switch to the new desktop
@@ -802,7 +777,7 @@ registerShortcut
     if (client === -1) {return -1;};
     var layer = layout.layers[client.layerIndex];
     
-    layer.moveDesktopColumn(-1, client.clientIndex, client.columnIndex, client.desktopIndex);
+    layer.moveDesktop("column", -1, client.clientIndex, client.columnIndex, client.desktopIndex);
     
     layer.render(client.layerIndex);
     workspace.currentDesktop = client.desktop;
@@ -821,7 +796,7 @@ registerShortcut
     if (client === -1) {return -1;};
     var layer = layout.layers[client.layerIndex];
     
-    layer.moveDesktopRow(-1, client.clientIndex, client.columnIndex, client.desktopIndex);
+    layer.moveDesktop("row", -1, client.clientIndex, client.columnIndex, client.desktopIndex);
     
     layer.render(client.layerIndex);
     workspace.currentDesktop = client.desktop;
@@ -840,7 +815,7 @@ registerShortcut
     if (client === -1) {return -1;};
     var layer = layout.layers[client.layerIndex];
     
-    layer.moveDesktopRow(1, client.clientIndex, client.columnIndex, client.desktopIndex);
+    layer.moveDesktop("row", 1, client.clientIndex, client.columnIndex, client.desktopIndex);
     
     layer.render(client.layerIndex);
     workspace.currentDesktop = client.desktop;
