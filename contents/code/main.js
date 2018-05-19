@@ -17,7 +17,7 @@ var Library =
   toBool: function (value)
   {
     return value == true; // QVariant can be compared with == but not === as it is a type of itself
-  },
+  }
 };
 
 // ----------
@@ -38,7 +38,7 @@ var margin =
   top: Number(readConfig('topMargin', 0)),
   bottom: Number(readConfig('bottomMargin', 0)),
   left: Number(readConfig('leftMargin', 0)),
-  right: Number(readConfig('rightMargin', 0)),
+  right: Number(readConfig('rightMargin', 0))
 };
 
 var fullClients = Library.trimSplitString(readConfig('fullClients', 'texstudio, inkscape, gimp, designer, creator, kdevelop, kdenlive').toString());
@@ -91,7 +91,7 @@ var Converter =
   currentIndex: function ()
   {
     return workspace.numScreens * (workspace.currentDesktop - 1) + workspace.activeScreen;
-  },
+  }
 };
 
 // --------------
@@ -201,7 +201,7 @@ function Column ()
         x: Math.floor(x),
         y: Math.floor(y),
         width: Math.floor(width),
-        height: Math.floor(height),
+        height: Math.floor(height)
       };
       
       this.clients[i].noBorder = noBorder;
@@ -465,7 +465,7 @@ function Layer ()
     var index =
     {
       row: Converter.indexToRow(desktopIndex),
-      column: Converter.indexToColumn(desktopIndex),
+      column: Converter.indexToColumn(desktopIndex)
     };
     
     var fail = true;
@@ -794,7 +794,7 @@ registerShortcut ('Tiling-Gaps: Maximize', 'Tiling-Gaps: Maximize', 'Meta+M', fu
     x: Math.floor(gap+area.x+margin.left),
     y: Math.floor(gap+area.y+margin.top),
     width: Math.floor(area.width-margin.left-margin.right-2*gap),
-    height: Math.floor(area.height-margin.top-margin.bottom-2*gap),
+    height: Math.floor(area.height-margin.top-margin.bottom-2*gap)
   };
   return 0;
 });

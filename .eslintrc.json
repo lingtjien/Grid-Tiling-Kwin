@@ -41,6 +41,11 @@
     [
       "error",
       {"skipBlankLines": true}
+    ],
+    "comma-dangle":
+    [
+      "error",
+      "never"
     ]
   }
 }
