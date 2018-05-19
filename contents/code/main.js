@@ -410,7 +410,6 @@ function Layer ()
   
   this.addClient = function (client)
   {
-    var added = -1;
     var desktop;
     
     // try to add to current desktop
@@ -418,19 +417,19 @@ function Layer ()
     while (index >= this.ndesktops())
     {
       desktop = new Desktop();
-      this.addDesktop(desktop);
+      if (this.addDesktop(desktop) !== 0) {return -1;}
     }
-    added = this.desktops[index].addClient(client);
-    if (added === 0) {return added;}
-    // try to add to any of the current desktops
+    if (this.desktops[index].addClient(client) === 0) {return 0;}
+    
+    // try to add to any of the desktops in the current array
     for (var i = 0; i < this.ndesktops(); i++)
     {
-      added = this.desktops[i].addClient(client);
-      if (added === 0) {return added;}
+      if (this.desktops[i].addClient(client) === 0) {return 0;}
     }
+    
     // make a new desktop (if possible) and add to that
     desktop = new Desktop();
-    if (this.addDesktop(desktop) === -1) {return -1;}
+    if (this.addDesktop(desktop) !== 0) {return -1;}
     return this.desktops[this.ndesktops()-1].addClient(client);
   };
   
@@ -523,11 +522,9 @@ function Layout ()
   
   this.addClient = function (client)
   {
-    var added = -1;
     for (var i = 0; i < this.nlayers(); i++)
     {
-      added = this.layers[i].addClient(client);
-      if (added === 0) {return added;}
+      if (this.layers[i].addClient(client) === 0) {return 0;}
     }
     var layer = new Layer();
     this.addLayer(layer);
@@ -536,17 +533,15 @@ function Layout ()
   
   this.removeClient = function (windowId)
   {
-    var removed = -1;
     for (var i = 0; i < this.nlayers(); i++)
     {
-      removed = this.layers[i].removeClient(windowId);
-      if (removed === 0)
+      if (this.layers[i].removeClient(windowId) === 0)
       {
-        if (this.layers[i].ndesktops() === 0) {removed = this.removeLayer(i);}
+        if (this.layers[i].ndesktops() === 0) {return this.removeLayer(i);}
         break;
       }
     }
-    return removed;
+    return 0;
   };
   
   this.getClient = function (windowId)
@@ -597,10 +592,10 @@ function CheckClient (client)
     if (clientName.indexOf(ignoredClients[i]) !== -1) {return -1;}
   }
   
-  var minSpace = 0;
+  var minSpace = 1;
   
   client.minSpace = minSpace;
-  return client;
+  return 0;
 }
 
 // ---------------------------
@@ -614,8 +609,8 @@ var layout = new Layout(); // main class, contains all methods
 workspace.clientActivated.connect (function (client)
 {
   if (client === null || client.windowId in addedClients) {return -1;}
-  if (CheckClient(client) === -1) {return -1;} // on succes adds minSpace to client
-  if (layout.addClient(client) === -1) {return -1;}
+  if (CheckClient(client) !== 0) {return -1;} // on succes adds minSpace to client
+  if (layout.addClient(client) !== 0) {return -1;}
   addedClients[client.windowId] = true;
   layout.render();
   workspace.currentDesktop = client.desktop;
@@ -785,7 +780,7 @@ registerShortcut ('Tiling-Gaps: Close Desktop', 'Tiling-Gaps: Close Desktop', 'M
   return layout.render();
 });
 
-registerShortcut (' Tiling-Gaps: Maximize', 'Tiling-Gaps: Maximize', 'Meta+M', function ()
+registerShortcut ('Tiling-Gaps: Maximize', 'Tiling-Gaps: Maximize', 'Meta+M', function ()
 {
   var client = layout.getClient(workspace.activeClient.windowId);
   if (client === -1) {return -1;}
