@@ -1,29 +1,36 @@
 {
-	  "globals": {
-			  "workspace": false,
-			  "readConfig": false,
-			  "registerShortcut": false
-		},
-    "env": {
-        "browser": true
-    },
-    "extends": "eslint:recommended",
-    "rules": {
-        "indent": [
-            "error",
-            2
-        ],
-        "linebreak-style": [
-            "error",
-            "unix"
-        ],
-        "quotes": [
-            "error",
-            "single"
-        ],
-        "semi": [
-            "error",
-            "always"
-        ]
-    }
+  "globals":
+  {
+    "workspace": false,
+    "readConfig": false,
+    "registerShortcut": false
+  },
+  "env":
+  {
+    "browser": true
+  },
+  "extends": "eslint:recommended",
+  "rules":
+  {
+    "indent":
+    [
+      "error",
+      2
+    ],
+    "linebreak-style":
+    [
+      "error",
+      "unix"
+    ],
+    "quotes":
+    [
+      "error",
+      "single"
+    ],
+    "semi":
+    [
+      "error",
+      "always"
+    ]
+  }
 }
