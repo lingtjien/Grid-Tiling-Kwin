@@ -684,7 +684,7 @@ workspace.clientActivated.connect (function (client)
     if (client === -1) {return -1;}
     
     var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
-    var properties = Client.properties(desktop.columns[client.columnIndex].nclients(), desktop.ncolumns(), client.desktopIndex)
+    var properties = Client.properties(desktop.columns[client.columnIndex].nclients(), desktop.ncolumns(), client.desktopIndex);
     
     if (Client.resized(client, desktop, properties.clientHeight, properties.columnWidth) === -1 && Client.moved(client, desktop, properties.clientHeight, properties.columnWidth) === -1) {return -1;}
     
@@ -696,7 +696,7 @@ workspace.clientActivated.connect (function (client)
     if (client === -1) {return -1;}
     
     var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
-    var properties = Client.properties(desktop.columns[client.columnIndex].nclients(), desktop.ncolumns(), client.desktopIndex)
+    var properties = Client.properties(desktop.columns[client.columnIndex].nclients(), desktop.ncolumns(), client.desktopIndex);
     
     if (Client.resized(client, desktop, properties.clientHeight, properties.columnWidth) === -1) {return -1;}
     
