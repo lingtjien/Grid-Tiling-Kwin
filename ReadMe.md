@@ -74,8 +74,9 @@ ln -s metadata.desktop ~/.local/share/kservices5/kwin-script-tiling-gaps.desktop
 ## Known Issues
 - Sometimes when you adjust the settings in the menu, you need to turn the script off, apply it, turn it back on and apply it again to register the new values (or just re-log).
 - Some applications do not render correctly on startup sometimes, just use the global shortcut that refreshes the layout
-- Maximized clients are not internally remembered so they are brought back to their tiled size when a refresh is called (not just the global shortcut). If you need proper maximization then just use the normal global shortcut for maximization
+- Maximized clients are not internally remembered so they are brought back to their tiled size when a refresh is called (not just the global shortcut).
 - Spotify can sometimes not be defined as full or half client, because both the client name and class of spotify are blank (random)
+- Dynamically resizing windows with the mouse can result in weird visual artifacts when dragged outside of the bounds, just use the global shortcut that refreshes the layout.
 - I don't use activities, so I don't know how this does with activities.
 - I don't use dynamic virtual desktops, no idea what happends. This was made with the intended use of using a set amount of virtual desktops.
 
