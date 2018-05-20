@@ -584,6 +584,12 @@ function Layout ()
 
 var Client =
 {
+  properties: function (nclients, ncolumns, desktopIndex)
+  {
+    var area = workspace.clientArea(0, Converter.screen(desktopIndex), Converter.desktop(desktopIndex));
+    
+    return {clientHeight: (area.height - margin.top - margin.bottom - ((nclients + 1) * gap)) / nclients, columnWidth: (area.width - margin.left - margin.right - ((ncolumns + 1) * gap)) / ncolumns};
+  },
   resized: function (client, desktop, clientHeight, columnWidth)
   {
     var diff =
@@ -670,7 +676,33 @@ workspace.clientActivated.connect (function (client)
   addedClients[client.windowId] = true;
   layout.render();
   workspace.currentDesktop = client.desktop;
-  ConnectClient(client); // connect client signals
+  
+  // connecting client signals
+  client.clientFinishUserMovedResized.connect (function (client)
+  {
+    client = layout.getClient(client.windowId);
+    if (client === -1) {return -1;}
+    
+    var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
+    var properties = Client.properties(desktop.columns[client.columnIndex].nclients(), desktop.ncolumns(), client.desktopIndex)
+    
+    if (Client.resized(client, desktop, properties.clientHeight, properties.columnWidth) === -1 && Client.moved(client, desktop, properties.clientHeight, properties.columnWidth) === -1) {return -1;}
+    
+    return desktop.render(client.desktopIndex, client.layerIndex);
+  });
+  client.clientStepUserMovedResized.connect (function (client)
+  {
+    client = layout.getClient(client.windowId);
+    if (client === -1) {return -1;}
+    
+    var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
+    var properties = Client.properties(desktop.columns[client.columnIndex].nclients(), desktop.ncolumns(), client.desktopIndex)
+    
+    if (Client.resized(client, desktop, properties.clientHeight, properties.columnWidth) === -1) {return -1;}
+    
+    return desktop.render(client.desktopIndex, client.layerIndex);
+  });
+  
   return 0;
 });
 
@@ -685,40 +717,6 @@ workspace.clientRemoved.connect (function (client)
   }
   return removed;
 });
-
-function ConnectClient (client)
-{
-  client.clientFinishUserMovedResized.connect (function (client)
-  {
-    client = layout.getClient(client.windowId);
-    if (client === -1) {return -1;}
-    
-    var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
-    
-    var area = workspace.clientArea(0, Converter.screen(client.desktopIndex), Converter.desktop(client.desktopIndex));
-    var columnWidth = (area.width - margin.left - margin.right - ((desktop.ncolumns() + 1) * gap)) / desktop.ncolumns();
-    var clientHeight = (area.height - margin.top - margin.bottom - ((desktop.columns[client.columnIndex].nclients() + 1) * gap)) / desktop.columns[client.columnIndex].nclients();
-    
-    if (Client.resized(client, desktop, clientHeight, columnWidth) === -1 && Client.moved(client, desktop, clientHeight, columnWidth) === -1) {return -1;}
-    
-    print(client.geometry.x + ' ' + client.geometry.y + ' ' + client.geometry.width + ' ' + client.geometry.height);
-    
-    desktop.render(client.desktopIndex, client.layerIndex);
-    
-    print(client.geometry.x + ' ' + client.geometry.y + ' ' + client.geometry.width + ' ' + client.geometry.height);
-    
-//     return layout.layers[client.layerIndex].desktops[client.desktopIndex].render(client.desktopIndex, client.layerIndex);
-  });
-//   client.clientStepUserMovedResized.connect (function (client)
-//   {
-//     client = layout.getClient(client.windowId);
-//     if (client === -1) {return -1;}
-//     if (Client.resized(client) === -1) {return -1;}
-//     
-//     return layout.layers[client.layerIndex].desktops[client.desktopIndex].render(client.desktopIndex, client.layerIndex);
-//   });
-  return 0;
-}
 
 // ------------------
 // Creating Shortcuts
