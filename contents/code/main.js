@@ -123,18 +123,12 @@ function Column ()
     return 0;
   };
   
-  this.removeClient = function (windowId)
+  this.removeClient = function (clientIndex)
   {
-    for (var i = 0; i < this.nclients(); i++)
-    {
-      if (this.clients[i].windowId === windowId)
-      {
-        this.clients.splice(i, 1);
-        if (i !== 0) {this.dividers.splice(i - 1, 1);} // the first client does not have a divider, thus it can not be removed
-        return 0;
-      }
-    }
-    return -1;
+    if (clientIndex < 0 || clientIndex >= this.nclients()) {return -1;}
+    this.clients.splice(clientIndex, 1);
+    if (clientIndex !== 0) {this.dividers.splice(clientIndex - 1, 1);} // the first client does not have a divider, thus it can not be removed
+    return 0;
   };
   
   this.getClient = function (windowId)
@@ -230,8 +224,8 @@ function Column ()
 
 function Desktop ()
 {
-  this.maxRows = 2;
-  this.maxCols = 3;
+  this.maxRows = 4;
+  this.maxCols = 2;
   
   this.columns = [];
   this.dividers = [];
@@ -304,17 +298,12 @@ function Desktop ()
     return 0;
   };
   
-  this.removeClient = function (windowId)
+  this.removeClient = function (clientIndex, columnIndex)
   {
-    for (var i = 0; i < this.ncolumns(); i++)
-    {
-      if (this.columns[i].removeClient(windowId) === 0)
-      {
-        if (this.columns[i].nclients() === 0) {this.removeColumn(i);}
-        return 0;
-      }
-    }
-    return -1;
+    if (columnIndex < 0 || columnIndex >= this.ncolumns()) {return -1;}
+    if (this.columns[columnIndex].removeClient(clientIndex) !== 0) {return -1;}
+    if (this.columns[columnIndex].nclients() === 0) {return this.removeColumn(columnIndex);}
+    return 0;
   };
   
   this.getClient = function (windowId)
@@ -339,12 +328,47 @@ function Desktop ()
     return 0;
   };
   
-  this.switchClient = function (direction, clientIndex, columnIndex)
+  this.switchClient = function (direction, c_clientIndex, c_columnIndex)
   {
-    // HERE
+    // t_(arget) and c_(urrent)
+    if (c_columnIndex < 0 || c_columnIndex >= this.ncolumns()) {return -1;}
+    var c_nclients = this.columns[c_columnIndex].nclients();
+    
+    var t_columnIndex = c_columnIndex + direction; // target to switch client with
+    if (t_columnIndex < 0 || t_columnIndex >= this.ncolumns()) {return -1;}
+    
+    var t_nclients = this.columns[t_columnIndex].nclients();
+    
+    // switch the whole column if the columns don't have a multiple of each others nclients
+    if (t_nclients < c_nclients) // current column has smaller clients
+    {
+      if (c_nclients % t_nclients !== 0) {return this.switchColumn(direction, c_columnIndex);}
+      
+    }
+    else // target column has smaller or equal clients
+    {
+      if (t_nclients % c_nclients !== 0) {return this.switchColumn(direction, c_columnIndex);}
+      var t_first = Math.floor(c_nclients / t_nclients);
+      
+      var min = c_clientIndex / c_nclients;
+      var max = min + 1 / c_nclients;
+      
+      var t_size = 1 / t_nclients;
+      
+      var c_client = this.columns[c_columnIndex].clients[c_clientIndex];
+      this.removeClient(c_clientIndex, c_columnIndex);
+      
+      for (var i = t_first; i < t_nclients; i++)
+      {
+        if ((i + 1) * t_size > max) {break;}
+        this.columns[c_columnIndex].addClient(this.columns[t_columnIndex].clients[i]); // IMPLEMENT position to insert c_clientIndex
+      }
+      
+      this.columns[t_columnIndex].addClient(c_client); // IMPLEMENT position to insert t_first
+    }
     return 0;
   };
-  
+    
   this.changeDivider = function (direction, change, columnIndex)
   {
     if (columnIndex < 0 || columnIndex >= this.ncolumns()) {return -1;}
@@ -443,17 +467,12 @@ function Layer ()
     return this.desktops[this.ndesktops() - 1].addClient(client);
   };
   
-  this.removeClient = function (windowId)
+  this.removeClient = function (clientIndex, columnIndex, desktopIndex)
   {
-    for (var i = 0; i < this.ndesktops(); i++)
-    {
-      if (this.desktops[i].removeClient(windowId) === 0)
-      {
-        if (this.desktops[i].ncolumns() === 0) {return this.removeDesktop(i);}
-        return 0;
-      }
-    }
-    return -1;
+    if (desktopIndex < 0 || desktopIndex >= this.ndesktops()) {return -1;}
+    if (this.desktops[desktopIndex].removeClient(clientIndex, columnIndex) !== 0) {return -1;}
+    if (this.desktops[desktopIndex].ncolumns() === 0) {return this.removeDesktop(desktopIndex);}
+    return 0;
   };
   
   this.getClient = function (windowId)
@@ -467,7 +486,7 @@ function Layer ()
     return client;
   };
   
-  this.moveDesktop = function (direction , amount, clientIndex, columnIndex, desktopIndex)
+  this.moveDesktop = function (direction, amount, clientIndex, columnIndex, desktopIndex)
   {
     if (desktopIndex < 0 || desktopIndex >= this.ndesktops()) {return -1;}
     
@@ -495,7 +514,7 @@ function Layer ()
       fail = (this.desktops[i].addClient(client) !== 0);
     }
     
-    this.desktops[desktopIndex].columns[columnIndex].removeClient(client.windowId);
+    this.removeClient(clientIndex, columnIndex, desktopIndex);
     return 0;
   };
   
@@ -525,7 +544,7 @@ function Layout ()
   
   this.removeLayer = function (layerIndex)
   {
-    if (layerIndex >= this.nlayers()) {return -1;}
+    if (layerIndex < 0 || layerIndex >= this.nlayers()) {return -1;}
     this.layers.splice(layerIndex, 1);
     return 0;
   };
@@ -541,16 +560,11 @@ function Layout ()
     return this.layers[this.nlayers() - 1].addClient(client);
   };
   
-  this.removeClient = function (windowId)
+  this.removeClient = function (clientIndex, columnIndex, desktopIndex, layerIndex)
   {
-    for (var i = 0; i < this.nlayers(); i++)
-    {
-      if (this.layers[i].removeClient(windowId) === 0)
-      {
-        if (this.layers[i].ndesktops() === 0) {return this.removeLayer(i);}
-        break;
-      }
-    }
+    if (layerIndex < 0 || layerIndex >= this.nlayers()) {return -1;}
+    if (this.layers[layerIndex].removeClient(clientIndex, columnIndex, desktopIndex) !== 0) {return -1;}
+    if (this.layers[layerIndex].ndesktops() === 0) {return this.removeLayer(layerIndex);}
     return 0;
   };
   
@@ -710,12 +724,9 @@ workspace.clientRemoved.connect (function (client)
 {
   if (!(client.windowId in addedClients)) {return -1;}
   delete addedClients[client.windowId];
-  var removed = layout.removeClient(client.windowId);
-  if (removed === 0)
-  {
-    layout.render();
-  }
-  return removed;
+  var internal = layout.getClient(client.windowId);
+  if (layout.removeClient(internal.clientIndex, internal.columnIndex, internal.desktopIndex, internal.layerIndex) !== 0) {return -1;}
+  return layout.render();
 });
 
 // ------------------
@@ -747,8 +758,9 @@ registerShortcut ('Tiling-Gaps: Switch Left', 'Tiling-Gaps: Switch Left', 'Meta+
   var client = layout.getClient(workspace.activeClient.windowId);
   if (client === -1) {return -1;}
   var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
-  if (desktop.switchColumn(-1, client.columnIndex) === -1) {return -1;}
-
+  
+  if (desktop.switchClient(-1, client.clientIndex, client.columnIndex) === -1) {return -1;}
+  
   return desktop.render(client.desktopIndex, client.layerIndex);
 });
 
@@ -757,7 +769,8 @@ registerShortcut ('Tiling-Gaps: Switch Right', 'Tiling-Gaps: Switch Right', 'Met
   var client = layout.getClient(workspace.activeClient.windowId);
   if (client === -1) {return -1;}
   var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
-  if (desktop.switchColumn(1, client.columnIndex) === -1) {return -1;}
+  
+  if (desktop.switchClient(1, client.clientIndex, client.columnIndex) === -1) {return -1;}
   
   return desktop.render(client.desktopIndex, client.layerIndex);
 });

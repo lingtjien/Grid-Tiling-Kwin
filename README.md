@@ -71,6 +71,16 @@ ln -s metadata.desktop ~/.local/share/kservices5/kwin-script-tiling-gaps.desktop
 - set shortcut **Tiling-Gaps: Increase Size** to **Meta+=**
 - set shortcut **Tiling-Gaps: Decrease Size** to **Meta+-**
 
+## Hiding Window Title Bars
+1. System Settings
+2. Application Style
+3. Window Decorations
+4. Your Theme
+5. Window Specific Overrides
+6. Add
+7. **check** `Hide window title bar`
+8. `Regular expression to match` = `.*`.
+
 ## Known Issues
 - Sometimes when you adjust the settings in the menu, you need to turn the script off, apply it, turn it back on and apply it again to register the new values (or just re-log).
 - Some applications do not render correctly on startup sometimes, just use the global shortcut that refreshes the layout
