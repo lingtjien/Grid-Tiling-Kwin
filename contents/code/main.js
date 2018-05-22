@@ -225,7 +225,7 @@ function Column ()
 function Desktop ()
 {
   this.maxRows = 4;
-  this.maxCols = 2;
+  this.maxCols = 4;
   
   this.columns = [];
   this.dividers = [];
@@ -328,52 +328,22 @@ function Desktop ()
     return 0;
   };
   
-  this.switchClient = function (direction, c_clientIndex, c_columnIndex)
+  this.switchClient = function (direction, clientIndex, columnIndex)
   {
-    // t_(arget) and c_(urrent)
-    if (c_columnIndex < 0 || c_columnIndex >= this.ncolumns()) {return -1;}
-    var c_nclients = this.columns[c_columnIndex].nclients();
+    if (columnIndex < 0 || columnIndex >= this.ncolumns()) {return -1;}
+    var column = this.columns[columnIndex];
+    if (clientIndex < 0 || clientIndex >= column.nclients()) {return -1;}
+    var client = this.columns[columnIndex].clients[clientIndex];
     
-    var t_columnIndex = c_columnIndex + direction; // target to switch client with
-    if (t_columnIndex < 0 || t_columnIndex >= this.ncolumns()) {return -1;}
-    
-    var t_nclients = this.columns[t_columnIndex].nclients();
-    
-    var c_size, c_start, t_size, t_start;
-    
-    // switch the whole column if the columns don't have a multiple of each others nclients
-    if (t_nclients < c_nclients) // current column has smaller size clients
+    var i = columnIndex + direction; // target to switch client with
+    if (i < 0 || i >= this.ncolumns()) {return -1;}
+    while (this.columns[i].nclients() !== column.nclients())
     {
-      if (c_nclients % t_nclients !== 0) {return this.switchColumn(direction, c_columnIndex);}
-      t_size = 1;
-      c_size = Math.floor(c_nclients / t_nclients);
-      t_start = Math.floor(c_size / c_clientIndex);
-      c_start = t_start * c_size;
+      i += direction;
+      if (i < 0 || i >= this.ncolumns()) {return this.switchColumn(direction, columnIndex);}
     }
-    else // target column has smaller or equal size clients
-    {
-      if (t_nclients % c_nclients !== 0) {return this.switchColumn(direction, c_columnIndex);}
-      c_size = 1;
-      c_start = c_size * c_clientIndex;
-      t_size = Math.floor(t_nclients / c_nclients);
-      t_start = t_size * c_clientIndex;
-    }
-    // slice is exclusive thus the +1
-    var c_clients = this.columns[c_columnIndex].clients.slice(c_start, c_start + c_size + 1);
-    var t_clients = this.columns[t_columnIndex].clients.slice(t_start, t_start + t_size + 1);
-    
-    var i;
-    for (i = 0; i < c_clients.length; i++)
-    {
-      this.columns[t_columnIndex].addClient(c_clients[i]);
-      this.columns[c_columnIndex].removeClient(c_clients[i].clientIndex);
-    }
-    for (i = 0; i < t_clients.length; i++)
-    {
-      this.columns[c_columnIndex].addClient(t_clients[i]);
-      this.columns[t_columnIndex].removeClient(t_clients[i].clientIndex);
-    }
-    
+    this.columns[columnIndex].clients[clientIndex] = this.columns[i].clients[clientIndex];
+    this.columns[i].clients[clientIndex] = client;
     return 0;
   };
     
