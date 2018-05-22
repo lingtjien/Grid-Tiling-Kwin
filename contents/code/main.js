@@ -339,33 +339,41 @@ function Desktop ()
     
     var t_nclients = this.columns[t_columnIndex].nclients();
     
+    var c_size, c_start, t_size, t_start;
+    
     // switch the whole column if the columns don't have a multiple of each others nclients
-    if (t_nclients < c_nclients) // current column has smaller clients
+    if (t_nclients < c_nclients) // current column has smaller size clients
     {
       if (c_nclients % t_nclients !== 0) {return this.switchColumn(direction, c_columnIndex);}
-      
+      t_size = 1;
+      c_size = Math.floor(c_nclients / t_nclients);
+      t_start = Math.floor(c_size / c_clientIndex);
+      c_start = t_start * c_size;
     }
-    else // target column has smaller or equal clients
+    else // target column has smaller or equal size clients
     {
       if (t_nclients % c_nclients !== 0) {return this.switchColumn(direction, c_columnIndex);}
-      var t_first = Math.floor(c_nclients / t_nclients);
-      
-      var min = c_clientIndex / c_nclients;
-      var max = min + 1 / c_nclients;
-      
-      var t_size = 1 / t_nclients;
-      
-      var c_client = this.columns[c_columnIndex].clients[c_clientIndex];
-      this.removeClient(c_clientIndex, c_columnIndex);
-      
-      for (var i = t_first; i < t_nclients; i++)
-      {
-        if ((i + 1) * t_size > max) {break;}
-        this.columns[c_columnIndex].addClient(this.columns[t_columnIndex].clients[i]); // IMPLEMENT position to insert c_clientIndex
-      }
-      
-      this.columns[t_columnIndex].addClient(c_client); // IMPLEMENT position to insert t_first
+      c_size = 1;
+      c_start = c_size * c_clientIndex;
+      t_size = Math.floor(t_nclients / c_nclients);
+      t_start = t_size * c_clientIndex;
     }
+    // slice is exclusive thus the +1
+    var c_clients = this.columns[c_columnIndex].clients.slice(c_start, c_start + c_size + 1);
+    var t_clients = this.columns[t_columnIndex].clients.slice(t_start, t_start + t_size + 1);
+    
+    var i;
+    for (i = 0; i < c_clients.length; i++)
+    {
+      this.columns[t_columnIndex].addClient(c_clients[i]);
+      this.columns[c_columnIndex].removeClient(c_clients[i].clientIndex);
+    }
+    for (i = 0; i < t_clients.length; i++)
+    {
+      this.columns[c_columnIndex].addClient(t_clients[i]);
+      this.columns[t_columnIndex].removeClient(t_clients[i].clientIndex);
+    }
+    
     return 0;
   };
     
