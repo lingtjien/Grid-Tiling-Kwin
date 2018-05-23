@@ -619,9 +619,51 @@ var Client =
     
     return 0;
   },
-  moved: function (client, desktop, clientHeight, columnWidth)
+  movedX: function (client, desktop, columnWidth)
   {
-    // HERE
+    var diff =
+    {
+      x: client.geometry.x - client.geometryRender.x,
+      y: client.geometry.y - client.geometryRender.y,
+      width: client.geometry.width - client.geometryRender.width,
+      height: client.geometry.height - client.geometryRender.height
+    };
+    
+    if (diff.x === 0) {return -1;}
+    if (diff.width !== 0 || diff.height !== 0) {return -1;}
+    
+    if (diff.x > moveThreshold * columnWidth)
+    {
+      desktop.switchClient(1, client.clientIndex, client.desktopIndex);
+    }
+    else if (diff.x < -moveThreshold * columnWidth)
+    {
+      desktop.switchClient(1, client.clientIndex, client.desktopIndex);
+    }
+        
+    return 0;
+  },
+  movedY: function (client, desktop, clientHeight)
+  {
+    var diff =
+    {
+      x: client.geometry.x - client.geometryRender.x,
+      y: client.geometry.y - client.geometryRender.y,
+      width: client.geometry.width - client.geometryRender.width,
+      height: client.geometry.height - client.geometryRender.height
+    };
+    
+    if (diff.y === 0) {return -1;}
+    if (diff.width !== 0 || diff.height !== 0) {return -1;}
+    
+    if (diff.y > moveThreshold * clientHeight)
+    {
+      desktop.columns[client.columnIndex].switchClient(1, client.clientIndex);
+    }
+    else if (diff.y < -moveThreshold * clientHeight)
+    {
+      desktop.columns[client.columnIndex].switchClient(-1, client.clientIndex);
+    }
     
     return 0;
   },
@@ -678,9 +720,11 @@ workspace.clientActivated.connect (function (client)
     var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
     var properties = Client.properties(desktop.columns[client.columnIndex].nclients(), desktop.ncolumns(), client.desktopIndex);
     
-    if (Client.resized(client, desktop, properties.clientHeight, properties.columnWidth) === -1 && Client.moved(client, desktop, properties.clientHeight, properties.columnWidth) === -1) {return -1;}
+    if (Client.resized(client, desktop, properties.clientHeight, properties.columnWidth) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
+    if (Client.movedX(client, desktop, properties.columnWidth) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
+    if (Client.movedY(client, desktop, properties.clientHeight) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
     
-    return desktop.render(client.desktopIndex, client.layerIndex);
+    return 0;
   });
   client.clientStepUserMovedResized.connect (function (client)
   {
@@ -690,9 +734,9 @@ workspace.clientActivated.connect (function (client)
     var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
     var properties = Client.properties(desktop.columns[client.columnIndex].nclients(), desktop.ncolumns(), client.desktopIndex);
     
-    if (Client.resized(client, desktop, properties.clientHeight, properties.columnWidth) === -1) {return -1;}
+    if (Client.resized(client, desktop, properties.clientHeight, properties.columnWidth) === -1) {desktop.render(client.desktopIndex, client.layerIndex);}
     
-    return desktop.render(client.desktopIndex, client.layerIndex);
+    return 0;
   });
   
   return 0;
