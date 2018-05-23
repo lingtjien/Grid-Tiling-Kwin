@@ -833,9 +833,7 @@ registerShortcut ('Tiling-Gaps: Close Desktop', 'Tiling-Gaps: Close Desktop', 'M
       {
         column.clients[l].closeWindow();
       }
-      desktop.removeColumn(k);
     }
-    layer.removeDesktop(j);
   }
   return layout.render();
 });
