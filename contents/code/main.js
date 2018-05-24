@@ -640,7 +640,7 @@ var Client =
     {
       desktop.switchClient(1, client.clientIndex, client.desktopIndex);
     }
-        
+    
     return 0;
   },
   movedY: function (client, desktop, clientHeight)
@@ -724,6 +724,7 @@ workspace.clientActivated.connect (function (client)
     if (Client.movedX(client, desktop, properties.columnWidth) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
     if (Client.movedY(client, desktop, properties.clientHeight) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
     
+    
     return 0;
   });
   client.clientStepUserMovedResized.connect (function (client)
@@ -755,7 +756,7 @@ workspace.clientRemoved.connect (function (client)
 // Creating Shortcuts
 // ------------------
 
-registerShortcut ('Tiling-Gaps: Switch Up', 'Tiling-Gaps: Switch Up', 'Meta+Alt+Up', function ()
+registerShortcut ('Grid-Tiling: Switch Up', 'Grid-Tiling: Switch Up', 'Meta+Alt+Up', function ()
 {
   var client = layout.getClient(workspace.activeClient.windowId);
   if (client === -1) {return -1;}
@@ -765,7 +766,7 @@ registerShortcut ('Tiling-Gaps: Switch Up', 'Tiling-Gaps: Switch Up', 'Meta+Alt+
   return desktop.render(client.desktopIndex, client.layerIndex);
 });
 
-registerShortcut ('Tiling-Gaps: Switch Down', 'Tiling-Gaps: Switch Down', 'Meta+Alt+Down', function ()
+registerShortcut ('Grid-Tiling: Switch Down', 'Grid-Tiling: Switch Down', 'Meta+Alt+Down', function ()
 {
   var client = layout.getClient(workspace.activeClient.windowId);
   if (client === -1) {return -1;}
@@ -775,7 +776,7 @@ registerShortcut ('Tiling-Gaps: Switch Down', 'Tiling-Gaps: Switch Down', 'Meta+
   return desktop.render(client.desktopIndex, client.layerIndex);
 });
 
-registerShortcut ('Tiling-Gaps: Switch Left', 'Tiling-Gaps: Switch Left', 'Meta+Alt+Left', function ()
+registerShortcut ('Grid-Tiling: Switch Left', 'Grid-Tiling: Switch Left', 'Meta+Alt+Left', function ()
 {
   var client = layout.getClient(workspace.activeClient.windowId);
   if (client === -1) {return -1;}
@@ -786,7 +787,7 @@ registerShortcut ('Tiling-Gaps: Switch Left', 'Tiling-Gaps: Switch Left', 'Meta+
   return desktop.render(client.desktopIndex, client.layerIndex);
 });
 
-registerShortcut ('Tiling-Gaps: Switch Right', 'Tiling-Gaps: Switch Right', 'Meta+Alt+Right', function ()
+registerShortcut ('Grid-Tiling: Switch Right', 'Grid-Tiling: Switch Right', 'Meta+Alt+Right', function ()
 {
   var client = layout.getClient(workspace.activeClient.windowId);
   if (client === -1) {return -1;}
@@ -797,7 +798,7 @@ registerShortcut ('Tiling-Gaps: Switch Right', 'Tiling-Gaps: Switch Right', 'Met
   return desktop.render(client.desktopIndex, client.layerIndex);
 });
 
-registerShortcut ('Tiling-Gaps: Move Right Desktop', 'Tiling-Gaps: Move Right Desktop', 'Meta+End', function ()
+registerShortcut ('Grid-Tiling: Move Right Desktop', 'Grid-Tiling: Move Right Desktop', 'Meta+End', function ()
 {
   var client = layout.getClient(workspace.activeClient.windowId);
   if (client === -1) {return -1;}
@@ -810,7 +811,7 @@ registerShortcut ('Tiling-Gaps: Move Right Desktop', 'Tiling-Gaps: Move Right De
   return 0;
 });
 
-registerShortcut ('Tiling-Gaps: Move Left Desktop', 'Tiling-Gaps: Move Left Desktop', 'Meta+Home', function ()
+registerShortcut ('Grid-Tiling: Move Left Desktop', 'Grid-Tiling: Move Left Desktop', 'Meta+Home', function ()
 {
   var client = layout.getClient(workspace.activeClient.windowId);
   if (client === -1) {return -1;}
@@ -823,7 +824,7 @@ registerShortcut ('Tiling-Gaps: Move Left Desktop', 'Tiling-Gaps: Move Left Desk
   return 0;
 });
 
-registerShortcut ('Tiling-Gaps: Move Up Desktop', 'Tiling-Gaps: Move Up Desktop', 'Meta+PgUp', function ()
+registerShortcut ('Grid-Tiling: Move Up Desktop', 'Grid-Tiling: Move Up Desktop', 'Meta+PgUp', function ()
 {
   var client = layout.getClient(workspace.activeClient.windowId);
   if (client === -1) {return -1;}
@@ -836,7 +837,7 @@ registerShortcut ('Tiling-Gaps: Move Up Desktop', 'Tiling-Gaps: Move Up Desktop'
   return 0;
 });
 
-registerShortcut ('Tiling-Gaps: Move Down Desktop', 'Tiling-Gaps: Move Down Desktop', 'Meta+PgDown', function ()
+registerShortcut ('Grid-Tiling: Move Down Desktop', 'Grid-Tiling: Move Down Desktop', 'Meta+PgDown', function ()
 {
   var client = layout.getClient(workspace.activeClient.windowId);
   if (client === -1) {return -1;}
@@ -849,19 +850,19 @@ registerShortcut ('Tiling-Gaps: Move Down Desktop', 'Tiling-Gaps: Move Down Desk
   return 0;
 });
 
-registerShortcut ('Tiling-Gaps: Toggle Border', 'Tiling-Gaps: Toggle Border', 'Meta+P', function ()
+registerShortcut ('Grid-Tiling: Toggle Border', 'Grid-Tiling: Toggle Border', 'Meta+P', function ()
 {
   noBorder = !noBorder;
   return layout.render();
 });
 
-registerShortcut ('Tiling-Gaps: Toggle Opacity', 'Tiling-Gaps: Toggle Opacity', 'Meta+O', function ()
+registerShortcut ('Grid-Tiling: Toggle Opacity', 'Grid-Tiling: Toggle Opacity', 'Meta+O', function ()
 {
   noOpacity = !noOpacity;
   return layout.render();
 });
 
-registerShortcut ('Tiling-Gaps: Close Desktop', 'Tiling-Gaps: Close Desktop', 'Meta+Q', function ()
+registerShortcut ('Grid-Tiling: Close Desktop', 'Grid-Tiling: Close Desktop', 'Meta+Q', function ()
 {
   // looping is done backwards as the array is decreased in size in every iteration thus forward looping will result in skipping elements
   var j = Converter.currentIndex();
@@ -882,7 +883,7 @@ registerShortcut ('Tiling-Gaps: Close Desktop', 'Tiling-Gaps: Close Desktop', 'M
   return layout.render();
 });
 
-registerShortcut ('Tiling-Gaps: Maximize', 'Tiling-Gaps: Maximize', 'Meta+M', function ()
+registerShortcut ('Grid-Tiling: Maximize', 'Grid-Tiling: Maximize', 'Meta+M', function ()
 {
   var client = layout.getClient(workspace.activeClient.windowId);
   if (client === -1) {return -1;}
@@ -898,12 +899,12 @@ registerShortcut ('Tiling-Gaps: Maximize', 'Tiling-Gaps: Maximize', 'Meta+M', fu
   return 0;
 });
 
-registerShortcut ('Tiling-Gaps: Refresh (Minimize)', 'Tiling-Gaps: Refresh (Minimize)', 'Meta+N', function ()
+registerShortcut ('Grid-Tiling: Refresh (Minimize)', 'Grid-Tiling: Refresh (Minimize)', 'Meta+N', function ()
 {
   return layout.render();
 });
 
-registerShortcut ('Tiling-Gaps: Increase Size', 'Tiling-Gaps: Increase Size', 'Meta+=', function ()
+registerShortcut ('Grid-Tiling: Increase Size', 'Grid-Tiling: Increase Size', 'Meta+=', function ()
 {
   var client = layout.getClient(workspace.activeClient.windowId);
   if (client === -1) {return -1;}
@@ -914,7 +915,7 @@ registerShortcut ('Tiling-Gaps: Increase Size', 'Tiling-Gaps: Increase Size', 'M
   return desktop.render(client.desktopIndex, client.layerIndex);
 });
 
-registerShortcut ('Tiling-Gaps: Decrease Size', 'Tiling-Gaps: Decrease Size', 'Meta+-', function ()
+registerShortcut ('Grid-Tiling: Decrease Size', 'Grid-Tiling: Decrease Size', 'Meta+-', function ()
 {
   var client = layout.getClient(workspace.activeClient.windowId);
   if (client === -1) {return -1;}
