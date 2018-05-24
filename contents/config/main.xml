@@ -49,13 +49,13 @@
         <label>default state of borders on/off at start</label>
         <default>true</default>
       </entry>
-      <entry name="fullClients" type="string">
-        <label>clients minimum tiled full</label>
-        <default>texstudio, inkscape, gimp, designer, creator, kdevelop, kdenlive</default>
+      <entry name="clientNames" type="string">
+        <label>names of the clients which define a minimum space</label>
+        <default>texstudio, inkscape, gimp, designer, creator, kdevelop, kdenlive, chromium, kate, spotify</default>
       </entry>
-      <entry name="halfClients" type="string">
-        <label>clients minimum tiled half</label>
-        <default>chromium, kate, spotify</default>
+      <entry name="clientSpaces" type="string">
+        <label>minimum spaces of the clients which define a mimimum space</label>
+        <default>1, 1, 1, 1, 1, 1, 1, 2, 2, 2</default>
       </entry>
       <entry name="ignoredClients" type="string">
         <label>ignored clients</label>

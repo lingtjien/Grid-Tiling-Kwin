@@ -1,81 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>KWin::TilingGapsConfigForm</class>
- <widget class="QWidget" name="KWin::TilingGapsConfigForm">
+ <class>KWin::GridTilingConfigForm</class>
+ <widget class="QWidget" name="KWin::GridTilingConfigForm">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>330</width>
-    <height>440</height>
+    <height>470</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>330</width>
-    <height>440</height>
+    <height>470</height>
    </size>
   </property>
   <property name="windowTitle">
-   <string>Tiling Gaps</string>
+   <string>Grid Tiling</string>
   </property>
-  <widget class="QWidget" name="horizontalLayoutWidget_4">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>249</y>
-     <width>311</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <layout class="QHBoxLayout" name="fullClientsLayout">
-    <item>
-     <widget class="QLabel" name="fullClientsLabel">
-      <property name="text">
-       <string>Full Clients</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QLineEdit" name="kcfg_fullClients">
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QWidget" name="horizontalLayoutWidget_5">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>290</y>
-     <width>311</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <layout class="QHBoxLayout" name="halfClientsLayout">
-    <item>
-     <widget class="QLabel" name="halfClientsLabel">
-      <property name="text">
-       <string>Half Clients</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QLineEdit" name="kcfg_halfClients">
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
   <widget class="QWidget" name="horizontalLayoutWidget_6">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>350</y>
+     <y>260</y>
      <width>311</width>
      <height>41</height>
     </rect>
@@ -101,7 +49,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>390</y>
+     <y>300</y>
      <width>311</width>
      <height>41</height>
     </rect>
@@ -129,7 +77,7 @@
      <x>10</x>
      <y>210</y>
      <width>311</width>
-     <height>20</height>
+     <height>24</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="hLayout2">
@@ -356,7 +304,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>230</y>
+     <y>340</y>
      <width>311</width>
      <height>16</height>
     </rect>
@@ -369,7 +317,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>330</y>
+     <y>240</y>
      <width>311</width>
      <height>16</height>
     </rect>
@@ -377,6 +325,67 @@
    <property name="orientation">
     <enum>Qt::Horizontal</enum>
    </property>
+  </widget>
+  <widget class="QWidget" name="verticalLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>360</y>
+     <width>311</width>
+     <height>101</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="clientLayout">
+    <item>
+     <widget class="QLabel" name="clientLabel">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Client</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="clientNamesLayout">
+      <item>
+       <widget class="QLabel" name="clientNamesLabel">
+        <property name="text">
+         <string>Name</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="kcfg_clientNames">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="clientSpacesLayout">
+      <item>
+       <widget class="QLabel" name="clientSpacesLabel">
+        <property name="text">
+         <string>Space</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="kcfg_clientSpaces">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
   </widget>
  </widget>
  <resources/>

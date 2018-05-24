@@ -1,6 +1,6 @@
 [Desktop Entry]
-Name=Tiling-Gaps
-Comment=Automatically tile new windows with gaps
+Name=Grid-Tiling
+Comment=Automatically tile new windows with gaps in any grid size
 Icon=preferences-system-windows-script-test
 Type=Service
 
@@ -8,7 +8,7 @@ X-Plasma-API=javascript
 X-Plasma-MainScript=code/main.js
 
 X-KDE-PluginInfo-Author=LinG
-X-KDE-PluginInfo-Name=tiling-gaps
+X-KDE-PluginInfo-Name=grid-tiling
 X-KDE-PluginInfo-Version=0.0.1
 
 X-KDE-PluginInfo-Depends=
@@ -16,5 +16,5 @@ X-KDE-PluginInfo-License=GPL
 X-KDE-ServiceTypes=KWin/Script,KCModule
 
 X-KDE-Library=kwin/effects/configs/kcm_kwin4_genericscripted
-X-KDE-PluginKeyword=tiling-gaps
-X-KDE-ParentComponents=tiling-gaps
+X-KDE-PluginKeyword=grid-tiling
+X-KDE-ParentComponents=grid-tiling

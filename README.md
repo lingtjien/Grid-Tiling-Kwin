@@ -7,17 +7,18 @@ Normal Installation
 ```
 plasmapkg2 --type kwinscript -i *Name of this directory*
 mkdir -p ~/.local/share/kservices5
-ln -s ~/.local/share/kwin/scripts/tiling-gaps/metadata.desktop ~/.local/share/kservices5/kwin-script-tiling-gaps.desktop
+cd ~/.local/share/kservices5
+ln -s ~/.local/share/kwin/scripts/grid-tiling/metadata.desktop kwin-script-grid-tiling.desktop 
 ```
 
 Local Installation (Advanced)
 
 ```
-mkdir -p ~/.local/share/kwin/scripts/tiling-gaps
-ln -s contents ~/.local/share/kwin/scripts/tiling-gaps/contents
-ln -s metadata.desktop ~/.local/share/kwin/scripts/tiling-gaps/metadata.desktop
+mkdir -p ~/.local/share/kwin/scripts/grid-tiling
+ln -s contents ~/.local/share/kwin/scripts/grid-tiling/contents
+ln -s metadata.desktop ~/.local/share/kwin/scripts/grid-tiling/metadata.desktop
 mkdir -p ~/.local/share/kservices5
-ln -s metadata.desktop ~/.local/share/kservices5/kwin-script-tiling-gaps.desktop
+ln -s metadata.desktop ~/.local/share/kservices5/kwin-script-grid-tiling.desktop
 ```
 
 *Note: You can replace ln for cp, if you prefer to copy and not have it linked to your cloned repository, using `ln` instead of `cp` will result in an automatic update when you pull the latest changes*

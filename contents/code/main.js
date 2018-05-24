@@ -4,6 +4,23 @@
 
 var Library =
 {
+  createMinSpace: function (clientNames, clientSpaces)
+  {
+    var minSpaces = {};
+    
+    var names = clientName.split(',');
+    var spaces = clientSpaces.split(',');
+    
+    var smallest = names.length < minSpaces.length ? minSpaces.length : names.length;
+    for (var i = 0; i < smallest; i++)
+    {
+      var name = names[i].trim();
+      var space = spaces[i].trim();
+      if (name === '' || space === '') {continue;}
+      minSpaces[name] = 1 / Number(space);
+    }
+    return minSpaces; //HERE
+  },
   trimSplitString: function (string)
   {
     var split = string.split(',');
@@ -41,9 +58,9 @@ var margin =
   right: Number(readConfig('rightMargin', 0))
 };
 
-var fullClients = Library.trimSplitString(readConfig('fullClients', 'texstudio, inkscape, gimp, designer, creator, kdevelop, kdenlive').toString());
+var clientNames = Library.trimSplitString(readConfig('clientsNames', 'texstudio, inkscape, gimp, designer, creator, kdevelop, kdenlive, chromium, kate, spotify').toString());
 
-var halfClients = Library.trimSplitString(readConfig('halfClients', 'chromium, kate, spotify').toString());
+var clientSpaces = Library.trimSplitNumber(readConfig('clientSpaces', '1, 1, 1, 1, 1, 1, 1, 2, 2, 2'));
 
 var ignoredClients = Library.trimSplitString('ksmserver, krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, '.concat(readConfig('ignoredClients', 'wine, overwatch').toString()));
 
