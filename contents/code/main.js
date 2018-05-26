@@ -361,7 +361,7 @@ function Desktop (rows, columns)
     }
     
     var column = new Column();
-    if (client.minSpace > 1 / this.ncolumns()) {return -1;}
+    if (client.minSpace > 1 / (this.ncolumns() + 1)) {return -1;}
     if (this.addColumn(column) === -1) {return -1;}
     this.columns[this.ncolumns() - 1].addClient(client);
     
