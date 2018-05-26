@@ -44,7 +44,7 @@ var Library =
     var names = this.trimSplitString(clientNames);
     var spaces = this.trimSplitString(clientSpaces);
     
-    for (var i = 0; i < Library.smallest(names.length, spaces.length); i++)
+    for (var i = 0; i < this.smallest(names.length, spaces.length); i++)
     {
       minSpaces.names.push(names[i]);
       minSpaces.spaces.push(1 / Number(spaces[i]));
@@ -76,7 +76,7 @@ var Library =
     var rows = this.trimSplitString(rowstring); //here
     var columns = this.trimSplitString(columnstring);
     
-    for (var i = 0; i < Library.smallest(rows.length, columns.length); i++)
+    for (var i = 0; i < this.smallest(rows.length, columns.length); i++)
     {
       grids.rows.push(Number(rows[i]));
       grids.columns.push(Number(columns[i]));
@@ -564,8 +564,7 @@ function Layer ()
       fail = (this.desktops[i].addClient(client) !== 0);
     }
     
-    this.removeClient(clientIndex, columnIndex, desktopIndex);
-    return 0;
+    return this.desktops[desktopIndex].removeClient(clientIndex, columnIndex); // removeClient method itself will also remove the desktop if it becomes empty thus making it not possible to move
   };
   
   // rendering
