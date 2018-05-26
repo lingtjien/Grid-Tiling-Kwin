@@ -19,15 +19,37 @@ var Library =
       return value1;
     }
   },
-  trimSplitString: function (string)
+  trimSplitString: function (input)
   {
-    var split = string.split(',');
+    var split = input.split(',');
     for (var i = 0; i < split.length; i++)
     {
       if (split[i].trim() === '') {split.splice(i, 1); continue;}
       split[i] = split[i].trim();
     }
     return split;
+  },
+  createMinSpaces: function (clientNames, clientSpaces)
+  {
+    var minSpaces =
+    {
+      names: [],
+      spaces: [],
+      size: function ()
+      {
+        return Library.smallest(this.names.length, this.spaces.length);
+      }
+    };
+    
+    var names = this.trimSplitString(clientNames);
+    var spaces = this.trimSplitString(clientSpaces);
+    
+    for (var i = 0; i < Library.smallest(names.length, spaces.length); i++)
+    {
+      minSpaces.names.push(names[i]);
+      minSpaces.spaces.push(1 / Number(spaces[i]));
+    }
+    return minSpaces;
   },
   createGrids: function (rowstring, columnstring)
   {
@@ -37,7 +59,7 @@ var Library =
       columns: [],
       size: function ()
       {
-        return this.smallest(this.rows.length, this.columns.length);
+        return Library.smallest(this.rows.length, this.columns.length);
       },
       smallestSpace: function ()
       {
@@ -51,38 +73,22 @@ var Library =
       }
     };
     
-    var rows = this.trimSplitString(rowstring);
+    var rows = this.trimSplitString(rowstring); //here
     var columns = this.trimSplitString(columnstring);
     
-    for (var i = 0; i < this.smallest(rows.length, columns.length); i++)
+    for (var i = 0; i < Library.smallest(rows.length, columns.length); i++)
     {
       grids.rows.push(Number(rows[i]));
-      girds.columns.push(Number(columns[i]));
+      grids.columns.push(Number(columns[i]));
     }
     
     return grids;
   },
-  createMinSpaces: function (clientNames, clientSpaces)
+  screenToGrid: function (screen)
   {
-    var minSpaces =
-    {
-      names: [],
-      spaces: [],
-      size: function ()
-      {
-        return this.smallest(this.name.length, this.space.length);
-      }
-    };
-    
-    var names = this.trimSplitString(clientNames);
-    var spaces = this.trimSplitString(clientSpaces);
-    
-    for (var i = 0; i < this.smallest(names.length, spaces.length); i++)
-    {
-      minSpaces.names.push(names[i]);
-      minSpaces.spaces.push(1 / Number(spaces[i]));
-    }
-    return minSpaces;
+    var index = 0;
+    if (screen < Parameters.grids.size()) {index = screen;}
+    return {row: Parameters.grids.rows[index], column: Parameters.grids.columns[index]};
   }
 };
 
@@ -92,7 +98,7 @@ var Library =
 
 var Parameters =
 {
-  grids: Library.createGrids(readConfig('gridRows', '2, 2'), readConfig('gridColumns', '2, 2')),
+  grids: Library.createGrids(readConfig('gridRows', '2, 2').toString(), readConfig('gridColumns', '2, 3').toString()),
   gap: Number(readConfig('gap', 16)),
   dividerBounds: Number(readConfig('dividerBounds', 0.2)),
   dividerStepSize: Number(readConfig('dividerStepSize', 0.05)),
@@ -263,9 +269,9 @@ function Column ()
         height: Math.floor(height)
       };
       
-      this.clients[i].Parameters.noBorder = Parameters.noBorder;
-      if (Parameters.noOpacity) {this.clients[i].Parameters.opacity = 1;}
-      else {this.clients[i].Parameters.opacity = Parameters.opacity;}
+      this.clients[i].noBorder = Parameters.noBorder;
+      if (Parameters.noOpacity) {this.clients[i].opacity = 1;}
+      else {this.clients[i].opacity = Parameters.opacity;}
       
       this.clients[i].desktop = Converter.desktop(desktopIndex);
       this.clients[i].screen = Converter.screen(desktopIndex);
@@ -285,10 +291,10 @@ function Column ()
   
 }
 
-function Desktop ()
+function Desktop (rows, columns)
 {
-  this.maxRows = 4;
-  this.maxCols = 4;
+  this.maxRows = rows;
+  this.maxCols = columns;
   
   this.columns = [];
   this.dividers = [];
@@ -485,13 +491,14 @@ function Layer ()
   
   this.addClient = function (client)
   {
-    var desktop;
+    var grid, desktop;
     
     // try to add to current desktop
     var index = Converter.currentIndex();
     while (index >= this.ndesktops())
     {
-      desktop = new Desktop();
+      grid = Library.screenToGrid(Converter.screen(this.ndesktops()));
+      desktop = new Desktop(grid.row, grid.column);
       if (this.addDesktop(desktop) !== 0) {return -1;}
     }
     if (this.desktops[index].addClient(client) === 0) {return 0;}
@@ -503,7 +510,8 @@ function Layer ()
     }
     
     // make a new desktop (if possible) and add to that
-    desktop = new Desktop();
+    grid = Library.screenToGrid(Converter.screen(this.ndesktops()));
+    desktop = new Desktop(grid.row, grid.column);
     if (this.addDesktop(desktop) !== 0) {return -1;}
     return this.desktops[this.ndesktops() - 1].addClient(client);
   };
@@ -548,7 +556,8 @@ function Layer ()
       if (i < 0) {return -1;}
       while (i >= this.ndesktops())
       {
-        var desktop = new Desktop();
+        var grid = Library.screenToGrid(Converter.screen(this.ndesktops()));
+        var desktop = new Desktop(grid.row, grid.column);
         if (this.addDesktop(desktop) === -1) {return -1;}
       }
       
