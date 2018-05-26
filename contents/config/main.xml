@@ -5,6 +5,14 @@
       http://www.kde.org/standards/kcfg/1.0/kcfg.xsd" >
     <kcfgfile name=""/>
     <group name="">
+      <entry name="gridRows" type="string">
+        <label>the number of rows a grid uses, can be supplied differently per screen</label>
+        <default>2, 2</default>
+      </entry>
+      <entry name="gridColumns" type="string">
+        <label>the number of columns a grid uses, can be supplied differently per screen</label>
+        <default>2, 2</default>
+      </entry>
       <entry name="gap" type="int">
         <label>gap size between windows in px</label>
         <default>16</default>
