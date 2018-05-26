@@ -11,7 +11,7 @@
       </entry>
       <entry name="gridColumns" type="string">
         <label>the number of columns a grid uses, can be supplied differently per screen</label>
-        <default>2, 2</default>
+        <default>2, 3</default>
       </entry>
       <entry name="gap" type="int">
         <label>gap size between windows in px</label>
@@ -19,7 +19,7 @@
       </entry>
       <entry name="dividerBounds" type="double">
         <label>divider from this value to 1-value</label>
-        <default>0.2</default>
+        <default>0.3</default>
       </entry>
       <entry name="dividerStepSize" type="double">
         <label>increment and decrement size of the divider</label>

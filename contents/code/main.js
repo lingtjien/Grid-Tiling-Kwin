@@ -100,7 +100,7 @@ var Parameters =
 {
   grids: Library.createGrids(readConfig('gridRows', '2, 2').toString(), readConfig('gridColumns', '2, 3').toString()),
   gap: Number(readConfig('gap', 16)),
-  dividerBounds: Number(readConfig('dividerBounds', 0.2)),
+  dividerBounds: Number(readConfig('dividerBounds', 0.3)),
   dividerStepSize: Number(readConfig('dividerStepSize', 0.05)),
   moveThreshold: Number(readConfig('moveThreshold', 0.5)), // move clients outside this fraction of its own size
   opacity: Number(readConfig('opacity', 0.9)),
