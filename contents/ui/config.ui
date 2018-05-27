@@ -364,7 +364,7 @@
            </size>
           </property>
           <property name="text">
-           <string>Client</string>
+           <string>Client Min Space</string>
           </property>
          </widget>
         </item>
