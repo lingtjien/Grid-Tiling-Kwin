@@ -691,11 +691,11 @@ var Client =
     
     if (diff.x > Parameters.moveThreshold * columnWidth)
     {
-      desktop.switchClient(1, client.clientIndex, client.desktopIndex);
+      desktop.switchClient(1, client.clientIndex, client.columnIndex);
     }
     else if (diff.x < -Parameters.moveThreshold * columnWidth)
     {
-      desktop.switchClient(1, client.clientIndex, client.desktopIndex);
+      desktop.switchClient(-1, client.clientIndex, client.columnIndex);
     }
     
     return 0;
