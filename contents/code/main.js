@@ -654,15 +654,8 @@ var Client =
     
     return {clientHeight: (area.height - Parameters.margin.top - Parameters.margin.bottom - ((nclients + 1) * Parameters.gap)) / nclients, columnWidth: (area.width - Parameters.margin.left - Parameters.margin.right - ((ncolumns + 1) * Parameters.gap)) / ncolumns};
   },
-  resized: function (client, desktop, clientHeight, columnWidth)
+  resized: function (diff, client, desktop, clientHeight, columnWidth)
   {
-    var diff =
-    {
-      x: client.geometry.x - client.geometryRender.x,
-      y: client.geometry.y - client.geometryRender.y,
-      width: client.geometry.width - client.geometryRender.width,
-      height: client.geometry.height - client.geometryRender.height
-    };
     if (diff.width === 0 && diff.height === 0) {return -1;}
     
     if (diff.width !== 0)
@@ -691,16 +684,8 @@ var Client =
     
     return 0;
   },
-  movedX: function (client, desktop, columnWidth)
+  movedX: function (diff, client, desktop, columnWidth)
   {
-    var diff =
-    {
-      x: client.geometry.x - client.geometryRender.x,
-      y: client.geometry.y - client.geometryRender.y,
-      width: client.geometry.width - client.geometryRender.width,
-      height: client.geometry.height - client.geometryRender.height
-    };
-    
     if (diff.x === 0) {return -1;}
     if (diff.width !== 0 || diff.height !== 0) {return -1;}
     
@@ -715,16 +700,8 @@ var Client =
     
     return 0;
   },
-  movedY: function (client, desktop, clientHeight)
+  movedY: function (diff, client, desktop, clientHeight)
   {
-    var diff =
-    {
-      x: client.geometry.x - client.geometryRender.x,
-      y: client.geometry.y - client.geometryRender.y,
-      width: client.geometry.width - client.geometryRender.width,
-      height: client.geometry.height - client.geometryRender.height
-    };
-    
     if (diff.y === 0) {return -1;}
     if (diff.width !== 0 || diff.height !== 0) {return -1;}
     
@@ -800,9 +777,17 @@ workspace.clientActivated.connect (function (client)
     var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
     var properties = Client.properties(desktop.columns[client.columnIndex].nclients(), desktop.ncolumns(), client.desktopIndex);
     
-    if (Client.resized(client, desktop, properties.clientHeight, properties.columnWidth) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
-    if (Client.movedX(client, desktop, properties.columnWidth) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
-    if (Client.movedY(client, desktop, properties.clientHeight) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
+    var diff =
+    {
+      x: client.geometry.x - client.geometryRender.x,
+      y: client.geometry.y - client.geometryRender.y,
+      width: client.geometry.width - client.geometryRender.width,
+      height: client.geometry.height - client.geometryRender.height
+    };
+    
+    if (Client.resized(diff, client, desktop, properties.clientHeight, properties.columnWidth) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
+    if (Client.movedX(diff, client, desktop, properties.columnWidth) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
+    if (Client.movedY(diff, client, desktop, properties.clientHeight) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
     
     return 0;
   });
@@ -814,7 +799,15 @@ workspace.clientActivated.connect (function (client)
     var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
     var properties = Client.properties(desktop.columns[client.columnIndex].nclients(), desktop.ncolumns(), client.desktopIndex);
     
-    if (Client.resized(client, desktop, properties.clientHeight, properties.columnWidth) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
+    var diff =
+    {
+      x: client.geometry.x - client.geometryRender.x,
+      y: client.geometry.y - client.geometryRender.y,
+      width: client.geometry.width - client.geometryRender.width,
+      height: client.geometry.height - client.geometryRender.height
+    };
+    
+    if (Client.resized(diff, client, desktop, properties.clientHeight, properties.columnWidth) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
     
     return 0;
   });
