@@ -814,7 +814,7 @@ workspace.clientActivated.connect (function (client)
     var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
     var properties = Client.properties(desktop.columns[client.columnIndex].nclients(), desktop.ncolumns(), client.desktopIndex);
     
-    if (Client.resized(client, desktop, properties.clientHeight, properties.columnWidth) === -1) {desktop.render(client.desktopIndex, client.layerIndex);}
+    if (Client.resized(client, desktop, properties.clientHeight, properties.columnWidth) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
     
     return 0;
   });
