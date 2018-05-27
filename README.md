@@ -51,7 +51,7 @@ Delete the linked or copied files that you created during installation. To remov
 - set the opacity as defined by `opacity`
 - set default opacity toggle `noOpacity`
 - set default borders toggle `noBorders`
-- toggle between bordered clients (global shortcut: `Grid-Tiling: Switch *Left/Up/Down/Right*`)
+- toggle between bordered clients (global shortcut: `Grid-Tiling: Toggle Borders`)
 - toggle between opaque clients (global shortcut: `Grid-Tiling: Toggle Opacity`)
 - switch clients within a virtual desktop both by dragging them outside the `moveThreshold` by mouse and global shortcuts
 - move clients between virtual desktops (global shortcut: `Grid-Tiling: Move *Left/Up/Down/Right* Desktop`)
