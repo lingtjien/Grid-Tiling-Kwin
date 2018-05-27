@@ -113,7 +113,7 @@ var Parameters =
     left: Number(readConfig('leftMargin', 0)),
     right: Number(readConfig('rightMargin', 0))
   },
-  minSpaces: Library.createMinSpaces(readConfig('clientsNames', 'texstudio, inkscape, gimp, designer, creator, kdevelop, kdenlive, chromium, kate, spotify').toString(), readConfig('clientSpaces', '1, 1, 1, 1, 1, 1, 1, 2, 2, 2').toString()),
+  minSpaces: Library.createMinSpaces(readConfig('clientNames', 'texstudio, inkscape, gimp, designer, creator, kdevelop, kdenlive, chromium, kate, spotify').toString(), readConfig('clientSpaces', '1, 1, 1, 1, 1, 1, 1, 2, 2, 2').toString()),
   ignoredClients: Library.trimSplitString('ksmserver, krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, '.concat(readConfig('ignoredClients', 'wine, overwatch').toString())),
   ignoredCaptions: Library.trimSplitString(readConfig('ignoredCaptions', 'Trace Bitmap (Shift+Alt+B), Document Properties (Shift+Ctrl+D)').toString())
 };
