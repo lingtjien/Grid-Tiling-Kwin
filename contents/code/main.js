@@ -73,7 +73,7 @@ var Library =
       }
     };
     
-    var rows = this.trimSplitString(rowstring); //here
+    var rows = this.trimSplitString(rowstring);
     var columns = this.trimSplitString(columnstring);
     
     for (var i = 0; i < this.smallest(rows.length, columns.length); i++)
@@ -967,6 +967,7 @@ registerShortcut ('Grid-Tiling: Maximize', 'Grid-Tiling: Maximize', 'Meta+M', fu
     width: Math.floor(area.width - Parameters.margin.left - Parameters.margin.right - 2 * Parameters.gap),
     height: Math.floor(area.height - Parameters.margin.top - Parameters.margin.bottom - 2 * Parameters.gap)
   };
+  workspace.activeClient = client;
   return 0;
 });
 
