@@ -521,7 +521,6 @@ function Layer ()
   {
     if (desktopIndex < 0 || desktopIndex >= this.ndesktops()) {return -1;}
     if (this.desktops[desktopIndex].removeClient(clientIndex, columnIndex) !== 0) {return -1;}
-    if (this.desktops[desktopIndex].ncolumns() === 0) {return this.removeDesktop(desktopIndex);}
     return 0;
   };
   
