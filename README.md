@@ -39,7 +39,7 @@ Delete the linked or copied files that you created during installation. To remov
 
 ## Functionality
 - automatically tile clients, up to any grid size of clients per (internal) virtual desktop, new clients are first attempted to be added to your current desktop, to the column with the least number of clients.
-  - the size of the grid (row & column) is supplied in the UI per screen and separated by a command (first element in row & column are for your first screen and so forth...)
+  - the size of the grid (row & column) is supplied in the UI per screen and separated by a comma (first element in row & column are for your first screen and so forth...)
   - you can supply different grid sizes per screen if you have multiple screens
   - if you do not supply a grid size for your additional screen(s) then it will default to the grid size of the first screen
 
