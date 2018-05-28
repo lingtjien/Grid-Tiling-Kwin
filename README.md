@@ -35,28 +35,51 @@ ln -s ../kwin/scripts/grid-tiling/metadata.desktop kwin-script-grid-tiling.deskt
 Delete the linked or copied files that you created during installation. To remove installed scripts by `plasmapkg2`, run the same command again but this time with `-r` instead of `-i` to remove (see manual of `plasmapkg2` for more info)
 
 ## Preview
-![](preview/tiling-gaps.gif)
+![](https://media.giphy.com/media/4TkqhVlUAKEZMbL0ha/giphy.gif)
 
 ## Functionality
 - automatically tile clients, up to any grid size of clients per (internal) virtual desktop, new clients are first attempted to be added to your current desktop, to the column with the least number of clients.
   - the size of the grid (row & column) is supplied in the UI per screen and separated by a command (first element in row & column are for your first screen and so forth...)
   - you can supply different grid sizes per screen if you have multiple screens
   - if you do not supply a grid size for your additional screen(s) then it will default to the grid size of the first screen
+
+![](https://media.giphy.com/media/1qha5U2v85vIOTeT6f/giphy.gif)
+  
 - restriction of minimum space a client can occupy on a virtual desktop, as in the amount of clients this client can share a virtual desktop with
   - the minimum is defined by an **integral number** larger or equal to `1`
   - defaults to the maximum which is the number of rows multiplied by columns
   - a size of `1` is the largest which means that it can only ever exist alone on a virtual desktop, size of `2` means that it can exist with one other client together on a virtual desktop and so forth...
+
+![](https://media.giphy.com/media/d5ze8TC9GUQrhElN2Q/giphy.gif)
+  
 - set margins as defined by `topMargin` `bottomMargin` `leftMargin` `rightMargin`
 - set the gap size as defined by `gap`
 - set the opacity as defined by `opacity`
 - set default opacity toggle `noOpacity`
 - set default borders toggle `noBorders`
 - toggle between bordered clients (global shortcut: `Grid-Tiling: Toggle Borders`)
+
+![](https://media.giphy.com/media/pzKoeHMevmRZBEr6ej/giphy.gif)
+
 - toggle between opaque clients (global shortcut: `Grid-Tiling: Toggle Opacity`)
+
+![](https://media.giphy.com/media/2vjoPmERuumZhpcDBN/giphy.gif)
+
 - switch clients within a virtual desktop both by dragging them outside the `moveThreshold` by mouse and global shortcuts
+
+![](https://media.giphy.com/media/2WH0gA5A0mDLxBwVop/giphy.gif)
+![](https://media.giphy.com/media/1XbN5mJlXUn3hoDoPk/giphy.gif)
+
 - move clients between virtual desktops (global shortcut: `Grid-Tiling: Move *Left/Up/Down/Right* Desktop`)
+
+![](https://media.giphy.com/media/2wh560orSSXgoiObR1/giphy.gif)
+
 - close all clients on the current virtual desktop (global shortcut: `Grid-Tiling: Close Desktop`)
 - dynamically resize clients both by dragging them by mouse and global shortcuts up to a minimum as defined by `dividerBounds`
+
+![](https://media.giphy.com/media/1bK3hVSqPv7Xt0hrgo/giphy.gif)
+![](https://media.giphy.com/media/SiEq2XtSWZEvIIlMlQ/giphy.gif)
+
 - maximize client (with gaps) by global shortcut
 - add clients to ignored lists (clients, captions) defined by `ignoredClients` and `ignoredCaptions`
 - also works for applications which enforce their own geometry on startup (most of the time)
