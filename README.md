@@ -91,7 +91,8 @@ Delete the linked or copied files that you created during installation. To remov
 ## Recommended Setup
 - set window focus policy to `focus follows mouse - mouse precedence`
 - set shortcuts `Switch One Desktop *Left/Up/Down/Right*` to `Meta+*Left/Up/Down/Right*`
-- set shortcuts `Grid-Tiling: Switch *Left/Up/Down/Right*` to `Meta+Alt+*Left/Up/Down/Right*`
+- set shortcuts `Grid-Tiling: Switch *Left/Up/Down/Right*` to `Meta+Ctrl+*Left/Up/Down/Right*`
+- set shortcuts `Switch To Window *Left/Up/Down/Right*` to `Meta+Alt+*Left/Up/Down/Right*`
 - set shortcuts `Grid-Tiling: Move *Left/Up/Down/Right* Desktop` to `Meta+*Home/PgUp/PgDn/End*`
 - set shortcut `Grid-Tiling: Toggle Opacity` to `Meta+O`
 - set shortcut `Grid-Tiling: Toggle Borders` to `Meta+P`

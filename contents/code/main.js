@@ -113,7 +113,7 @@ var Parameters =
     left: Number(readConfig('leftMargin', 0)),
     right: Number(readConfig('rightMargin', 0))
   },
-  minSpaces: Library.createMinSpaces(readConfig('clientNames', 'texstudio, inkscape, gimp, designer, creator, kdevelop, kdenlive, chromium, kate, spotify').toString(), readConfig('clientSpaces', '1, 1, 1, 1, 1, 1, 1, 2, 2, 2').toString()),
+  minSpaces: Library.createMinSpaces(readConfig('clientNames', 'texstudio, inkscape, gimp, designer, creator, kdenlive, kdevelop, chromium, kate, spotify').toString(), readConfig('clientSpaces', '1, 1, 1, 1, 1, 1, 2, 2, 2, 2').toString()),
   ignoredClients: Library.trimSplitString('ksmserver, krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, '.concat(readConfig('ignoredClients', 'wine, overwatch').toString())),
   ignoredCaptions: Library.trimSplitString(readConfig('ignoredCaptions', 'Trace Bitmap (Shift+Alt+B), Document Properties (Shift+Ctrl+D)').toString())
 };
@@ -827,7 +827,7 @@ workspace.clientRemoved.connect (function (client)
 // Creating Shortcuts
 // ------------------
 
-registerShortcut ('Grid-Tiling: Switch Up', 'Grid-Tiling: Switch Up', 'Meta+Alt+Up', function ()
+registerShortcut ('Grid-Tiling: Switch Up', 'Grid-Tiling: Switch Up', 'Meta+Ctrl+Up', function ()
 {
   var client = layout.getClient(workspace.activeClient.windowId);
   if (client === -1) {return -1;}
@@ -837,7 +837,7 @@ registerShortcut ('Grid-Tiling: Switch Up', 'Grid-Tiling: Switch Up', 'Meta+Alt+
   return desktop.render(client.desktopIndex, client.layerIndex);
 });
 
-registerShortcut ('Grid-Tiling: Switch Down', 'Grid-Tiling: Switch Down', 'Meta+Alt+Down', function ()
+registerShortcut ('Grid-Tiling: Switch Down', 'Grid-Tiling: Switch Down', 'Meta+Ctrl+Down', function ()
 {
   var client = layout.getClient(workspace.activeClient.windowId);
   if (client === -1) {return -1;}
@@ -847,7 +847,7 @@ registerShortcut ('Grid-Tiling: Switch Down', 'Grid-Tiling: Switch Down', 'Meta+
   return desktop.render(client.desktopIndex, client.layerIndex);
 });
 
-registerShortcut ('Grid-Tiling: Switch Left', 'Grid-Tiling: Switch Left', 'Meta+Alt+Left', function ()
+registerShortcut ('Grid-Tiling: Switch Left', 'Grid-Tiling: Switch Left', 'Meta+Ctrl+Left', function ()
 {
   var client = layout.getClient(workspace.activeClient.windowId);
   if (client === -1) {return -1;}
@@ -858,7 +858,7 @@ registerShortcut ('Grid-Tiling: Switch Left', 'Grid-Tiling: Switch Left', 'Meta+
   return desktop.render(client.desktopIndex, client.layerIndex);
 });
 
-registerShortcut ('Grid-Tiling: Switch Right', 'Grid-Tiling: Switch Right', 'Meta+Alt+Right', function ()
+registerShortcut ('Grid-Tiling: Switch Right', 'Grid-Tiling: Switch Right', 'Meta+Ctrl+Right', function ()
 {
   var client = layout.getClient(workspace.activeClient.windowId);
   if (client === -1) {return -1;}
