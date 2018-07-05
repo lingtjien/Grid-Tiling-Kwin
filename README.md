@@ -115,6 +115,16 @@ Delete the linked or copied files that you created during installation. To remov
 
 ## Extra Settings Info
 
+These are settings that you can adjust in KWin which are unrelated to this script but work well together with this script and the recommended settings.
+
+### Transparant Blurry Menu
+
+1. System Settings
+2. Application Style
+3. Widget Style
+4. `configure`
+5. Transparency
+
 ### Changing Client Border Size
 
 1. System Settings
