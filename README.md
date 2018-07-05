@@ -115,7 +115,7 @@ Delete the linked or copied files that you created during installation. To remov
 
 ## Extra Settings Info
 
-These are settings that you can adjust in KWin which are unrelated to this script but work well together with this script and the recommended settings.
+These are settings that you can adjust in KWin which are unrelated to this script.
 
 ### Transparant Blurry Menu
 
