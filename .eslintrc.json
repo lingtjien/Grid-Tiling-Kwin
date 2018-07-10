@@ -17,6 +17,12 @@
       "error",
       2
     ],
+    "brace-style":
+    [
+      "error",
+      "allman",
+      {"allowSingleLine": true}
+    ],
     "linebreak-style":
     [
       "error",

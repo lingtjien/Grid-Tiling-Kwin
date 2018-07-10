@@ -179,7 +179,7 @@ function Column ()
     var count = 0;
     for (var i = 0; i < this.nclients(); i++)
     {
-      if (this.clients[i].minimized) count += 1;
+      if (this.clients[i].minimized) {count += 1;}
     }
     return count;
   };
@@ -319,7 +319,7 @@ function Desktop (rows, columns)
     var count = 0;
     for (var i = 0; i < this.ncolumns(); i++)
     {
-      if (this.columns[i].nminimized() === this.columns[i].nclients()) count += 1;
+      if (this.columns[i].nminimized() === this.columns[i].nclients()) {count += 1;}
     }
     return count;
   };
