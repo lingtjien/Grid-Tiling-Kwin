@@ -174,6 +174,15 @@ function Column ()
   
   this.nclients = function () {return this.clients.length;};
   this.ndividers = function () {return this.dividers.length;};
+  this.nminimized = function ()
+  {
+    var count = 0;
+    for (var i = 0; i < this.nclients(); i++)
+    {
+      if (this.clients[i].minimized) count += 1;
+    }
+    return count;
+  };
   
   this.minSpace = function ()
   {
@@ -246,14 +255,18 @@ function Column ()
   // rendering
   this.render = function (x, width, areaY, areaHeight, columnIndex, desktopIndex, layerIndex)
   {
+    var nminimized = this.nminimized();
+    
     var y = areaY + Parameters.margin.top + Parameters.gap;
-    var clientHeight = (areaHeight - Parameters.margin.top - Parameters.margin.bottom - ((this.nclients() + 1) * Parameters.gap)) / this.nclients();
+    var clientHeight = (areaHeight - Parameters.margin.top - Parameters.margin.bottom - ((this.nclients() - nminimized + 1) * Parameters.gap)) / (this.nclients() - nminimized);
     
     var current = 0;
     var previous = 0;
     var divider = 0;
     for (var i = 0; i < this.nclients(); i++)
     {
+      if (this.clients[i].minimized) {continue;}
+      
       if (i === this.nclients() - 1) {divider = 0;}
       else {divider = this.dividers[i];}
       
@@ -301,6 +314,15 @@ function Desktop (rows, columns)
   
   this.ncolumns = function () {return this.columns.length;};
   this.ndividers = function () {return this.dividers.length;};
+  this.nminimized = function ()
+  {
+    var count = 0;
+    for (var i = 0; i < this.ncolumns(); i++)
+    {
+      if (this.columns[i].nminimized() === this.columns[i].nclients()) count += 1;
+    }
+    return count;
+  };
   
   this.addColumn = function (column)
   {
@@ -446,15 +468,18 @@ function Desktop (rows, columns)
     var check = 0;
     
     var area = workspace.clientArea(0, Converter.screen(desktopIndex), Converter.desktop(desktopIndex));
+    var nminimized = this.nminimized();
     
     var x = area.x + Parameters.margin.left + Parameters.gap; // first x coordinate
-    var columnWidth = (area.width - Parameters.margin.left - Parameters.margin.right - ((this.ncolumns() + 1) * Parameters.gap)) / this.ncolumns(); // width per column
+    var columnWidth = (area.width - Parameters.margin.left - Parameters.margin.right - ((this.ncolumns() - nminimized + 1) * Parameters.gap)) / (this.ncolumns() - nminimized); // width per column
     
     var current = 0;
     var previous = 0;
     var divider = 0;
     for (var i = 0; i < this.ncolumns(); i++)
     {
+      if (this.columns[i].nminimized() === this.columns[i].nclients()) {continue;}
+      
       if (i === this.ncolumns() - 1) {divider = 0;}
       else {divider = this.dividers[i];}
       
@@ -821,6 +846,22 @@ workspace.clientRemoved.connect (function (client)
   var internal = layout.getClient(client.windowId);
   if (layout.removeClient(internal.clientIndex, internal.columnIndex, internal.desktopIndex, internal.layerIndex) !== 0) {return -1;}
   return layout.render();
+});
+
+workspace.clientMinimized.connect (function (client)
+{
+  client = layout.getClient(client.windowId);
+  if (client === -1) {return -1;}
+  
+  return layout.layers[client.layerIndex].desktops[client.desktopIndex].render(client.desktopIndex, client.layerIndex);
+});
+
+workspace.clientUnminimized.connect (function (client)
+{
+  client = layout.getClient(client.windowId);
+  if (client === -1) {return -1;}
+  
+  return layout.layers[client.layerIndex].desktops[client.desktopIndex].render(client.desktopIndex, client.layerIndex);
 });
 
 // ------------------
