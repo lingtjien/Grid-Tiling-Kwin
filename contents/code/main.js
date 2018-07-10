@@ -1000,19 +1000,37 @@ registerShortcut ('Grid-Tiling: Maximize', 'Grid-Tiling: Maximize', 'Meta+M', fu
   var client = layout.getClient(workspace.activeClient.windowId);
   if (client === -1) {return -1;}
   
-  var area = workspace.clientArea(0, client.screen, client.desktop);
-  client.geometry =
+  var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
+  for (var i = 0; i < desktop.ncolumns(); i++)
   {
-    x: Math.floor(Parameters.gap + area.x + Parameters.margin.left),
-    y: Math.floor(Parameters.gap + area.y + Parameters.margin.top),
-    width: Math.floor(area.width - Parameters.margin.left - Parameters.margin.right - 2 * Parameters.gap),
-    height: Math.floor(area.height - Parameters.margin.top - Parameters.margin.bottom - 2 * Parameters.gap)
-  };
-  workspace.activeClient = client;
-  return 0;
+    var column = desktop.columns[i];
+    for (var j = 0; j < column.nclients(); j++)
+    {
+      if (column.clients[j].windowId === client.windowId) {column.clients[j].minimized = false;}
+      else {column.clients[j].minimized = true;}
+    }
+  }
+  return 0; // render is not needed as the signal for minimize has been connected to render
 });
 
-registerShortcut ('Grid-Tiling: Refresh (Minimize)', 'Grid-Tiling: Refresh (Minimize)', 'Meta+N', function ()
+registerShortcut ('Grid-Tiling: Unminimize Desktop', 'Grid-Tiling: Unminimize Desktop', 'Meta+N', function ()
+{
+  var client = layout.getClient(workspace.activeClient.windowId);
+  if (client === -1) {return -1;}
+  
+  var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
+  for (var i = 0; i < desktop.ncolumns(); i++)
+  {
+    var column = desktop.columns[i];
+    for (var j = 0; j < column.nclients(); j++)
+    {
+      column.clients[j].minimized = false;
+    }
+  }
+  return 0; // render is not needed as the signal for unminimize has been connected to render
+});
+
+registerShortcut ('Grid-Tiling: Refresh', 'Grid-Tiling: Refresh', 'Meta+R', function ()
 {
   return layout.render();
 });
