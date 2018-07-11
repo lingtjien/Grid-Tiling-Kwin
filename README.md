@@ -98,7 +98,9 @@ Delete the linked or copied files that you created during installation. To remov
 - set shortcut `Close Window` to `Meta+W`
 - set shortcut `Grid-Tiling: Close Desktop` to `Meta+Q`
 - set shortcut `Grid-Tiling: Maximize` to `Meta+M`
-- set shortcut `Grid-Tiling: Refresh (Minimize)` to `Meta+N`
+- set shortcut `Grid-Tiling: Unminimize Desktop` to `Meta+,`
+- set shortcut `Minimize Window` to `Meta+N`
+- set shortcut `Grid-Tiling: Refresh` to `Meta+R`
 - set shortcut `Grid-Tiling: Increase Size` to `Meta+=`
 - set shortcut `Grid-Tiling: Decrease Size` to `Meta+-`
 
@@ -141,9 +143,3 @@ These are settings that you can adjust in KWin which are unrelated to this scrip
 6. Add
 7. **check** `Hide window title bar`
 8. `Regular expression to match` = `.*`
-
-## To Do
-- add support for activities (check this commit: ca244ba0dca1d933eb1329d49450603a0f540b65 and do it similarly but with the layer class instead of the desktop class)
-- option for active client showing the border
-- adding shortcuts that only change the size of clients horizontally or vertically instead of always changing both
-- let clients remember their maximization

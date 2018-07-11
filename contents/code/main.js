@@ -852,7 +852,7 @@ workspace.clientMinimized.connect (function (client)
 {
   client = layout.getClient(client.windowId);
   if (client === -1) {return -1;}
-  
+  client.minimized = true;
   return layout.layers[client.layerIndex].desktops[client.desktopIndex].render(client.desktopIndex, client.layerIndex);
 });
 
@@ -860,7 +860,7 @@ workspace.clientUnminimized.connect (function (client)
 {
   client = layout.getClient(client.windowId);
   if (client === -1) {return -1;}
-  
+  client.minimized = false;
   return layout.layers[client.layerIndex].desktops[client.desktopIndex].render(client.desktopIndex, client.layerIndex);
 });
 
@@ -1013,18 +1013,21 @@ registerShortcut ('Grid-Tiling: Maximize', 'Grid-Tiling: Maximize', 'Meta+M', fu
   return 0; // render is not needed as the signal for minimize has been connected to render
 });
 
-registerShortcut ('Grid-Tiling: Unminimize Desktop', 'Grid-Tiling: Unminimize Desktop', 'Meta+N', function ()
+registerShortcut ('Grid-Tiling: Unminimize Desktop', 'Grid-Tiling: Unminimize Desktop', 'Meta+,', function ()
 {
-  var client = layout.getClient(workspace.activeClient.windowId);
-  if (client === -1) {return -1;}
-  
-  var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
-  for (var i = 0; i < desktop.ncolumns(); i++)
+  var j = Converter.currentIndex();
+  for (var i = layout.nlayers() - 1; i >= 0; i--)
   {
-    var column = desktop.columns[i];
-    for (var j = 0; j < column.nclients(); j++)
+    var layer = layout.layers[i];
+    if (j >= layer.ndesktops()) {continue;}
+    var desktop = layer.desktops[j];
+    for (var k = desktop.ncolumns() - 1; k >= 0 ; k--)
     {
-      column.clients[j].minimized = false;
+      var column = desktop.columns[k];
+      for (var l = column.nclients() - 1; l >= 0 ; l--)
+      {
+        column.clients[l].minimized = false;
+      }
     }
   }
   return 0; // render is not needed as the signal for unminimize has been connected to render
