@@ -34,8 +34,6 @@ ln -s ../kwin/scripts/grid-tiling/metadata.desktop kwin-script-grid-tiling.deskt
 
 Delete the linked or copied files that you created during installation. To remove installed scripts by `plasmapkg2`, run the same command again but this time with `-r` instead of `-i` to remove (see manual of `plasmapkg2` for more info)
 
-## Preview
-
 ## Functionality
 - automatically tile clients, up to any grid size of clients per (internal) virtual desktop, new clients are first attempted to be added to your current desktop, to the column with the least number of clients.
   - the size of the grid (row & column) is supplied in the UI per screen and separated by a comma (first element in row & column are for your first screen and so forth...)
@@ -79,7 +77,12 @@ Delete the linked or copied files that you created during installation. To remov
 ![](https://media.giphy.com/media/1bK3hVSqPv7Xt0hrgo/giphy.gif)
 ![](https://media.giphy.com/media/SiEq2XtSWZEvIIlMlQ/giphy.gif)
 
-- maximize client (with gaps) by global shortcut
+- support for minimization
+- maximize (global shortcut: `Grid-Tiling: Maximize`), minimizes all other clients
+- unminimize all clients on currect virtual desktop (global shortcut: `Grid-Tiling: Unminimize Desktop`)
+
+![](https://media.giphy.com/media/k80kK1UBeeULHR9Joa/giphy.gif)
+
 - add clients to ignored lists (clients, captions) defined by `ignoredClients` and `ignoredCaptions`
 - also works for applications which enforce their own geometry on startup (most of the time)
 
