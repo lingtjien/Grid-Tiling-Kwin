@@ -111,7 +111,6 @@ Delete the linked or copied files that you created during installation. To remov
 - If you have kwin shortcuts added by the script that you no longer need or use (because they got renamed to something else for example), then you can delete the old unused shortcuts by first selecting kwin in the global shortcuts menu and then pressing the `remove the selected component` button (hover mouse over the button to see the text). This action does require you to not have the KWin script active.
 - Sometimes when you adjust the settings in the menu, you need to turn the script off, apply it, turn it back on and apply it again to register the new values (or just re-log).
 - Some applications do not render correctly on startup sometimes, just use the global shortcut that refreshes the layout
-- Maximized clients are not internally remembered so they are brought back to their tiled size when a refresh is called (not just the global shortcut).
 - Spotify can sometimes not be defined as full or half client, because both the client name and class of spotify are blank (random)
 - Dynamically resizing clients with the mouse can result in weird visual artifacts when dragged outside of the bounds, just use the global shortcut that refreshes the layout.
 - I don't use activities, so I don't know how this does with activities.
