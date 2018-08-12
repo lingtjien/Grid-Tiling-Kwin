@@ -59,11 +59,11 @@
       </entry>
       <entry name="clientNames" type="string">
         <label>names of the clients which define a minimum space</label>
-        <default>texstudio, inkscape, gimp, designer, creator, kdenlive, kdevelop, chromium, kate, spotify</default>
+        <default>texstudio, inkscape, krita, gimp, designer, creator, kdenlive, kdevelop, chromium, kate, spotify</default>
       </entry>
       <entry name="clientSpaces" type="string">
         <label>minimum spaces of the clients which define a mimimum space</label>
-        <default>1, 1, 1, 1, 1, 1, 2, 2, 2, 2</default>
+        <default>1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2</default>
       </entry>
       <entry name="ignoredClients" type="string">
         <label>ignored clients</label>

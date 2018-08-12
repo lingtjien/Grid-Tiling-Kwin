@@ -113,7 +113,7 @@ var Parameters =
     left: Number(readConfig('leftMargin', 0)),
     right: Number(readConfig('rightMargin', 0))
   },
-  minSpaces: Library.createMinSpaces(readConfig('clientNames', 'texstudio, inkscape, gimp, designer, creator, kdenlive, kdevelop, chromium, kate, spotify').toString(), readConfig('clientSpaces', '1, 1, 1, 1, 1, 1, 2, 2, 2, 2').toString()),
+  minSpaces: Library.createMinSpaces(readConfig('clientNames', 'texstudio, inkscape, krita, gimp, designer, creator, kdenlive, kdevelop, chromium, kate, spotify').toString(), readConfig('clientSpaces', '1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2').toString()),
   ignoredClients: Library.trimSplitString('ksmserver, krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, '.concat(readConfig('ignoredClients', 'wine, overwatch').toString())),
   ignoredCaptions: Library.trimSplitString(readConfig('ignoredCaptions', 'Trace Bitmap (Shift+Alt+B), Document Properties (Shift+Ctrl+D)').toString())
 };
@@ -156,6 +156,10 @@ var Converter =
   screen: function (desktopIndex)
   {
     return desktopIndex % workspace.numScreens;
+  },
+  index: function (desktop, screen)
+  {
+    return workspace.numScreens * (desktop - 1) + screen;
   },
   currentIndex: function ()
   {
@@ -287,7 +291,9 @@ function Column ()
       else {this.clients[i].opacity = Parameters.opacity;}
       
       this.clients[i].desktop = Converter.desktop(desktopIndex);
+      this.clients[i].desktopRender = Converter.desktop(desktopIndex);
       this.clients[i].screen = Converter.screen(desktopIndex);
+      this.clients[i].screenRender = Converter.screen(desktopIndex);
       this.clients[i].geometry = geometry;
       this.clients[i].geometryRender = geometry;
       this.clients[i].clientIndex = i;
@@ -560,6 +566,22 @@ function Layer ()
     return client;
   };
   
+  this.MoveDesktop = function (targetIndex, clientIndex, columnIndex, desktopIndex)
+  {
+    if (desktopIndex < 0 || desktopIndex >= this.ndesktops() || targetIndex === desktopIndex) {return -1;}
+    
+    var client = this.desktops[desktopIndex].columns[columnIndex].clients[clientIndex];
+    while (targetIndex >= this.ndesktops())
+    {
+      var grid = Library.screenToGrid(Converter.screen(this.ndesktops()));
+      var desktop = new Desktop(grid.row, grid.column);
+      if (this.addDesktop(desktop) === -1) {return -1;}
+    }
+    
+    if (this.desktops[targetIndex].addClient(client) === -1) {return -1;}
+    return this.desktops[desktopIndex].removeClient(clientIndex, columnIndex);
+  }
+  
   this.moveDesktop = function (direction, amount, clientIndex, columnIndex, desktopIndex)
   {
     if (desktopIndex < 0 || desktopIndex >= this.ndesktops()) {return -1;}
@@ -589,7 +611,7 @@ function Layer ()
       fail = (this.desktops[i].addClient(client) !== 0);
     }
     
-    return this.desktops[desktopIndex].removeClient(clientIndex, columnIndex); // removeClient method itself will also remove the desktop if it becomes empty thus making it not possible to move
+    return this.desktops[desktopIndex].removeClient(clientIndex, columnIndex);
   };
   
   // rendering
@@ -832,6 +854,23 @@ workspace.clientActivated.connect (function (client)
     };
     
     if (Client.resized(diff, client, desktop, properties.clientHeight, properties.columnWidth) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
+    
+    return 0;
+  });
+  client.desktopChanged.connect (function ()
+  {
+    var client = layout.getClient(workspace.activeClient.windowId);
+    if (client === -1 || (client.desktop === client.desktopRender && client.screen === client.screenRender)) {return -1;}
+    var layer = layout.layers[client.layerIndex];
+    
+    var targetIndex = Converter.index(client.desktop, client.screen);
+    while (layer.MoveDesktop(targetIndex, client.clientIndex, client.columnIndex, client.desktopIndex) !== 0)
+    {
+      targetIndex += 1;
+      if (targetIndex >= Converter.size()) {targetIndex = 0;}
+    }
+    layer.render(client.layerIndex);
+    workspace.currentDesktop = client.desktop; // switch to the new desktop
     
     return 0;
   });
