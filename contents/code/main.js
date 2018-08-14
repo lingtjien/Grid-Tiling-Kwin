@@ -580,7 +580,7 @@ function Layer ()
     
     if (this.desktops[targetIndex].addClient(client) === -1) {return -1;}
     return this.desktops[desktopIndex].removeClient(clientIndex, columnIndex);
-  }
+  };
   
   this.moveDesktop = function (direction, amount, clientIndex, columnIndex, desktopIndex)
   {
@@ -794,6 +794,24 @@ var Client =
     
     client.minSpace = minSpace;
     return 0;
+  },
+  desktopChanged: function (client)
+  {
+    if (client === -1 || (client.desktop === client.desktopRender && client.screen === client.screenRender)) {return -1;}
+    
+    var layer = layout.layers[client.layerIndex];
+    var targetIndex = Converter.index(client.desktop, client.screen);
+    var direction = targetIndex > client.desktopIndex ? 1 : -1;
+    while (layer.MoveDesktop(targetIndex, client.clientIndex, client.columnIndex, client.desktopIndex) !== 0)
+    {
+      targetIndex += direction;
+      if (targetIndex >= Converter.size()) {targetIndex = 0;}
+      if (targetIndex < 0) {targetIndex = Converter.size() - 1;}
+    }
+    
+    layer.render(client.layerIndex);
+    workspace.currentDesktop = client.desktop; // switch to the new desktop
+    return 0;
   }
 };
 
@@ -857,23 +875,22 @@ workspace.clientActivated.connect (function (client)
     
     return 0;
   });
-  client.desktopChanged.connect (function ()
+  client.desktopChanged.connect ( (function ()
   {
-    var client = layout.getClient(workspace.activeClient.windowId);
-    if (client === -1 || (client.desktop === client.desktopRender && client.screen === client.screenRender)) {return -1;}
-    var layer = layout.layers[client.layerIndex];
-    
-    var targetIndex = Converter.index(client.desktop, client.screen);
-    while (layer.MoveDesktop(targetIndex, client.clientIndex, client.columnIndex, client.desktopIndex) !== 0)
+    var c = client;
+    return function ()
     {
-      targetIndex += 1;
-      if (targetIndex >= Converter.size()) {targetIndex = 0;}
-    }
-    layer.render(client.layerIndex);
-    workspace.currentDesktop = client.desktop; // switch to the new desktop
-    
-    return 0;
-  });
+      Client.desktopChanged(c);
+    };
+  }) () );
+  client.screenChanged.connect ( (function ()
+  {
+    var c = client;
+    return function ()
+    {
+      Client.desktopChanged(c);
+    };
+  }) () );
   
   return 0;
 });
@@ -882,8 +899,8 @@ workspace.clientRemoved.connect (function (client)
 {
   if (!(client.windowId in addedClients)) {return -1;}
   delete addedClients[client.windowId];
-  var internal = layout.getClient(client.windowId);
-  if (layout.removeClient(internal.clientIndex, internal.columnIndex, internal.desktopIndex, internal.layerIndex) !== 0) {return -1;}
+  client = layout.getClient(client.windowId);
+  if (layout.removeClient(client.clientIndex, client.columnIndex, client.desktopIndex, client.layerIndex) !== 0) {return -1;}
   return layout.render();
 });
 
