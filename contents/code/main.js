@@ -136,19 +136,65 @@ var Converter =
   {
     return this.rows() * this.cols();
   },
-  rowColumnToIndex: function (rowIndex, columnIndex) // returns the desktopIndex based on a rowIndex and columnIndex
+  rowColToIndex: function (rowCol)
   {
-    if (rowIndex < 0 || rowIndex >= this.rows() || columnIndex < 0 || columnIndex >= this.cols()) {return -1;}
-    return rowIndex * this.cols() + columnIndex;
+    return rowCol.row * this.cols() + rowCol.col;
   },
-  indexToRow: function (desktopIndex)
+  indexToRowCol: function (desktopIndex)
   {
-    return Math.floor(desktopIndex / this.cols());
+    return {
+      row: Math.floor(desktopIndex / this.cols()),
+      col: desktopIndex % this.cols()
+    };
   },
-  indexToColumn: function (desktopIndex)
+  nextRow: function (index)
   {
-    return desktopIndex % this.cols();
+    if (index.row + 1 >= this.rows())
+    {
+      if (index.col + 1 >= this.cols())
+      {
+        index.row = 0;
+        index.col = 0;
+      }
+      else
+      {
+        index.row = 0;
+        index.col += 1;
+      }
+    }
+    else
+    {
+      index.row += 1;
+    }
   },
+  previousRow: function (index)
+  {
+    if (index.row - 1 < 0)
+    {
+      if (index.col - 1 < 0)
+      {
+        index.row = this.rows() - 1;
+        index.col = this.cols() - 1;
+      }
+      else
+      {
+        index.row = this.rows() - 1;
+        index.col -= 1;
+      }
+    }
+    else
+    {
+      index.row -= 1;
+    }
+  },
+//   colToRowIndex: function (desktopIndex)
+//   {
+//     return (desktopIndex % this.rows()) * this.cols() + Math.floor(desktopIndex / this.rows());
+//   },
+//   rowToColIndex: function (desktopIndex)
+//   {
+//     return (desktopIndex % this.cols()) * this.rows() + Math.floor(desktopIndex / this.cols());
+//   },
   desktop: function (desktopIndex)
   {
     return Math.floor(desktopIndex / workspace.numScreens) + 1; // indexing of desktops starts at 1 by Kwin
@@ -156,10 +202,6 @@ var Converter =
   screen: function (desktopIndex)
   {
     return desktopIndex % workspace.numScreens;
-  },
-  index: function (desktop, screen)
-  {
-    return workspace.numScreens * (desktop - 1) + screen;
   },
   currentIndex: function ()
   {
@@ -566,9 +608,9 @@ function Layer ()
     return client;
   };
   
-  this.MoveDesktop = function (targetIndex, clientIndex, columnIndex, desktopIndex)
+  this.moveDesktop = function (targetIndex, clientIndex, columnIndex, desktopIndex)
   {
-    if (desktopIndex < 0 || desktopIndex >= this.ndesktops() || targetIndex === desktopIndex) {return -1;}
+    if (desktopIndex < 0 || desktopIndex >= this.ndesktops() || targetIndex < 0 || targetIndex === desktopIndex) {return -1;}
     
     var client = this.desktops[desktopIndex].columns[columnIndex].clients[clientIndex];
     while (targetIndex >= this.ndesktops())
@@ -579,38 +621,6 @@ function Layer ()
     }
     
     if (this.desktops[targetIndex].addClient(client) === -1) {return -1;}
-    return this.desktops[desktopIndex].removeClient(clientIndex, columnIndex);
-  };
-  
-  this.moveDesktop = function (direction, amount, clientIndex, columnIndex, desktopIndex)
-  {
-    if (desktopIndex < 0 || desktopIndex >= this.ndesktops()) {return -1;}
-    
-    var client = this.desktops[desktopIndex].columns[columnIndex].clients[clientIndex];
-    var index =
-    {
-      row: Converter.indexToRow(desktopIndex),
-      column: Converter.indexToColumn(desktopIndex)
-    };
-    
-    var fail = true;
-    while (fail)
-    {
-      index[direction] += amount;
-      
-      var i = Converter.rowColumnToIndex(index.row, index.column);
-      
-      if (i < 0) {return -1;}
-      while (i >= this.ndesktops())
-      {
-        var grid = Library.screenToGrid(Converter.screen(this.ndesktops()));
-        var desktop = new Desktop(grid.row, grid.column);
-        if (this.addDesktop(desktop) === -1) {return -1;}
-      }
-      
-      fail = (this.desktops[i].addClient(client) !== 0);
-    }
-    
     return this.desktops[desktopIndex].removeClient(clientIndex, columnIndex);
   };
   
@@ -794,24 +804,6 @@ var Client =
     
     client.minSpace = minSpace;
     return 0;
-  },
-  desktopChanged: function (client)
-  {
-    if (client === -1 || (client.desktop === client.desktopRender && client.screen === client.screenRender)) {return -1;}
-    
-    var layer = layout.layers[client.layerIndex];
-    var targetIndex = Converter.index(client.desktop, client.screen);
-    var direction = targetIndex > client.desktopIndex ? 1 : -1;
-    while (layer.MoveDesktop(targetIndex, client.clientIndex, client.columnIndex, client.desktopIndex) !== 0)
-    {
-      targetIndex += direction;
-      if (targetIndex >= Converter.size()) {targetIndex = 0;}
-      if (targetIndex < 0) {targetIndex = Converter.size() - 1;}
-    }
-    
-    layer.render(client.layerIndex);
-    workspace.currentDesktop = client.desktop; // switch to the new desktop
-    return 0;
   }
 };
 
@@ -875,22 +867,6 @@ workspace.clientActivated.connect (function (client)
     
     return 0;
   });
-  client.desktopChanged.connect ( (function ()
-  {
-    var c = client;
-    return function ()
-    {
-      Client.desktopChanged(c);
-    };
-  }) () );
-  client.screenChanged.connect ( (function ()
-  {
-    var c = client;
-    return function ()
-    {
-      Client.desktopChanged(c);
-    };
-  }) () );
   
   return 0;
 });
@@ -949,7 +925,6 @@ registerShortcut ('Grid-Tiling: Switch Left', 'Grid-Tiling: Switch Left', 'Meta+
   var client = layout.getClient(workspace.activeClient.windowId);
   if (client === -1) {return -1;}
   var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
-  
   if (desktop.switchClient(-1, client.clientIndex, client.columnIndex) === -1) {return -1;}
   
   return desktop.render(client.desktopIndex, client.layerIndex);
@@ -971,11 +946,17 @@ registerShortcut ('Grid-Tiling: Move Right Desktop', 'Grid-Tiling: Move Right De
   var client = layout.getClient(workspace.activeClient.windowId);
   if (client === -1) {return -1;}
   var layer = layout.layers[client.layerIndex];
-  
-  layer.moveDesktop('column', 1, client.clientIndex, client.columnIndex, client.desktopIndex);
+  var direction = 1;
+  var targetIndex = client.desktopIndex + direction;
+  while (layer.moveDesktop(targetIndex, client.clientIndex, client.columnIndex, client.desktopIndex) !== 0)
+  {
+    targetIndex += direction;
+    if (targetIndex >= Converter.size()) {targetIndex = 0;}
+    if (targetIndex === client.desktopIndex) {return -1;}
+  }
   
   layer.render(client.layerIndex);
-  workspace.currentDesktop = client.desktop; // switch to the new desktop
+  workspace.currentDesktop = client.desktop;
   return 0;
 });
 
@@ -984,8 +965,14 @@ registerShortcut ('Grid-Tiling: Move Left Desktop', 'Grid-Tiling: Move Left Desk
   var client = layout.getClient(workspace.activeClient.windowId);
   if (client === -1) {return -1;}
   var layer = layout.layers[client.layerIndex];
-  
-  layer.moveDesktop('column', -1, client.clientIndex, client.columnIndex, client.desktopIndex);
+  var direction = -1;
+  var targetIndex = client.desktopIndex + direction;
+  while (layer.moveDesktop(targetIndex, client.clientIndex, client.columnIndex, client.desktopIndex) !== 0)
+  {
+    targetIndex += direction;
+    if (targetIndex < 0) {targetIndex = Converter.size() - 1;}
+    if (targetIndex === client.desktopIndex) {return -1;}
+  }
   
   layer.render(client.layerIndex);
   workspace.currentDesktop = client.desktop;
@@ -997,8 +984,13 @@ registerShortcut ('Grid-Tiling: Move Up Desktop', 'Grid-Tiling: Move Up Desktop'
   var client = layout.getClient(workspace.activeClient.windowId);
   if (client === -1) {return -1;}
   var layer = layout.layers[client.layerIndex];
-  
-  layer.moveDesktop('row', -1, client.clientIndex, client.columnIndex, client.desktopIndex);
+  var targetIndex = Converter.indexToRowCol(client.desktopIndex);
+  Converter.previousRow(targetIndex);
+  while (layer.moveDesktop(Converter.rowColToIndex(targetIndex), client.clientIndex, client.columnIndex, client.desktopIndex) !== 0)
+  {
+    Converter.previousRow(targetIndex);
+    if (Converter.rowColToIndex(targetIndex) === client.desktopIndex) {return -1;}
+  }
   
   layer.render(client.layerIndex);
   workspace.currentDesktop = client.desktop;
@@ -1010,12 +1002,16 @@ registerShortcut ('Grid-Tiling: Move Down Desktop', 'Grid-Tiling: Move Down Desk
   var client = layout.getClient(workspace.activeClient.windowId);
   if (client === -1) {return -1;}
   var layer = layout.layers[client.layerIndex];
-  
-  layer.moveDesktop('row', 1, client.clientIndex, client.columnIndex, client.desktopIndex);
+  var targetIndex = Converter.indexToRowCol(client.desktopIndex);
+  Converter.nextRow(targetIndex);
+  while (layer.moveDesktop(Converter.rowColToIndex(targetIndex), client.clientIndex, client.columnIndex, client.desktopIndex) !== 0)
+  {
+    Converter.nextRow(targetIndex);
+    if (Converter.rowColToIndex(targetIndex) === client.desktopIndex) {return -1;}
+  }
   
   layer.render(client.layerIndex);
   workspace.currentDesktop = client.desktop;
-  return 0;
 });
 
 registerShortcut ('Grid-Tiling: Toggle Border', 'Grid-Tiling: Toggle Border', 'Meta+P', function ()
