@@ -124,77 +124,67 @@ var Parameters =
 
 var Converter =
 {
-  rows: function ()
+  nrow: function ()
   {
     return workspace.desktopGridHeight;
   },
-  cols: function ()
+  ncol: function ()
   {
     return workspace.desktopGridWidth * workspace.numScreens; // addional screens add extra columns
   },
   size: function ()
   {
-    return this.rows() * this.cols();
+    return this.nrow() * this.ncol();
   },
-  rowColToIndex: function (rowCol)
+  index: function (index) // either converts a desktopIndex to row and col or does the reverse when given an object with row and col properties
   {
-    return rowCol.row * this.cols() + rowCol.col;
+    if (index.hasOwnProperty('row') && index.hasOwnProperty('col'))
+      return index.row * this.ncol() + index.col;
+    else
+      return {row: Math.floor(index / this.ncol()), col: index % this.ncol()};
   },
-  indexToRowCol: function (desktopIndex)
+  increment: function (index, direction) // index object with row and col properties, direction either 'row' or 'col'
   {
-    return {
-      row: Math.floor(desktopIndex / this.cols()),
-      col: desktopIndex % this.cols()
-    };
-  },
-  nextRow: function (index)
-  {
-    if (index.row + 1 >= this.rows())
+    var perpendicular = direction === 'row' ? 'col' : 'row';
+    if (index[direction] + 1 >= this['n' + direction]())
     {
-      if (index.col + 1 >= this.cols())
+      if (index[perpendicular] + 1 >= this['n' + perpendicular]())
       {
-        index.row = 0;
-        index.col = 0;
+        index[direction] = 0;
+        index[perpendicular] = 0;
       }
       else
       {
-        index.row = 0;
-        index.col += 1;
+        index[direction] = 0;
+        index[perpendicular] += 1;
       }
     }
     else
     {
-      index.row += 1;
+      index[direction] += 1;
     }
   },
-  previousRow: function (index)
+  decrement: function (index, direction) // index object with row and col properties, direction either 'row' or 'col'
   {
-    if (index.row - 1 < 0)
+    var perpendicular = direction === 'row' ? 'col' : 'row';
+    if (index[direction] - 1 < 0)
     {
-      if (index.col - 1 < 0)
+      if (index[perpendicular] - 1 < 0)
       {
-        index.row = this.rows() - 1;
-        index.col = this.cols() - 1;
+        index[direction] = this['n' + direction]() - 1;
+        index[perpendicular] = this['n' + perpendicular]() - 1;
       }
       else
       {
-        index.row = this.rows() - 1;
-        index.col -= 1;
+        index[direction] = this['n' + direction]() - 1;
+        index[perpendicular] -= 1;
       }
     }
     else
     {
-      index.row -= 1;
+      index[direction] -= 1;
     }
   },
-//   colToRowIndex: function (desktopIndex)
-//   {
-//     return (desktopIndex % this.rows()) * this.cols() + Math.floor(desktopIndex / this.rows());
-//   },
-//   rowToColIndex: function (desktopIndex)
-//   {
-//     return (desktopIndex % this.cols()) * this.rows() + Math.floor(desktopIndex / this.cols());
-//   },
   desktop: function (desktopIndex)
   {
     return Math.floor(desktopIndex / workspace.numScreens) + 1; // indexing of desktops starts at 1 by Kwin
@@ -941,77 +931,36 @@ registerShortcut ('Grid-Tiling: Switch Right', 'Grid-Tiling: Switch Right', 'Met
   return desktop.render(client.desktopIndex, client.layerIndex);
 });
 
-registerShortcut ('Grid-Tiling: Move Right Desktop', 'Grid-Tiling: Move Right Desktop', 'Meta+End', function ()
+[
+  {text: 'Left', shortcut: 'Home', method: 'decrement', direction: 'col'},
+  {text: 'Right', shortcut: 'End', method: 'increment', direction: 'col'},
+  {text: 'Up', shortcut: 'PgUp', method: 'decrement', direction: 'row'},
+  {text: 'Down', shortcut: 'PgDown', method: 'increment', direction: 'row'}
+].forEach (function(entry)
 {
-  var client = layout.getClient(workspace.activeClient.windowId);
-  if (client === -1) {return -1;}
-  var layer = layout.layers[client.layerIndex];
-  var direction = 1;
-  var targetIndex = client.desktopIndex + direction;
-  while (layer.moveDesktop(targetIndex, client.clientIndex, client.columnIndex, client.desktopIndex) !== 0)
+  registerShortcut ('Grid-Tiling: Move ' + entry.text + ' Desktop', 'Grid-Tiling: Move ' + entry.text + ' Desktop', 'Meta+' + entry.shortcut, (function ()
   {
-    targetIndex += direction;
-    if (targetIndex >= Converter.size()) {targetIndex = 0;}
-    if (targetIndex === client.desktopIndex) {return -1;}
-  }
-  
-  layer.render(client.layerIndex);
-  workspace.currentDesktop = client.desktop;
-  return 0;
-});
-
-registerShortcut ('Grid-Tiling: Move Left Desktop', 'Grid-Tiling: Move Left Desktop', 'Meta+Home', function ()
-{
-  var client = layout.getClient(workspace.activeClient.windowId);
-  if (client === -1) {return -1;}
-  var layer = layout.layers[client.layerIndex];
-  var direction = -1;
-  var targetIndex = client.desktopIndex + direction;
-  while (layer.moveDesktop(targetIndex, client.clientIndex, client.columnIndex, client.desktopIndex) !== 0)
-  {
-    targetIndex += direction;
-    if (targetIndex < 0) {targetIndex = Converter.size() - 1;}
-    if (targetIndex === client.desktopIndex) {return -1;}
-  }
-  
-  layer.render(client.layerIndex);
-  workspace.currentDesktop = client.desktop;
-  return 0;
-});
-
-registerShortcut ('Grid-Tiling: Move Up Desktop', 'Grid-Tiling: Move Up Desktop', 'Meta+PgUp', function ()
-{
-  var client = layout.getClient(workspace.activeClient.windowId);
-  if (client === -1) {return -1;}
-  var layer = layout.layers[client.layerIndex];
-  var targetIndex = Converter.indexToRowCol(client.desktopIndex);
-  Converter.previousRow(targetIndex);
-  while (layer.moveDesktop(Converter.rowColToIndex(targetIndex), client.clientIndex, client.columnIndex, client.desktopIndex) !== 0)
-  {
-    Converter.previousRow(targetIndex);
-    if (Converter.rowColToIndex(targetIndex) === client.desktopIndex) {return -1;}
-  }
-  
-  layer.render(client.layerIndex);
-  workspace.currentDesktop = client.desktop;
-  return 0;
-});
-
-registerShortcut ('Grid-Tiling: Move Down Desktop', 'Grid-Tiling: Move Down Desktop', 'Meta+PgDown', function ()
-{
-  var client = layout.getClient(workspace.activeClient.windowId);
-  if (client === -1) {return -1;}
-  var layer = layout.layers[client.layerIndex];
-  var targetIndex = Converter.indexToRowCol(client.desktopIndex);
-  Converter.nextRow(targetIndex);
-  while (layer.moveDesktop(Converter.rowColToIndex(targetIndex), client.clientIndex, client.columnIndex, client.desktopIndex) !== 0)
-  {
-    Converter.nextRow(targetIndex);
-    if (Converter.rowColToIndex(targetIndex) === client.desktopIndex) {return -1;}
-  }
-  
-  layer.render(client.layerIndex);
-  workspace.currentDesktop = client.desktop;
+    var method = entry.method;
+    var direction = entry.direction;
+    return function ()
+    {
+      var client = layout.getClient(workspace.activeClient.windowId);
+      if (client === -1) {return -1;}
+      var layer = layout.layers[client.layerIndex];
+      
+      var targetIndex = Converter.index(client.desktopIndex);
+      Converter[method](targetIndex, direction);
+      while (layer.moveDesktop(Converter.index(targetIndex), client.clientIndex, client.columnIndex, client.desktopIndex) !== 0)
+      {
+        Converter[method](targetIndex, direction);
+        if (Converter.index(targetIndex) === client.desktopIndex) {return -1;}
+      }
+      
+      layer.render(client.layerIndex);
+      workspace.currentDesktop = client.desktop;
+      return 0;
+    };
+  })() );
 });
 
 registerShortcut ('Grid-Tiling: Toggle Border', 'Grid-Tiling: Toggle Border', 'Meta+P', function ()
