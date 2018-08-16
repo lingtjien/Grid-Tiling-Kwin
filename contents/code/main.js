@@ -886,49 +886,33 @@ workspace.clientUnminimized.connect (function (client)
   return layout.layers[client.layerIndex].desktops[client.desktopIndex].render(client.desktopIndex, client.layerIndex);
 });
 
-// ------------------
-// Creating Shortcuts
-// ------------------
+// ---------
+// Shortcuts
+// ---------
 
-registerShortcut ('Grid-Tiling: Switch Up', 'Grid-Tiling: Switch Up', 'Meta+Ctrl+Up', function ()
+[
+  {text: 'Up', shortcut: 'Up', method: 'vertical', direction: -1},
+  {text: 'Down', shortcut: 'Down', method: 'vertical', direction: 1},
+  {text: 'Left', shortcut: 'Left', method: 'horizontal', direction: -1},
+  {text: 'Right', shortcut: 'Right', method: 'horizontal', direction: 1}
+].forEach(function(entry)
 {
-  var client = layout.getClient(workspace.activeClient.windowId);
-  if (client === -1) {return -1;}
-  var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
-  if (desktop.columns[client.columnIndex].switchClient(-1, client.clientIndex) === -1) {return -1;}
-  
-  return desktop.render(client.desktopIndex, client.layerIndex);
-});
-
-registerShortcut ('Grid-Tiling: Switch Down', 'Grid-Tiling: Switch Down', 'Meta+Ctrl+Down', function ()
-{
-  var client = layout.getClient(workspace.activeClient.windowId);
-  if (client === -1) {return -1;}
-  var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
-  if (desktop.columns[client.columnIndex].switchClient(1, client.clientIndex) === -1) {return -1;}
-
-  return desktop.render(client.desktopIndex, client.layerIndex);
-});
-
-registerShortcut ('Grid-Tiling: Switch Left', 'Grid-Tiling: Switch Left', 'Meta+Ctrl+Left', function ()
-{
-  var client = layout.getClient(workspace.activeClient.windowId);
-  if (client === -1) {return -1;}
-  var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
-  if (desktop.switchClient(-1, client.clientIndex, client.columnIndex) === -1) {return -1;}
-  
-  return desktop.render(client.desktopIndex, client.layerIndex);
-});
-
-registerShortcut ('Grid-Tiling: Switch Right', 'Grid-Tiling: Switch Right', 'Meta+Ctrl+Right', function ()
-{
-  var client = layout.getClient(workspace.activeClient.windowId);
-  if (client === -1) {return -1;}
-  var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
-  
-  if (desktop.switchClient(1, client.clientIndex, client.columnIndex) === -1) {return -1;}
-  
-  return desktop.render(client.desktopIndex, client.layerIndex);
+  registerShortcut('Grid-Tiling: Switch ' + entry.text, 'Grid-Tiling: Switch ' + entry.text, 'Meta+Ctrl+' + entry.shortcut, (function ()
+  {
+    var method = entry.method;
+    var direction = entry.direction;
+    return function ()
+    {
+      var client = layout.getClient(workspace.activeClient.windowId);
+      if (client === -1) {return -1;}
+      var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
+      
+      if (method === 'vertical' && desktop.columns[client.columnIndex].switchClient(direction, client.clientIndex) === -1) {return -1;}
+      if (method === 'horizontal' && desktop.switchClient(direction, client.clientIndex, client.columnIndex) === -1) {return -1;}
+      
+      return desktop.render(client.desktopIndex, client.layerIndex);
+    };
+  })() );
 });
 
 [
@@ -963,16 +947,41 @@ registerShortcut ('Grid-Tiling: Switch Right', 'Grid-Tiling: Switch Right', 'Met
   })() );
 });
 
-registerShortcut ('Grid-Tiling: Toggle Border', 'Grid-Tiling: Toggle Border', 'Meta+P', function ()
+[
+  {text: 'Border', shortcut: 'P', variable: 'noBorder'},
+  {text: 'Opacity', shortcut: 'O', variable: 'noOpacity'}
+].forEach (function(entry)
 {
-  Parameters.noBorder = !Parameters.noBorder;
-  return layout.render();
+  registerShortcut ('Grid-Tiling: Toggle ' + entry.text, 'Grid-Tiling: Toggle ' + entry.text, 'Meta+' + entry.shortcut, (function ()
+  {
+    var variable = entry.variable;
+    return function ()
+    {
+      Parameters[variable] = !Parameters[variable];
+      return layout.render();
+    };
+  })() );
 });
 
-registerShortcut ('Grid-Tiling: Toggle Opacity', 'Grid-Tiling: Toggle Opacity', 'Meta+O', function ()
+[
+  {text: 'Increase', shortcut: '=', direction: 1},
+  {text: 'Decrease', shortcut: '-', direction: -1}
+].forEach (function(entry)
 {
-  Parameters.noOpacity = !Parameters.noOpacity;
-  return layout.render();
+  registerShortcut ('Grid-Tiling: ' + entry.text + ' Size', 'Grid-Tiling: ' + entry.text + ' Size', 'Meta+' + entry.shortcut, (function ()
+  {
+    var direction = entry.direction;
+    return function ()
+    {
+      var client = layout.getClient(workspace.activeClient.windowId);
+      if (client === -1) {return -1;}
+      var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
+      desktop.columns[client.columnIndex].changeDivider('both', direction * Parameters.dividerStepSize, client.clientIndex);
+      desktop.changeDivider('both', Parameters.dividerStepSize, client.columnIndex);
+      
+      return desktop.render(client.desktopIndex, client.layerIndex);
+    };
+  })() );
 });
 
 registerShortcut ('Grid-Tiling: Close Desktop', 'Grid-Tiling: Close Desktop', 'Meta+Q', function ()
@@ -1037,26 +1046,4 @@ registerShortcut ('Grid-Tiling: Unminimize Desktop', 'Grid-Tiling: Unminimize De
 registerShortcut ('Grid-Tiling: Refresh', 'Grid-Tiling: Refresh', 'Meta+R', function ()
 {
   return layout.render();
-});
-
-registerShortcut ('Grid-Tiling: Increase Size', 'Grid-Tiling: Increase Size', 'Meta+=', function ()
-{
-  var client = layout.getClient(workspace.activeClient.windowId);
-  if (client === -1) {return -1;}
-  var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
-  desktop.columns[client.columnIndex].changeDivider('both', Parameters.dividerStepSize, client.clientIndex);
-  desktop.changeDivider('both', Parameters.dividerStepSize, client.columnIndex);
-  
-  return desktop.render(client.desktopIndex, client.layerIndex);
-});
-
-registerShortcut ('Grid-Tiling: Decrease Size', 'Grid-Tiling: Decrease Size', 'Meta+-', function ()
-{
-  var client = layout.getClient(workspace.activeClient.windowId);
-  if (client === -1) {return -1;}
-  var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
-  desktop.columns[client.columnIndex].changeDivider('both', -Parameters.dividerStepSize, client.clientIndex);
-  desktop.changeDivider('both', -Parameters.dividerStepSize, client.columnIndex);
-  
-  return desktop.render(client.desktopIndex, client.layerIndex);
 });
