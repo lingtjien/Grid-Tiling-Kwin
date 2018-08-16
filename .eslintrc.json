@@ -60,6 +60,11 @@
     "space-infix-ops":
     [
       "error"
+    ],
+    "space-before-function-paren":
+    [
+      "error",
+      "always"
     ]
   }
 }

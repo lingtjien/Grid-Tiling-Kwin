@@ -895,7 +895,7 @@ workspace.clientUnminimized.connect (function (client)
   {text: 'Down', shortcut: 'Down', method: 'vertical', direction: 1},
   {text: 'Left', shortcut: 'Left', method: 'horizontal', direction: -1},
   {text: 'Right', shortcut: 'Right', method: 'horizontal', direction: 1}
-].forEach(function(entry)
+].forEach(function (entry)
 {
   registerShortcut('Grid-Tiling: Switch ' + entry.text, 'Grid-Tiling: Switch ' + entry.text, 'Meta+Ctrl+' + entry.shortcut, (function ()
   {
@@ -920,7 +920,7 @@ workspace.clientUnminimized.connect (function (client)
   {text: 'Right', shortcut: 'End', method: 'increment', direction: 'col'},
   {text: 'Up', shortcut: 'PgUp', method: 'decrement', direction: 'row'},
   {text: 'Down', shortcut: 'PgDown', method: 'increment', direction: 'row'}
-].forEach (function(entry)
+].forEach (function (entry)
 {
   registerShortcut ('Grid-Tiling: Move ' + entry.text + ' Desktop', 'Grid-Tiling: Move ' + entry.text + ' Desktop', 'Meta+' + entry.shortcut, (function ()
   {
@@ -950,7 +950,7 @@ workspace.clientUnminimized.connect (function (client)
 [
   {text: 'Border', shortcut: 'P', variable: 'noBorder'},
   {text: 'Opacity', shortcut: 'O', variable: 'noOpacity'}
-].forEach (function(entry)
+].forEach (function (entry)
 {
   registerShortcut ('Grid-Tiling: Toggle ' + entry.text, 'Grid-Tiling: Toggle ' + entry.text, 'Meta+' + entry.shortcut, (function ()
   {
@@ -966,7 +966,7 @@ workspace.clientUnminimized.connect (function (client)
 [
   {text: 'Increase', shortcut: '=', direction: 1},
   {text: 'Decrease', shortcut: '-', direction: -1}
-].forEach (function(entry)
+].forEach (function (entry)
 {
   registerShortcut ('Grid-Tiling: ' + entry.text + ' Size', 'Grid-Tiling: ' + entry.text + ' Size', 'Meta+' + entry.shortcut, (function ()
   {
