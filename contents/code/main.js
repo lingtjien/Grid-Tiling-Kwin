@@ -10,14 +10,8 @@ var Library =
   },
   smallest: function (value1, value2)
   {
-    if (value1 > value2)
-    {
-      return value2;
-    }
-    else
-    {
-      return value1;
-    }
+    if (value1 > value2) {return value2;}
+    else {return value1;}
   },
   trimSplitString: function (input)
   {
@@ -35,10 +29,7 @@ var Library =
     {
       names: [],
       spaces: [],
-      size: function ()
-      {
-        return Library.smallest(this.names.length, this.spaces.length);
-      }
+      size: function () {return Library.smallest(this.names.length, this.spaces.length);}
     };
     
     var names = this.trimSplitString(clientNames);
@@ -57,10 +48,7 @@ var Library =
     {
       rows: [],
       columns: [],
-      size: function ()
-      {
-        return Library.smallest(this.rows.length, this.columns.length);
-      },
+      size: function () {return Library.smallest(this.rows.length, this.columns.length);},
       smallestSpace: function ()
       {
         var smallest = 1;
@@ -937,6 +925,45 @@ workspace.clientUnminimized.connect (function (client)
       while (layer.moveDesktop(Converter.index(targetIndex), client.clientIndex, client.columnIndex, client.desktopIndex) !== 0)
       {
         Converter[method](targetIndex, direction);
+        if (Converter.index(targetIndex) === client.desktopIndex) {return -1;}
+      }
+      
+      layer.render(client.layerIndex);
+      workspace.currentDesktop = client.desktop;
+      return 0;
+    };
+  })() );
+});
+
+[
+  {text: 1, shortcut: 1, index: 0},
+  {text: 2, shortcut: 2, index: 1},
+  {text: 3, shortcut: 3, index: 2},
+  {text: 4, shortcut: 4, index: 3},
+  {text: 5, shortcut: 5, index: 4},
+  {text: 6, shortcut: 6, index: 5},
+  {text: 7, shortcut: 7, index: 6},
+  {text: 8, shortcut: 8, index: 7},
+  {text: 9, shortcut: 9, index: 8},
+  {text: 10, shortcut: 10, index: 9},
+  {text: 11, shortcut: 11, index: 10},
+  {text: 12, shortcut: 12, index: 11}
+].forEach (function (entry)
+{
+  registerShortcut ('Grid-Tiling: Move ' + entry.text, 'Grid-Tiling: Move ' + entry.text, 'Meta+F' + entry.shortcut, (function ()
+  {
+    var targetIndex = entry.index;
+    return function ()
+    {
+      var client = layout.getClient(workspace.activeClient.windowId);
+      if (client === -1) {return -1;}
+      var layer = layout.layers[client.layerIndex];
+      
+      var direction = targetIndex > client.desktopIndex ? 'increment' : 'decrement';
+      targetIndex = Converter.index(targetIndex);
+      while (layer.moveDesktop(Converter.index(targetIndex), client.clientIndex, client.columnIndex, client.desktopIndex) !== 0)
+      {
+        Converter[direction](targetIndex, 'col');
         if (Converter.index(targetIndex) === client.desktopIndex) {return -1;}
       }
       
