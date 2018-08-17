@@ -4,6 +4,8 @@
 
 ### Normal Installation
 
+*Note:* `*path*` *is the path to this repository.*
+
 ```
 plasmapkg2 --type kwinscript -i *path*
 mkdir -p ~/.local/share/kservices5
@@ -19,10 +21,9 @@ cd ~/.local/share/kwin/scripts/grid-tiling
 ln -s *path*/contents contents
 ln -s *path*/metadata.desktop metadata.desktop
 mkdir -p ~/.local/share/kservices5
+cd ~/.local/share/kservices5
 ln -s ../kwin/scripts/grid-tiling/metadata.desktop kwin-script-grid-tiling.desktop 
 ```
-
-*Note:* `*path*` *is the path to this repository.*
 
 *Note: You can replace `ln -s` for `cp`, if you prefer to copy and not have it linked to your cloned repository (if you do this then you're pretty much manually doing what `plasmapkg2` does), using `ln` instead of `cp` will result in an automatic update when you pull the latest changes*
 
