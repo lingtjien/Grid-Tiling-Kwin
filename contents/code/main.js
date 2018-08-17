@@ -952,15 +952,15 @@ workspace.clientUnminimized.connect (function (client)
 {
   registerShortcut ('Grid-Tiling: Move ' + entry.text, 'Grid-Tiling: Move ' + entry.text, 'Meta+F' + entry.shortcut, (function ()
   {
-    var targetIndex = entry.index;
+    var index = entry.index;
     return function ()
     {
       var client = layout.getClient(workspace.activeClient.windowId);
       if (client === -1) {return -1;}
       var layer = layout.layers[client.layerIndex];
       
-      var direction = targetIndex > client.desktopIndex ? 'increment' : 'decrement';
-      targetIndex = Converter.index(targetIndex);
+      var direction = index > client.desktopIndex ? 'increment' : 'decrement';
+      var targetIndex = Converter.index(index);
       while (layer.moveDesktop(Converter.index(targetIndex), client.clientIndex, client.columnIndex, client.desktopIndex) !== 0)
       {
         Converter[direction](targetIndex, 'col');
