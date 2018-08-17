@@ -1007,10 +1007,10 @@ registerShortcut ('Grid-Tiling: Close Desktop', 'Grid-Tiling: Close Desktop', 'M
     var layer = layout.layers[i];
     if (j >= layer.ndesktops()) {continue;}
     var desktop = layer.desktops[j];
-    for (var k = desktop.ncolumns() - 1; k >= 0 ; k--)
+    for (var k = desktop.ncolumns() - 1; k >= 0; k--)
     {
       var column = desktop.columns[k];
-      for (var l = column.nclients() - 1; l >= 0 ; l--)
+      for (var l = column.nclients() - 1; l >= 0; l--)
       {
         column.clients[l].closeWindow();
       }
@@ -1045,10 +1045,10 @@ registerShortcut ('Grid-Tiling: Unminimize Desktop', 'Grid-Tiling: Unminimize De
     var layer = layout.layers[i];
     if (j >= layer.ndesktops()) {continue;}
     var desktop = layer.desktops[j];
-    for (var k = desktop.ncolumns() - 1; k >= 0 ; k--)
+    for (var k = desktop.ncolumns() - 1; k >= 0; k--)
     {
       var column = desktop.columns[k];
-      for (var l = column.nclients() - 1; l >= 0 ; l--)
+      for (var l = column.nclients() - 1; l >= 0; l--)
       {
         column.clients[l].minimized = false;
       }
