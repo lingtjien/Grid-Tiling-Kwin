@@ -935,24 +935,11 @@ workspace.clientUnminimized.connect (function (client)
   })() );
 });
 
-[
-  {text: 1, shortcut: 1, index: 0},
-  {text: 2, shortcut: 2, index: 1},
-  {text: 3, shortcut: 3, index: 2},
-  {text: 4, shortcut: 4, index: 3},
-  {text: 5, shortcut: 5, index: 4},
-  {text: 6, shortcut: 6, index: 5},
-  {text: 7, shortcut: 7, index: 6},
-  {text: 8, shortcut: 8, index: 7},
-  {text: 9, shortcut: 9, index: 8},
-  {text: 10, shortcut: 10, index: 9},
-  {text: 11, shortcut: 11, index: 10},
-  {text: 12, shortcut: 12, index: 11}
-].forEach (function (entry)
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].forEach (function (entry)
 {
-  registerShortcut ('Grid-Tiling: Move ' + entry.text, 'Grid-Tiling: Move ' + entry.text, 'Meta+F' + entry.shortcut, (function ()
+  registerShortcut ('Grid-Tiling: Move ' + entry, 'Grid-Tiling: Move ' + entry, 'Meta+F' + entry, (function ()
   {
-    var index = entry.index;
+    var index = entry - 1;
     return function ()
     {
       var client = layout.getClient(workspace.activeClient.windowId);
