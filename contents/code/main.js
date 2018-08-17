@@ -924,8 +924,8 @@ workspace.clientUnminimized.connect (function (client)
       Converter[method](targetIndex, direction);
       while (layer.moveDesktop(Converter.index(targetIndex), client.clientIndex, client.columnIndex, client.desktopIndex) !== 0)
       {
-        Converter[method](targetIndex, direction);
         if (Converter.index(targetIndex) === client.desktopIndex) {return -1;}
+        Converter[method](targetIndex, direction);
       }
       
       layer.render(client.layerIndex);
@@ -950,8 +950,8 @@ workspace.clientUnminimized.connect (function (client)
       var targetIndex = Converter.index(index);
       while (layer.moveDesktop(Converter.index(targetIndex), client.clientIndex, client.columnIndex, client.desktopIndex) !== 0)
       {
-        Converter[direction](targetIndex, 'col');
         if (Converter.index(targetIndex) === client.desktopIndex) {return -1;}
+        Converter[direction](targetIndex, 'col');
       }
       
       layer.render(client.layerIndex);
@@ -991,7 +991,7 @@ workspace.clientUnminimized.connect (function (client)
       if (client === -1) {return -1;}
       var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
       desktop.columns[client.columnIndex].changeDivider('both', direction * Parameters.dividerStepSize, client.clientIndex);
-      desktop.changeDivider('both', Parameters.dividerStepSize, client.columnIndex);
+      desktop.changeDivider('both', direction * Parameters.dividerStepSize, client.columnIndex);
       
       return desktop.render(client.desktopIndex, client.layerIndex);
     };
