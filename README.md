@@ -2,9 +2,9 @@
 
 ## Install
 
-### Normal Installation
-
 *Note:* `*path*` *is the path to this repository.*
+
+### Normal Installation
 
 ```
 plasmapkg2 --type kwinscript -i *path*
@@ -68,7 +68,7 @@ Delete the linked or copied files that you created during installation. To remov
 ![](https://media.giphy.com/media/2WH0gA5A0mDLxBwVop/giphy.gif)
 ![](https://media.giphy.com/media/1XbN5mJlXUn3hoDoPk/giphy.gif)
 
-- move clients between virtual desktops (global shortcut: `Grid-Tiling: Move *Number*`). This will attempt to move the active client to a desktop and screen depending on the amount of screens (if it fails then it will attempt the next or previous one). If you have only *one screen* then this number is equal to the desktop number, if you have *2 screens* then *Number 1* is `desktop 1` & `screen 1`, *Number 2* `desktop 1` & `screen 2`, *Number 3* `desktop 2` & `screen 1` and so forth...
+- move clients between virtual desktops (global shortcut: `Grid-Tiling: Move *Number*`). This will attempt to move the active client to a desktop and screen depending on the amount of screens (if it fails then it will attempt the next or previous one). If you have only **one screen** then this number is equal to the desktop number, if you have **two screens** then `1` is **desktop 1 & screen 1**, `2` **desktop 1 & screen 2**, `3` **desktop 2 & screen 1** and so forth...
 - move clients between virtual desktops (global shortcut: `Grid-Tiling: Move *Left/Up/Down/Right* Desktop`)
 
 ![](https://media.giphy.com/media/2wh560orSSXgoiObR1/giphy.gif)
@@ -98,6 +98,7 @@ Delete the linked or copied files that you created during installation. To remov
 - set shortcuts `Grid-Tiling: Switch *Left/Up/Down/Right*` to `Meta+Ctrl+*Left/Up/Down/Right*`
 - set shortcuts `Switch To Window *Left/Up/Down/Right*` to `Meta+Alt+*Left/Up/Down/Right*`
 - set shortcuts `Grid-Tiling: Move *Left/Up/Down/Right* Desktop` to `Meta+*Home/PgUp/PgDn/End*`
+- set shortcuts `Grid-Tiling: Move *Number*` to `Meta+F*Number*`
 - set shortcut `Grid-Tiling: Toggle Opacity` to `Meta+O`
 - set shortcut `Grid-Tiling: Toggle Borders` to `Meta+P`
 - set shortcut `Close Window` to `Meta+W`
