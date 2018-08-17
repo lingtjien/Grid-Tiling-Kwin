@@ -68,7 +68,9 @@ Delete the linked or copied files that you created during installation. To remov
 ![](https://media.giphy.com/media/2WH0gA5A0mDLxBwVop/giphy.gif)
 ![](https://media.giphy.com/media/1XbN5mJlXUn3hoDoPk/giphy.gif)
 
-- move clients between virtual desktops (global shortcut: `Grid-Tiling: Move *Number*`). This will attempt to move the active client to a desktop and screen depending on the amount of screens (if it fails then it will attempt the next or previous one). If you have only **one screen** then this number is equal to the desktop number, if you have **two screens** then `1` is **desktop 1 & screen 1**, `2` **desktop 1 & screen 2**, `3` **desktop 2 & screen 1** and so forth...
+- move clients between virtual desktops (global shortcut: `Grid-Tiling: Move *Number*`)
+  - This will attempt to move the active client to a desktop and screen depending on the amount of screens (if it fails then it will attempt the next or previous one)
+  - If you have only **one screen** then this number is equal to the desktop number, if you have **two screens** then `1` is **desktop 1 & screen 1**, `2` **desktop 1 & screen 2**, `3` **desktop 2 & screen 1** and so forth...
 - move clients between virtual desktops (global shortcut: `Grid-Tiling: Move *Left/Up/Down/Right* Desktop`)
 
 ![](https://media.giphy.com/media/2wh560orSSXgoiObR1/giphy.gif)
