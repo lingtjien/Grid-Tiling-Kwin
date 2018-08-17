@@ -900,7 +900,7 @@ workspace.clientUnminimized.connect (function (client)
       
       return desktop.render(client.desktopIndex, client.layerIndex);
     };
-  })() );
+  })());
 });
 
 [
@@ -932,7 +932,7 @@ workspace.clientUnminimized.connect (function (client)
       workspace.currentDesktop = client.desktop;
       return 0;
     };
-  })() );
+  })());
 });
 
 [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].forEach (function (entry)
@@ -958,7 +958,7 @@ workspace.clientUnminimized.connect (function (client)
       workspace.currentDesktop = client.desktop;
       return 0;
     };
-  })() );
+  })());
 });
 
 [
@@ -974,7 +974,7 @@ workspace.clientUnminimized.connect (function (client)
       Parameters[variable] = !Parameters[variable];
       return layout.render();
     };
-  })() );
+  })());
 });
 
 [
@@ -995,7 +995,7 @@ workspace.clientUnminimized.connect (function (client)
       
       return desktop.render(client.desktopIndex, client.layerIndex);
     };
-  })() );
+  })());
 });
 
 registerShortcut ('Grid-Tiling: Close Desktop', 'Grid-Tiling: Close Desktop', 'Meta+Q', function ()

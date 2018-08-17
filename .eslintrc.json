@@ -66,6 +66,11 @@
       "error",
       {"before": false, "after": true}
     ],
+    "space-in-parens":
+    [
+      "error",
+      "never"
+    ],
     "space-before-function-paren":
     [
       "error",
