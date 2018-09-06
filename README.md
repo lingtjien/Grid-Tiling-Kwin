@@ -125,6 +125,13 @@ Delete the linked or copied files that you created during installation. To remov
 
 These are settings that you can adjust in KWin which are unrelated to this script.
 
+### Change Window Action Modifier Key
+1. System Settings
+2. Window Management
+3. Window Behavior
+4. Window Actions
+5. Modifier Key
+
 ### Transparant Blurry Menu
 
 1. System Settings
