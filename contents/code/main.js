@@ -874,6 +874,24 @@ workspace.clientUnminimized.connect (function (client)
   return layout.layers[client.layerIndex].desktops[client.desktopIndex].render(client.desktopIndex, client.layerIndex);
 });
 
+workspace.desktopPresenceChanged.connect (function (client,index)
+{
+  client = layout.getClient(client.windowId);
+  if (client === -1) {return -1;}
+      var layer = layout.layers[client.layerIndex];
+      
+      var direction = index > client.desktopIndex ? 'increment' : 'decrement';
+      var targetIndex = Converter.index(index);
+      while (layer.moveDesktop(Converter.index(targetIndex), client.clientIndex, client.columnIndex, client.desktopIndex) !== 0)
+      {
+        if (Converter.index(targetIndex) === client.desktopIndex) {return -1;}
+        Converter[direction](targetIndex, 'col');
+      }
+      
+      layer.render(client.layerIndex);
+      return layout.render();
+});
+
 // ---------
 // Shortcuts
 // ---------
