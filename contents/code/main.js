@@ -935,6 +935,39 @@ workspace.clientUnminimized.connect (function (client)
   })());
 });
 
+[
+  {text: 'Left', shortcut: 'Home', method: 'decrement', direction: 'col'},
+  {text: 'Right', shortcut: 'End', method: 'increment', direction: 'col'},
+  {text: 'Up', shortcut: 'PgUp', method: 'decrement', direction: 'row'},
+  {text: 'Down', shortcut: 'PgDown', method: 'increment', direction: 'row'}
+].forEach (function (entry)
+{
+  registerShortcut ('Grid-Tiling: MoveStay ' + entry.text + ' Desktop', 'Grid-Tiling: MoveStay ' + entry.text + ' Desktop', 'Meta+Shift' + entry.shortcut, (function ()
+  {
+    var method = entry.method;
+    var direction = entry.direction;
+    return function ()
+    {
+      var client = layout.getClient(workspace.activeClient.windowId);
+      if (client === -1) {return -1;}
+      var layer = layout.layers[client.layerIndex];
+      
+      var targetIndex = Converter.index(client.desktopIndex);
+      Converter[method](targetIndex, direction);
+      while (layer.moveDesktop(Converter.index(targetIndex), client.clientIndex, client.columnIndex, client.desktopIndex) !== 0)
+      {
+        if (Converter.index(targetIndex) === client.desktopIndex) {return -1;}
+        Converter[method](targetIndex, direction);
+      }
+      
+      layer.render(client.layerIndex);
+      layout.render();
+      return 0;
+    };
+  })());
+});
+
+
 [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].forEach (function (entry)
 {
   registerShortcut ('Grid-Tiling: Move ' + entry, 'Grid-Tiling: Move ' + entry, 'Meta+F' + entry, (function ()
