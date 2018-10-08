@@ -832,7 +832,7 @@ workspace.desktopPresenceChanged.connect (function (client)
     targetIndex += direction;
     if (targetIndex >= Converter.size()) {targetIndex = 0;}
     if (targetIndex < 0) {targetIndex = Converter.size() - 1;}
-    if (targetIndex === start) {break;}
+    if (targetIndex === start) {return -1;}
   }
 
   layer.render(client.layerIndex);
