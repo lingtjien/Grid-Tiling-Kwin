@@ -124,54 +124,9 @@ var Converter =
   {
     return this.nrow() * this.ncol();
   },
-  index: function (index) // either converts a desktopIndex to row and col or does the reverse when given an object with row and col properties
+  desktopIndex: function (desktop, screen)
   {
-    if (index.hasOwnProperty('row') && index.hasOwnProperty('col'))
-      return index.row * this.ncol() + index.col;
-    else
-      return {row: Math.floor(index / this.ncol()), col: index % this.ncol()};
-  },
-  increment: function (index, direction) // index object with row and col properties, direction either 'row' or 'col'
-  {
-    var perpendicular = direction === 'row' ? 'col' : 'row';
-    if (index[direction] + 1 >= this['n' + direction]())
-    {
-      if (index[perpendicular] + 1 >= this['n' + perpendicular]())
-      {
-        index[direction] = 0;
-        index[perpendicular] = 0;
-      }
-      else
-      {
-        index[direction] = 0;
-        index[perpendicular] += 1;
-      }
-    }
-    else
-    {
-      index[direction] += 1;
-    }
-  },
-  decrement: function (index, direction) // index object with row and col properties, direction either 'row' or 'col'
-  {
-    var perpendicular = direction === 'row' ? 'col' : 'row';
-    if (index[direction] - 1 < 0)
-    {
-      if (index[perpendicular] - 1 < 0)
-      {
-        index[direction] = this['n' + direction]() - 1;
-        index[perpendicular] = this['n' + perpendicular]() - 1;
-      }
-      else
-      {
-        index[direction] = this['n' + direction]() - 1;
-        index[perpendicular] -= 1;
-      }
-    }
-    else
-    {
-      index[direction] -= 1;
-    }
+    return workspace.numScreens * (desktop - 1) + screen;
   },
   desktop: function (desktopIndex)
   {
@@ -858,6 +813,28 @@ workspace.clientRemoved.connect (function (client)
   return layout.render();
 });
 
+workspace.desktopPresenceChanged.connect (function (client)
+{
+  client = layout.getClient(client.windowId);
+  if (client === -1) {return -1;}
+  if (client.desktop === client.desktopRender && client.screen === client.screenRender) {return -1;}
+  var layer = layout.layers[client.layerIndex];
+  var targetIndex = Converter.desktopIndex(client.desktop, client.screen);
+  
+  var start = client.desktopIndex;
+  var direction = targetIndex > client.desktopIndex ? 1 : -1;
+  while (layer.moveDesktop(targetIndex, client.clientIndex, client.columnIndex, client.desktopIndex) !== 0)
+  {
+    targetIndex += direction;
+    if (targetIndex >= Converter.size()) {targetIndex = 0;}
+    if (targetIndex < 0) {targetIndex = Converter.size() - 1;}
+    if (targetIndex === start) {break;}
+  }
+
+  layer.render(client.layerIndex);
+  workspace.currentDesktop = client.desktop; // switch to the new desktop
+});
+
 workspace.clientMinimized.connect (function (client)
 {
   client = layout.getClient(client.windowId);
@@ -899,64 +876,6 @@ workspace.clientUnminimized.connect (function (client)
       if (method === 'horizontal' && desktop.switchClient(direction, client.clientIndex, client.columnIndex) === -1) {return -1;}
       
       return desktop.render(client.desktopIndex, client.layerIndex);
-    };
-  })());
-});
-
-[
-  {text: 'Left', shortcut: 'Home', method: 'decrement', direction: 'col'},
-  {text: 'Right', shortcut: 'End', method: 'increment', direction: 'col'},
-  {text: 'Up', shortcut: 'PgUp', method: 'decrement', direction: 'row'},
-  {text: 'Down', shortcut: 'PgDown', method: 'increment', direction: 'row'}
-].forEach (function (entry)
-{
-  registerShortcut ('Grid-Tiling: Move ' + entry.text + ' Desktop', 'Grid-Tiling: Move ' + entry.text + ' Desktop', 'Meta+' + entry.shortcut, (function ()
-  {
-    var method = entry.method;
-    var direction = entry.direction;
-    return function ()
-    {
-      var client = layout.getClient(workspace.activeClient.windowId);
-      if (client === -1) {return -1;}
-      var layer = layout.layers[client.layerIndex];
-      
-      var targetIndex = Converter.index(client.desktopIndex);
-      Converter[method](targetIndex, direction);
-      while (layer.moveDesktop(Converter.index(targetIndex), client.clientIndex, client.columnIndex, client.desktopIndex) !== 0)
-      {
-        if (Converter.index(targetIndex) === client.desktopIndex) {return -1;}
-        Converter[method](targetIndex, direction);
-      }
-      
-      layer.render(client.layerIndex);
-      workspace.currentDesktop = client.desktop;
-      return 0;
-    };
-  })());
-});
-
-[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].forEach (function (entry)
-{
-  registerShortcut ('Grid-Tiling: Move ' + entry, 'Grid-Tiling: Move ' + entry, 'Meta+F' + entry, (function ()
-  {
-    var index = entry - 1;
-    return function ()
-    {
-      var client = layout.getClient(workspace.activeClient.windowId);
-      if (client === -1) {return -1;}
-      var layer = layout.layers[client.layerIndex];
-      
-      var direction = index > client.desktopIndex ? 'increment' : 'decrement';
-      var targetIndex = Converter.index(index);
-      while (layer.moveDesktop(Converter.index(targetIndex), client.clientIndex, client.columnIndex, client.desktopIndex) !== 0)
-      {
-        if (Converter.index(targetIndex) === client.desktopIndex) {return -1;}
-        Converter[direction](targetIndex, 'col');
-      }
-      
-      layer.render(client.layerIndex);
-      workspace.currentDesktop = client.desktop;
-      return 0;
     };
   })());
 });
