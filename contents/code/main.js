@@ -264,17 +264,20 @@ function Column ()
       this.clients[i].noBorder = Parameters.noBorder;
       if (Parameters.noOpacity) {this.clients[i].opacity = 1;}
       else {this.clients[i].opacity = Parameters.opacity;}
-      
-      this.clients[i].desktop = Converter.desktop(desktopIndex);
+
+      // these properties are used internally only so they must be set first as they are used to check
       this.clients[i].desktopRender = Converter.desktop(desktopIndex);
-      this.clients[i].screen = Converter.screen(desktopIndex);
       this.clients[i].screenRender = Converter.screen(desktopIndex);
-      this.clients[i].geometry = geometry;
       this.clients[i].geometryRender = geometry;
       this.clients[i].clientIndex = i;
       this.clients[i].columnIndex = columnIndex;
       this.clients[i].desktopIndex = desktopIndex;
       this.clients[i].layerIndex = layerIndex;
+
+      // these properties are from kwin and will thus trigger additional signals, these properties must be set last to prevent the signals that are hooked into this script from triggering before the internal properties have been set
+      this.clients[i].desktop = Converter.desktop(desktopIndex);
+      this.clients[i].screen = Converter.screen(desktopIndex);
+      this.clients[i].geometry = geometry;
       
       y += height + Parameters.gap;
       
@@ -480,7 +483,7 @@ function Desktop (rows, columns)
 function Layer ()
 {
   this.desktops = [];
-  this.ndesktops =  function () {return this.desktops.length;};
+  this.ndesktops = function () {return this.desktops.length;};
   
   this.addDesktop = function (desktop)
   {
@@ -818,6 +821,7 @@ workspace.desktopPresenceChanged.connect (function (client)
   client = layout.getClient(client.windowId);
   if (client === -1) {return -1;}
   if (client.desktop === client.desktopRender && client.screen === client.screenRender) {return -1;}
+  
   var layer = layout.layers[client.layerIndex];
   var targetIndex = Converter.desktopIndex(client.desktop, client.screen);
   
@@ -876,6 +880,37 @@ workspace.clientUnminimized.connect (function (client)
       if (method === 'horizontal' && desktop.switchClient(direction, client.clientIndex, client.columnIndex) === -1) {return -1;}
       
       return desktop.render(client.desktopIndex, client.layerIndex);
+    };
+  })());
+});
+
+[
+  {text: 'Next', shortcut: 'End', direction: 1},
+  {text: 'Previous', shortcut: 'Home', direction: -1}
+].forEach (function (entry)
+{
+  registerShortcut ('Grid-Tiling: Move ' + entry.text + ' Desktop/Screen', 'Grid-Tiling: Move ' + entry.text + ' Desktop/Screen', 'Meta+' + entry.shortcut, (function ()
+  {
+    var direction = entry.direction;
+    return function ()
+    {
+      var client = layout.getClient(workspace.activeClient.windowId);
+      if (client === -1) {return -1;}
+      var layer = layout.layers[client.layerIndex];
+      
+      var start = client.desktopIndex;
+      var targetIndex = start + direction;
+      while (layer.moveDesktop(targetIndex, client.clientIndex, client.columnIndex, client.desktopIndex) !== 0)
+      {
+        targetIndex += direction;
+        if (targetIndex >= Converter.size()) {targetIndex = 0;}
+        if (targetIndex < 0) {targetIndex = Converter.size() - 1;}
+        if (targetIndex === start) {break;}
+      }
+
+      layer.render(client.layerIndex);
+      workspace.currentDesktop = client.desktop;
+      return 0;
     };
   })());
 });
