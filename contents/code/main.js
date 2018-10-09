@@ -634,9 +634,9 @@ function Layout ()
 
 }
 
-// ------------------
-// Methods on clients
-// ------------------
+// --------------
+// Client Methods
+// --------------
 
 var Client =
 {
@@ -740,76 +740,80 @@ var Client =
 
     client.minSpace = minSpace;
     return 0;
+  },
+  add: function (client)
+  {
+    if (client === null || addedClients.hasOwnProperty(client.windowId) || floatingClients.hasOwnProperty(client.windowId)) {return -1;}
+    if (Client.validate(client) !== 0) {return -1;} // on succes adds minSpace to client
+    if (layout.addClient(client) !== 0) {return -1;}
+    addedClients[client.windowId] = true;
+    layout.render();
+    workspace.currentDesktop = client.desktop;
+
+    // -------------------------
+    // Connecting Client Signals
+    // -------------------------
+    client.clientFinishUserMovedResized.connect (function (client)
+    {
+      client = layout.getClient(client.windowId);
+      if (client === -1) {return -1;}
+
+      var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
+      var properties = Client.properties(desktop.columns[client.columnIndex].nclients(), desktop.ncolumns(), client.desktopIndex);
+
+      var diff =
+      {
+        x: client.geometry.x - client.geometryRender.x,
+        y: client.geometry.y - client.geometryRender.y,
+        width: client.geometry.width - client.geometryRender.width,
+        height: client.geometry.height - client.geometryRender.height
+      };
+
+      if (Client.resized(diff, client, desktop, properties.clientHeight, properties.columnWidth) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
+      if (Client.movedX(diff, client, desktop, properties.columnWidth) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
+      if (Client.movedY(diff, client, desktop, properties.clientHeight) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
+
+      return 0;
+    });
+    client.clientStepUserMovedResized.connect (function (client)
+    {
+      client = layout.getClient(client.windowId);
+      if (client === -1) {return -1;}
+
+      var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
+      var properties = Client.properties(desktop.columns[client.columnIndex].nclients(), desktop.ncolumns(), client.desktopIndex);
+
+      var diff =
+      {
+        x: client.geometry.x - client.geometryRender.x,
+        y: client.geometry.y - client.geometryRender.y,
+        width: client.geometry.width - client.geometryRender.width,
+        height: client.geometry.height - client.geometryRender.height
+      };
+
+      if (Client.resized(diff, client, desktop, properties.clientHeight, properties.columnWidth) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
+
+      return 0;
+    });
+
+    return 0;
   }
 };
 
-// ---------------------------
-// Connecting The KWin Signals
-// ---------------------------
+// ----------------------------
+// Connecting Workspace Signals
+// ----------------------------
 
 var addedClients = {}; // windowId of added clients
+var floatingClients = {}; // windowId of floating clients
 var layout = new Layout(); // main class, contains all methods
 
 // clientAdded does not work for a lot of clients
-workspace.clientActivated.connect (function (client)
-{
-  if (client === null || client.windowId in addedClients) {return -1;}
-  if (Client.validate(client) !== 0) {return -1;} // on succes adds minSpace to client
-  if (layout.addClient(client) !== 0) {return -1;}
-  addedClients[client.windowId] = true;
-  layout.render();
-  workspace.currentDesktop = client.desktop;
-
-  // connecting client signals
-  client.clientFinishUserMovedResized.connect (function (client)
-  {
-    client = layout.getClient(client.windowId);
-    if (client === -1) {return -1;}
-
-    var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
-    var properties = Client.properties(desktop.columns[client.columnIndex].nclients(), desktop.ncolumns(), client.desktopIndex);
-
-    var diff =
-    {
-      x: client.geometry.x - client.geometryRender.x,
-      y: client.geometry.y - client.geometryRender.y,
-      width: client.geometry.width - client.geometryRender.width,
-      height: client.geometry.height - client.geometryRender.height
-    };
-
-    if (Client.resized(diff, client, desktop, properties.clientHeight, properties.columnWidth) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
-    if (Client.movedX(diff, client, desktop, properties.columnWidth) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
-    if (Client.movedY(diff, client, desktop, properties.clientHeight) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
-
-    return 0;
-  });
-  client.clientStepUserMovedResized.connect (function (client)
-  {
-    client = layout.getClient(client.windowId);
-    if (client === -1) {return -1;}
-
-    var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
-    var properties = Client.properties(desktop.columns[client.columnIndex].nclients(), desktop.ncolumns(), client.desktopIndex);
-
-    var diff =
-    {
-      x: client.geometry.x - client.geometryRender.x,
-      y: client.geometry.y - client.geometryRender.y,
-      width: client.geometry.width - client.geometryRender.width,
-      height: client.geometry.height - client.geometryRender.height
-    };
-
-    if (Client.resized(diff, client, desktop, properties.clientHeight, properties.columnWidth) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
-
-    return 0;
-  });
-
-  return 0;
-});
+workspace.clientActivated.connect (Client.add);
 
 workspace.clientRemoved.connect (function (client)
 {
-  if (!(client.windowId in addedClients)) {return -1;}
+  if (!addedClients.hasOwnProperty(client.windowId)) {return -1;}
   delete addedClients[client.windowId];
   client = layout.getClient(client.windowId);
   if (layout.removeClient(client.clientIndex, client.columnIndex, client.desktopIndex, client.layerIndex) !== 0) {return -1;}
@@ -1009,6 +1013,24 @@ registerShortcut ('Grid-Tiling: Unminimize Desktop', 'Grid-Tiling: Unminimize De
     }
   }
   return 0; // render is not needed as the signal for unminimize has been connected to render
+});
+
+registerShortcut ('Grid-Tiling: Float', 'Grid-Tiling: Float', 'Meta+X', function ()
+{
+  var client = layout.getClient(workspace.activeClient.windowId);
+  if (client === -1 || !addedClients.hasOwnProperty(client.windowId)) {return -1;}
+  delete addedClients[client.windowId];
+  floatingClients[client.windowId] = true;
+  if (layout.removeClient(client.clientIndex, client.columnIndex, client.desktopIndex, client.layerIndex) !== 0) {return -1;}
+  return layout.render();
+});
+
+registerShortcut ('Grid-Tiling: Tile', 'Grid-Tiling: Tile', 'Meta+Z', function ()
+{
+  var client = workspace.activeClient;
+  if (client === -1 || !floatingClients.hasOwnProperty(client.windowId)) {return -1;}
+  delete floatingClients[client.windowId];
+  return Client.add(client);
 });
 
 registerShortcut ('Grid-Tiling: Refresh', 'Grid-Tiling: Refresh', 'Meta+R', function ()
