@@ -741,12 +741,12 @@ var Client =
     client.minSpace = minSpace;
     return 0;
   },
-  add: function (client)
+  tile: function (client)
   {
-    if (client === null || addedClients.hasOwnProperty(client.windowId) || floatingClients.hasOwnProperty(client.windowId)) {return -1;}
+    if (client === null || tiledClients.hasOwnProperty(client.windowId) || floatingClients.hasOwnProperty(client.windowId)) {return -1;}
     if (Client.validate(client) !== 0) {return -1;} // on succes adds minSpace to client
     if (layout.addClient(client) !== 0) {return -1;}
-    addedClients[client.windowId] = true;
+    tiledClients[client.windowId] = true;
     layout.render();
     workspace.currentDesktop = client.desktop;
 
@@ -804,17 +804,16 @@ var Client =
 // Connecting Workspace Signals
 // ----------------------------
 
-var addedClients = {}; // windowId of added clients
+var tiledClients = {}; // windowId of added clients
 var floatingClients = {}; // windowId of floating clients
 var layout = new Layout(); // main class, contains all methods
 
-// clientAdded does not work for a lot of clients
-workspace.clientActivated.connect (Client.add);
+workspace.clientActivated.connect (Client.tile); // clientAdded does not work for a lot of clients
 
 workspace.clientRemoved.connect (function (client)
 {
-  if (!addedClients.hasOwnProperty(client.windowId)) {return -1;}
-  delete addedClients[client.windowId];
+  if (!tiledClients.hasOwnProperty(client.windowId)) {return -1;}
+  delete tiledClients[client.windowId];
   client = layout.getClient(client.windowId);
   if (layout.removeClient(client.clientIndex, client.columnIndex, client.desktopIndex, client.layerIndex) !== 0) {return -1;}
   return layout.render();
@@ -974,7 +973,7 @@ registerShortcut ('Grid-Tiling: Close Desktop', 'Grid-Tiling: Close Desktop', 'M
       }
     }
   }
-  return layout.render();
+  return 0; // render is not needed as the close signal is connected
 });
 
 registerShortcut ('Grid-Tiling: Maximize', 'Grid-Tiling: Maximize', 'Meta+M', function ()
@@ -1018,8 +1017,8 @@ registerShortcut ('Grid-Tiling: Unminimize Desktop', 'Grid-Tiling: Unminimize De
 registerShortcut ('Grid-Tiling: Float', 'Grid-Tiling: Float', 'Meta+X', function ()
 {
   var client = layout.getClient(workspace.activeClient.windowId);
-  if (client === -1 || !addedClients.hasOwnProperty(client.windowId)) {return -1;}
-  delete addedClients[client.windowId];
+  if (client === -1 || !tiledClients.hasOwnProperty(client.windowId)) {return -1;}
+  delete tiledClients[client.windowId];
   floatingClients[client.windowId] = true;
   if (layout.removeClient(client.clientIndex, client.columnIndex, client.desktopIndex, client.layerIndex) !== 0) {return -1;}
   return layout.render();
@@ -1030,7 +1029,7 @@ registerShortcut ('Grid-Tiling: Tile', 'Grid-Tiling: Tile', 'Meta+Z', function (
   var client = workspace.activeClient;
   if (client === -1 || !floatingClients.hasOwnProperty(client.windowId)) {return -1;}
   delete floatingClients[client.windowId];
-  return Client.add(client);
+  return Client.tile(client);
 });
 
 registerShortcut ('Grid-Tiling: Refresh', 'Grid-Tiling: Refresh', 'Meta+R', function ()
