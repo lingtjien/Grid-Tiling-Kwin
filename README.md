@@ -59,14 +59,14 @@ Delete the linked or copied files that you created during installation. To remov
 
 - switch clients within a virtual desktop
   - dragging client outside the `moveThreshold`
-  - global shortcuts `Grid-Tiling: Switch *Left/Up/Down/Right*`
+  - `Grid-Tiling: Switch *Left/Up/Down/Right*`
 
 ![](http://tiny.cc/switch-shortcut)
 ![](http://tiny.cc/switch-mouse)
 
 - dynamically resize clients up to a minimum as defined by `dividerBounds`
   - dragging client borders by mouse
-  - global shortcuts `Grid-Tiling: *Increase/Decrease* Size`
+  - `Grid-Tiling: *Increase/Decrease* Size`
 
 ![](http://tiny.cc/resize-mouse)
 ![](http://tiny.cc/resize-shortcut)
@@ -95,7 +95,7 @@ Delete the linked or copied files that you created during installation. To remov
 
 ![](http://tiny.cc/float-tile)
 
-- close all clients on the current virtual desktop (global shortcut: `Grid-Tiling: Close Desktop`)
+- close all clients on the current virtual desktop `Grid-Tiling: Close Desktop`
 
 ![](http://tiny.cc/close-desktop)
 
