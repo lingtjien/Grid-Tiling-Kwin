@@ -46,7 +46,7 @@ Delete the linked or copied files that you created during installation. To remov
 ![](http://tiny.cc/tiling-2x3)
 
 - restriction of minimum space a client can occupy on a virtual desktop, as in the amount of clients this client can share a virtual desktop with
-  - the minimum is defined by an **integral number** larger or equal to `1`
+  - the minimum is defined by an **integer number** larger or equal to `1`
   - defaults to the maximum which is the number of rows multiplied by columns (of the largest grid)
   - a size of `1` is the largest which means that it can only ever exist alone on a virtual desktop, size of `2` means that it can exist with one other client together on a virtual desktop and so forth...
 
