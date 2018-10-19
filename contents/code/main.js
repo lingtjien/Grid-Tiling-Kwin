@@ -246,7 +246,7 @@ function Column ()
     {
       if (this.clients[i].minimized) {continue;}
 
-      if (i === this.nclients() - 1) {divider = 0;}
+      if (i === this.nclients() - 1 || (i < this.nclients() - 1 && this.clients[i + 1].minimized)) {divider = 0;}
       else {divider = this.dividers[i];}
 
       current = clientHeight * divider;
@@ -464,7 +464,7 @@ function Desktop (rows, columns)
     {
       if (this.columns[i].nminimized() === this.columns[i].nclients()) {continue;}
 
-      if (i === this.ncolumns() - 1) {divider = 0;}
+      if (i === this.ncolumns() - 1 || (i < this.ncolumns() - 1 && this.columns[i + 1].nminimized() === this.columns[i + 1].nclients())) {divider = 0;}
       else {divider = this.dividers[i];}
 
       current = columnWidth * divider;
