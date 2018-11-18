@@ -184,7 +184,17 @@ function Column ()
   {
     if (clientIndex < 0 || clientIndex >= this.nclients()) {return -1;}
     this.clients.splice(clientIndex, 1);
-    if (clientIndex !== 0) {this.dividers.splice(clientIndex - 1, 1);} // the first client does not have a divider, thus it can not be removed
+    if (clientIndex === 0)
+    {
+      if (this.dividers.length > 0)
+      {
+        this.dividers.splice(0, 1);
+      }
+    }
+    else
+    {
+      this.dividers.splice(clientIndex - 1, 1);
+    }
     return 0;
   };
 
@@ -244,7 +254,8 @@ function Column ()
     var divider = 0;
     for (var i = 0; i < this.nclients(); i++)
     {
-      if (this.clients[i].minimized) {continue;}
+      var client = this.clients[i];
+      if (client.minimized) {continue;}
 
       if (i === this.nclients() - 1 || (i < this.nclients() - 1 && this.clients[i + 1].minimized)) {divider = 0;}
       else {divider = this.dividers[i];}
@@ -261,23 +272,23 @@ function Column ()
         height: Math.floor(height)
       };
 
-      this.clients[i].noBorder = Parameters.noBorder;
-      if (Parameters.noOpacity) {this.clients[i].opacity = 1;}
-      else {this.clients[i].opacity = Parameters.opacity;}
+      client.noBorder = Parameters.noBorder;
+      if (Parameters.noOpacity) {client.opacity = 1;}
+      else {client.opacity = Parameters.opacity;}
 
       // these properties are used internally only so they must be set first as they are used to check
-      this.clients[i].desktopRender = Converter.desktop(desktopIndex);
-      this.clients[i].screenRender = Converter.screen(desktopIndex);
-      this.clients[i].geometryRender = geometry;
-      this.clients[i].clientIndex = i;
-      this.clients[i].columnIndex = columnIndex;
-      this.clients[i].desktopIndex = desktopIndex;
-      this.clients[i].layerIndex = layerIndex;
+      client.desktopRender = Converter.desktop(desktopIndex);
+      client.screenRender = Converter.screen(desktopIndex);
+      client.geometryRender = geometry;
+      client.clientIndex = i;
+      client.columnIndex = columnIndex;
+      client.desktopIndex = desktopIndex;
+      client.layerIndex = layerIndex;
 
       // these properties are from kwin and will thus trigger additional signals, these properties must be set last to prevent the signals that are hooked into this script from triggering before the internal properties have been set
-      this.clients[i].desktop = Converter.desktop(desktopIndex);
-      this.clients[i].screen = Converter.screen(desktopIndex);
-      this.clients[i].geometry = geometry;
+      client.desktop = Converter.desktop(desktopIndex);
+      client.screen = Converter.screen(desktopIndex);
+      client.geometry = geometry;
 
       y += height + Parameters.gap;
 
@@ -327,7 +338,17 @@ function Desktop (rows, columns)
   {
     if (columnIndex < 0 || columnIndex >= this.ncolumns()) {return -1;}
     this.columns.splice(columnIndex, 1);
-    if (columnIndex !== 0) {this.dividers.splice(columnIndex - 1, 1);}
+    if (columnIndex === 0)
+    {
+      if (this.dividers.length > 0)
+      {
+        this.dividers.splice(0, 1);
+      }
+    }
+    else
+    {
+      this.dividers.splice(columnIndex - 1, 1);
+    }
     return 0;
   };
 
@@ -369,9 +390,7 @@ function Desktop (rows, columns)
     var column = new Column();
     if (client.minSpace > 1 / (this.ncolumns() + 1)) {return -1;}
     if (this.addColumn(column) === -1) {return -1;}
-    this.columns[this.ncolumns() - 1].addClient(client);
-
-    return 0;
+    return this.columns[this.ncolumns() - 1].addClient(client);
   };
 
   this.removeClient = function (clientIndex, columnIndex)
@@ -409,7 +428,7 @@ function Desktop (rows, columns)
     if (columnIndex < 0 || columnIndex >= this.ncolumns()) {return -1;}
     var column = this.columns[columnIndex];
     if (clientIndex < 0 || clientIndex >= column.nclients()) {return -1;}
-    var client = this.columns[columnIndex].clients[clientIndex];
+    var client = column.clients[clientIndex];
 
     var i = columnIndex + direction; // target to switch client with
     if (i < 0 || i >= this.ncolumns()) {return -1;}
@@ -418,7 +437,7 @@ function Desktop (rows, columns)
       i += direction;
       if (i < 0 || i >= this.ncolumns()) {return this.switchColumn(direction, columnIndex);}
     }
-    this.columns[columnIndex].clients[clientIndex] = this.columns[i].clients[clientIndex];
+    column.clients[clientIndex] = this.columns[i].clients[clientIndex];
     this.columns[i].clients[clientIndex] = client;
     return 0;
   };
