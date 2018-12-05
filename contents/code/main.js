@@ -1,8 +1,8 @@
-// -----------------
-// Library Functions
-// -----------------
+// ---------
+// Algorithm
+// ---------
 
-var Library =
+var Algorithm =
 {
   toBool: function (value)
   {
@@ -29,7 +29,7 @@ var Library =
     {
       names: [],
       spaces: [],
-      size: function () {return Library.smallest(this.names.length, this.spaces.length);}
+      size: function () {return Algorithm.smallest(this.names.length, this.spaces.length);}
     };
 
     var names = this.trimSplitString(clientNames);
@@ -48,7 +48,7 @@ var Library =
     {
       rows: [],
       columns: [],
-      size: function () {return Library.smallest(this.rows.length, this.columns.length);},
+      size: function () {return Algorithm.smallest(this.rows.length, this.columns.length);},
       smallestSpace: function ()
       {
         var smallest = 1;
@@ -86,14 +86,14 @@ var Library =
 
 var Parameters =
 {
-  grids: Library.createGrids(readConfig('gridRows', '2, 2').toString(), readConfig('gridColumns', '2, 3').toString()),
+  grids: Algorithm.createGrids(readConfig('gridRows', '2, 2').toString(), readConfig('gridColumns', '2, 3').toString()),
   gap: Number(readConfig('gap', 16)),
   dividerBounds: Number(readConfig('dividerBounds', 0.3)),
   dividerStepSize: Number(readConfig('dividerStepSize', 0.05)),
   moveThreshold: Number(readConfig('moveThreshold', 0.5)), // move clients outside this fraction of its own size
   opacity: Number(readConfig('opacity', 0.9)),
-  noOpacity: Library.toBool(readConfig('noOpacity', false)),
-  noBorder: Library.toBool(readConfig('noBorder', true)),
+  noOpacity: Algorithm.toBool(readConfig('noOpacity', false)),
+  noBorder: Algorithm.toBool(readConfig('noBorder', true)),
   margin:
   {
     top: Number(readConfig('topMargin', 0)),
@@ -101,9 +101,9 @@ var Parameters =
     left: Number(readConfig('leftMargin', 0)),
     right: Number(readConfig('rightMargin', 0))
   },
-  minSpaces: Library.createMinSpaces(readConfig('clientNames', 'texstudio, inkscape, krita, gimp, designer, creator, kdenlive, kdevelop, chromium, kate, spotify').toString(), readConfig('clientSpaces', '1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2').toString()),
-  ignoredClients: Library.trimSplitString('ksmserver, krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, '.concat(readConfig('ignoredClients', 'wine, overwatch').toString())),
-  ignoredCaptions: Library.trimSplitString(readConfig('ignoredCaptions', 'Trace Bitmap (Shift+Alt+B), Document Properties (Shift+Ctrl+D)').toString())
+  minSpaces: Algorithm.createMinSpaces(readConfig('clientNames', 'texstudio, inkscape, krita, gimp, designer, creator, kdenlive, kdevelop, chromium, kate, spotify').toString(), readConfig('clientSpaces', '1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2').toString()),
+  ignoredClients: Algorithm.trimSplitString('ksmserver, krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, '.concat(readConfig('ignoredClients', 'wine, overwatch').toString())),
+  ignoredCaptions: Algorithm.trimSplitString(readConfig('ignoredCaptions', 'Trace Bitmap (Shift+Alt+B), Document Properties (Shift+Ctrl+D)').toString())
 };
 
 // ------------------------------------------
@@ -207,11 +207,11 @@ function Column ()
     return -1;
   };
 
-  this.switchClient = function (direction, clientIndex)
+  this.swapClient = function (direction, clientIndex)
   {
     if (clientIndex < 0 || clientIndex >= this.nclients()) {return -1;}
     var client = this.clients[clientIndex];
-    var i = clientIndex + direction; // target to switch client with
+    var i = clientIndex + direction; // target to swap client with
     if (i < 0 || i >= this.nclients()) {return -1;}
     this.clients[clientIndex] = this.clients[i];
     this.clients[i] = client;
@@ -412,30 +412,30 @@ function Desktop (rows, columns)
     return client;
   };
 
-  this.switchColumn = function (direction, columnIndex)
+  this.swapColumn = function (direction, columnIndex)
   {
     if (columnIndex < 0 || columnIndex >= this.ncolumns()) {return -1;}
     var column = this.columns[columnIndex];
-    var i = columnIndex + direction; // target to switch client with
+    var i = columnIndex + direction; // target to swap client with
     if (i < 0 || i >= this.ncolumns()) {return -1;}
     this.columns[columnIndex] = this.columns[i];
     this.columns[i] = column;
     return 0;
   };
 
-  this.switchClient = function (direction, clientIndex, columnIndex)
+  this.swapClient = function (direction, clientIndex, columnIndex)
   {
     if (columnIndex < 0 || columnIndex >= this.ncolumns()) {return -1;}
     var column = this.columns[columnIndex];
     if (clientIndex < 0 || clientIndex >= column.nclients()) {return -1;}
     var client = column.clients[clientIndex];
 
-    var i = columnIndex + direction; // target to switch client with
+    var i = columnIndex + direction; // target to swap client with
     if (i < 0 || i >= this.ncolumns()) {return -1;}
     while (this.columns[i].nclients() !== column.nclients())
     {
       i += direction;
-      if (i < 0 || i >= this.ncolumns()) {return this.switchColumn(direction, columnIndex);}
+      if (i < 0 || i >= this.ncolumns()) {return this.swapColumn(direction, columnIndex);}
     }
     column.clients[clientIndex] = this.columns[i].clients[clientIndex];
     this.columns[i].clients[clientIndex] = client;
@@ -526,7 +526,7 @@ function Layer ()
     var index = Converter.currentIndex();
     while (index >= this.ndesktops())
     {
-      grid = Library.screenToGrid(Converter.screen(this.ndesktops()));
+      grid = Algorithm.screenToGrid(Converter.screen(this.ndesktops()));
       desktop = new Desktop(grid.row, grid.column);
       if (this.addDesktop(desktop) !== 0) {return -1;}
     }
@@ -539,7 +539,7 @@ function Layer ()
     }
 
     // make a new desktop (if possible) and add to that
-    grid = Library.screenToGrid(Converter.screen(this.ndesktops()));
+    grid = Algorithm.screenToGrid(Converter.screen(this.ndesktops()));
     desktop = new Desktop(grid.row, grid.column);
     if (this.addDesktop(desktop) !== 0) {return -1;}
     return this.desktops[this.ndesktops() - 1].addClient(client);
@@ -570,7 +570,7 @@ function Layer ()
     var client = this.desktops[desktopIndex].columns[columnIndex].clients[clientIndex];
     while (targetIndex >= this.ndesktops())
     {
-      var grid = Library.screenToGrid(Converter.screen(this.ndesktops()));
+      var grid = Algorithm.screenToGrid(Converter.screen(this.ndesktops()));
       var desktop = new Desktop(grid.row, grid.column);
       if (this.addDesktop(desktop) === -1) {return -1;}
     }
@@ -702,11 +702,11 @@ var Client =
 
     if (diff.x > Parameters.moveThreshold * columnWidth)
     {
-      desktop.switchClient(1, client.clientIndex, client.columnIndex);
+      desktop.swapClient(1, client.clientIndex, client.columnIndex);
     }
     else if (diff.x < -Parameters.moveThreshold * columnWidth)
     {
-      desktop.switchClient(-1, client.clientIndex, client.columnIndex);
+      desktop.swapClient(-1, client.clientIndex, client.columnIndex);
     }
 
     return 0;
@@ -718,11 +718,11 @@ var Client =
 
     if (diff.y > Parameters.moveThreshold * clientHeight)
     {
-      desktop.columns[client.columnIndex].switchClient(1, client.clientIndex);
+      desktop.columns[client.columnIndex].swapClient(1, client.clientIndex);
     }
     else if (diff.y < -Parameters.moveThreshold * clientHeight)
     {
-      desktop.columns[client.columnIndex].switchClient(-1, client.clientIndex);
+      desktop.columns[client.columnIndex].swapClient(-1, client.clientIndex);
     }
 
     return 0;
@@ -898,8 +898,8 @@ workspace.clientUnminimized.connect (function (client)
       if (client === -1) {return -1;}
       var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
 
-      if (method === 'vertical' && desktop.columns[client.columnIndex].switchClient(direction, client.clientIndex) === -1) {return -1;}
-      if (method === 'horizontal' && desktop.switchClient(direction, client.clientIndex, client.columnIndex) === -1) {return -1;}
+      if (method === 'vertical' && desktop.columns[client.columnIndex].swapClient(direction, client.clientIndex) === -1) {return -1;}
+      if (method === 'horizontal' && desktop.swapClient(direction, client.clientIndex, client.columnIndex) === -1) {return -1;}
 
       return desktop.render(client.desktopIndex, client.layerIndex);
     };
