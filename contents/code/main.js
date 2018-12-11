@@ -319,7 +319,7 @@ function Desktop (rows, columns)
     return count;
   };
 
-  this.addColumn = function (column)
+  this.addColumn = function (column, index)
   {
     if (this.ncolumns() >= this.maxCols) {return -1;}
 
@@ -329,8 +329,17 @@ function Desktop (rows, columns)
       if (this.columns[i].minSpace() > 1 / (this.ncolumns() + 1)) {return -1;}
     }
 
-    this.columns.push(column);
-    if (this.ncolumns() !== 0) {this.dividers.push(0);} // do not add a new divider when the first column is added to the desktop
+    // do not add a new divider when the first column is added to the desktop
+    if (index === undefined)
+    {
+      this.columns.push(column);
+      if (this.ncolumns() > 1) {this.dividers.push(0);}
+    }
+    else
+    {
+      this.columns.splice(index, 0, column);
+      if (this.ncolumns() > 1) {this.dividers.splice(index, 0, 0);}
+    }
     return 0;
   };
 
@@ -442,6 +451,42 @@ function Desktop (rows, columns)
     return 0;
   };
 
+  this.moveClient = function (direction, clientIndex, columnIndex)
+  {
+    if (columnIndex < 0 || columnIndex >= this.ncolumns()) {return -1;}
+    var column = this.columns[columnIndex];
+    if (clientIndex < 0 || clientIndex >= column.nclients()) {return -1;}
+    var client = column.clients[clientIndex];
+
+    var i = columnIndex + direction; // target to move client to
+    while (i >= 0 && i < this.ncolumns() && (this.columns[i].minSpace() + client.minSpace > 1 / this.ncolumns() || this.columns[i].nclients() >= this.maxRows))
+    {
+      i += direction;
+    }
+
+    if (i < 0 || i >= this.ncolumns())
+    {
+      var c = new Column();
+      c.addClient(client);
+      if (i < 0)
+      {
+        if (this.addColumn(c, 0) === -1) {return -1;}
+      }
+      else
+      {
+        if (this.addColumn(c) === -1) {return -1;}
+      }
+    }
+    else
+    {
+      this.columns[i].addClient(client);
+    }
+
+    column.removeClient(clientIndex);
+    if (column.nclients() === 0) {return this.removeColumn(columnIndex);}
+    return 0;
+  };
+
   this.changeDivider = function (direction, change, columnIndex)
   {
     if (columnIndex < 0 || columnIndex >= this.ncolumns()) {return -1;}
@@ -549,6 +594,7 @@ function Layer ()
   {
     if (desktopIndex < 0 || desktopIndex >= this.ndesktops()) {return -1;}
     if (this.desktops[desktopIndex].removeClient(clientIndex, columnIndex) !== 0) {return -1;}
+    // do not remove the desktop to prevent moving of desktops when desktops are closed
     return 0;
   };
 
@@ -884,11 +930,11 @@ workspace.clientUnminimized.connect (function (client)
 [
   {text: 'Up', shortcut: 'Up', method: 'vertical', direction: -1},
   {text: 'Down', shortcut: 'Down', method: 'vertical', direction: 1},
-  {text: 'Left', shortcut: 'Left', method: 'horizontal', direction: -1},
-  {text: 'Right', shortcut: 'Right', method: 'horizontal', direction: 1}
+  {text: 'Left', shortcut: '', method: 'horizontal', direction: -1},
+  {text: 'Right', shortcut: '', method: 'horizontal', direction: 1}
 ].forEach(function (entry)
 {
-  registerShortcut('Grid-Tiling: Switch ' + entry.text, 'Grid-Tiling: Switch ' + entry.text, 'Meta+Ctrl+' + entry.shortcut, (function ()
+  registerShortcut('Grid-Tiling: Swap ' + entry.text, 'Grid-Tiling: Swap ' + entry.text, 'Meta+Ctrl+' + entry.shortcut, (function ()
   {
     var method = entry.method;
     var direction = entry.direction;
@@ -898,8 +944,8 @@ workspace.clientUnminimized.connect (function (client)
       if (client === -1) {return -1;}
       var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
 
-      if (method === 'vertical' && desktop.columns[client.columnIndex].swapClient(direction, client.clientIndex) === -1) {return -1;}
-      if (method === 'horizontal' && desktop.swapClient(direction, client.clientIndex, client.columnIndex) === -1) {return -1;}
+      if (method === 'vertical' && desktop.columns[client.columnIndex].swapClient(direction, client.clientIndex) !== 0) {return -1;}
+      if (method === 'horizontal' && desktop.swapClient(direction, client.clientIndex, client.columnIndex) !== 0) {return -1;}
 
       return desktop.render(client.desktopIndex, client.layerIndex);
     };
@@ -907,8 +953,29 @@ workspace.clientUnminimized.connect (function (client)
 });
 
 [
-  {text: 'Next', shortcut: 'End', direction: 1},
-  {text: 'Previous', shortcut: 'Home', direction: -1}
+  {text: 'Left', shortcut: 'Left', direction: -1},
+  {text: 'Right', shortcut: 'Right', direction: 1}
+].forEach(function (entry)
+{
+  registerShortcut('Grid-Tiling: Move/Swap ' + entry.text, 'Grid-Tiling: Move/Swap ' + entry.text, 'Meta+Ctrl+' + entry.shortcut, (function ()
+  {
+    var direction = entry.direction;
+    return function ()
+    {
+      var client = layout.getClient(workspace.activeClient.windowId);
+      if (client === -1) {return -1;}
+      var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
+
+      if (desktop.moveClient(direction, client.clientIndex, client.columnIndex) !== 0 && desktop.swapClient(direction, client.clientIndex, client.columnIndex) !== 0) {return -1;}
+
+      return desktop.render(client.desktopIndex, client.layerIndex);
+    };
+  })());
+});
+
+[
+  {text: 'Previous', shortcut: 'Home', direction: -1},
+  {text: 'Next', shortcut: 'End', direction: 1}
 ].forEach (function (entry)
 {
   registerShortcut ('Grid-Tiling: Move ' + entry.text + ' Desktop/Screen', 'Grid-Tiling: Move ' + entry.text + ' Desktop/Screen', 'Meta+' + entry.shortcut, (function ()
