@@ -750,11 +750,17 @@ var Client =
 
     if (diff.x > Parameters.moveThreshold * columnWidth)
     {
-      desktop.swapClient(1, client.clientIndex, client.columnIndex);
+      if (desktop.moveClient(1, client.clientIndex, client.columnIndex) !== 0)
+      {
+        desktop.swapClient(1, client.clientIndex, client.columnIndex);
+      }
     }
     else if (diff.x < -Parameters.moveThreshold * columnWidth)
     {
-      desktop.swapClient(-1, client.clientIndex, client.columnIndex);
+      if (desktop.moveClient(-1, client.clientIndex, client.columnIndex) !== 0)
+      {
+        desktop.swapClient(-1, client.clientIndex, client.columnIndex);
+      }
     }
 
     return 0;
