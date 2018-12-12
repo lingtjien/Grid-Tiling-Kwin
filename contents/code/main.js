@@ -473,20 +473,19 @@ function Desktop (rows, columns)
       if (i < 0)
       {
         if (this.addColumn(c, 0) === -1) {return -1;}
+        return this.removeClient(clientIndex, columnIndex + 1);
       }
       else
       {
         if (this.addColumn(c) === -1) {return -1;}
+        return this.removeClient(clientIndex, columnIndex);
       }
     }
     else
     {
       this.columns[i].addClient(client);
+      return this.removeClient(clientIndex, columnIndex);
     }
-
-    column.removeClient(clientIndex);
-    if (column.nclients() === 0) {return this.removeColumn(columnIndex);}
-    return 0;
   };
 
   this.changeDivider = function (direction, change, columnIndex)
