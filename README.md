@@ -46,7 +46,7 @@ Delete the linked or copied files that you created during installation. To remov
 ![](http://tiny.cc/tiling-2x3)
 
 - restriction of minimum space a client can occupy on a virtual desktop, as in the amount of clients this client can share a virtual desktop with
-  - the minimum is defined by an **integral number** larger or equal to `1`
+  - the minimum is defined by an **integer** larger or equal to `1`
   - defaults to the maximum which is the number of rows multiplied by columns (of the largest grid)
   - a size of `1` is the largest which means that it can only ever exist alone on a virtual desktop, size of `2` means that it can exist with one other client together on a virtual desktop and so forth...
 
@@ -57,12 +57,17 @@ Delete the linked or copied files that you created during installation. To remov
 
 ![](http://tiny.cc/move-desktop-screen)
 
-- switch clients within a virtual desktop
+- swap clients within a virtual desktop
   - dragging client outside the `moveThreshold`
-  - `Grid-Tiling: Switch *Left/Up/Down/Right*`
+  - `Grid-Tiling: Swap *Left/Up/Down/Right*`
 
-![](http://tiny.cc/switch-shortcut)
-![](http://tiny.cc/switch-mouse)
+![](http://tiny.cc/swap-shortcut)
+![](http://tiny.cc/swap-mouse)
+
+- move clients within a virtual desktop, first attempts to move the client if that fails it will fallback to switching.
+  - `Grid-Tiling: Move/Swap *Left/Right*`
+
+![](http://tiny.cc/move-shortcut)
 
 - dynamically resize clients up to a minimum as defined by `dividerBounds`
   - dragging client borders by mouse
@@ -112,7 +117,8 @@ Delete the linked or copied files that you created during installation. To remov
 - set window focus policy to `focus follows mouse - mouse precedence`
 
 - set shortcuts `Switch One Desktop *Left/Up/Down/Right*` to `Meta+*Left/Up/Down/Right*`
-- set shortcuts `Grid-Tiling: Switch *Left/Up/Down/Right*` to `Meta+Ctrl+*Left/Up/Down/Right*`
+- set shortcuts `Grid-Tiling: Swap *Up/Down*` to `Meta+Ctrl+*Up/Down*`
+- set shortcuts `Grid-Tiling: Move/Swap *Left/Right*` to `Meta+Ctrl+*Left/Right*`
 - set shortcuts `Switch To Window *Left/Up/Down/Right*` to `Meta+Alt+*Left/Up/Down/Right*`
 - set shortcuts `Grid-Tiling: Move *Previous/Next* Desktop` to `Meta+*Home/End*`
 - set shortcuts `Window One Desktop *Down/Up*` to `Meta+*PgDn/PgUp*` 
@@ -137,9 +143,9 @@ Delete the linked or copied files that you created during installation. To remov
 
 *If you use multiple screens you could also consider using the default shortcuts of KWin `Window To *Previous/Next* *Screen*` to `Meta+*PgDn/PgUp*` to easily move clients between screens*
 
-## Known Issues
+## Usefull To Know
 - If you have kwin shortcuts added by the script that you no longer need or use (because they got renamed to something else for example), then you can delete the old unused shortcuts by first selecting kwin in the global shortcuts menu and then pressing the `remove the selected component` button (hover mouse over the button to see the text). This action does require you to not have the KWin script active.
-- Sometimes when you adjust the settings in the menu, you need to turn the script off, apply it, turn it back on and apply it again to register the new values (or re-log/reboot).
+- When you adjust the settings in the menu, you need to turn the script off, apply it, turn it back on and apply it again to register the new values (or re-log/reboot).
 - Some applications do not render correctly on startup sometimes, just use the global refresh shortcut.
 - Moving clients between desktops using the action menu can sometimes result in wrong placement, just use the global refresh shortcut.
 - Spotify can sometimes not be defined as full or half client, because both the client name and class of spotify are blank at startup.
