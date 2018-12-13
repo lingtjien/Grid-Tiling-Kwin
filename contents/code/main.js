@@ -466,8 +466,6 @@ function Desktop (rows, columns)
 
     if (i < 0 || i >= this.ncolumns())
     {
-      if (this.ncolumns() === 1) {return -1;}
-
       var c = new Column();
       c.addClient(client);
       if (i < 0)
