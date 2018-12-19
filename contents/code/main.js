@@ -708,9 +708,9 @@ var Client =
   {
     var area = workspace.clientArea(0, Converter.screen(desktopIndex), Converter.desktop(desktopIndex));
 
-    return {clientHeight: (area.height - Parameters.margin.top - Parameters.margin.bottom - ((nclients + 1) * Parameters.gap)) / nclients, columnWidth: (area.width - Parameters.margin.left - Parameters.margin.right - ((ncolumns + 1) * Parameters.gap)) / ncolumns};
+    return {area: area, clientHeight: (area.height - Parameters.margin.top - Parameters.margin.bottom - ((nclients + 1) * Parameters.gap)) / nclients, columnWidth: (area.width - Parameters.margin.left - Parameters.margin.right - ((ncolumns + 1) * Parameters.gap)) / ncolumns};
   },
-  resized: function (diff, client, desktop, clientHeight, columnWidth)
+  resized: function (diff, client, desktop, properties)
   {
     if (diff.width === 0 && diff.height === 0) {return -1;}
 
@@ -718,11 +718,11 @@ var Client =
     {
       if (diff.x === 0)
       {
-        desktop.changeDivider('right', diff.width / columnWidth, client.columnIndex);
+        desktop.changeDivider('right', diff.width / properties.columnWidth, client.columnIndex);
       }
       else
       {
-        desktop.changeDivider('left', diff.width / columnWidth, client.columnIndex);
+        desktop.changeDivider('left', diff.width / properties.columnWidth, client.columnIndex);
       }
     }
 
@@ -730,52 +730,46 @@ var Client =
     {
       if (diff.y === 0)
       {
-        desktop.columns[client.columnIndex].changeDivider('bottom', diff.height / clientHeight, client.clientIndex);
+        desktop.columns[client.columnIndex].changeDivider('bottom', diff.height / properties.clientHeight, client.clientIndex);
       }
       else
       {
-        desktop.columns[client.columnIndex].changeDivider('top', diff.height / clientHeight, client.clientIndex);
+        desktop.columns[client.columnIndex].changeDivider('top', diff.height / properties.clientHeight, client.clientIndex);
       }
     }
 
     return 0;
   },
-  movedX: function (diff, client, desktop, columnWidth)
+  moved: function (diff, client, desktop, properties)
   {
-    if (diff.x === 0) {return -1;}
+    if (diff.x === 0 && diff.y === 0) {return -1;}
     if (diff.width !== 0 || diff.height !== 0) {return -1;}
 
-    if (diff.x > Parameters.moveThreshold * columnWidth)
+    var i = 0; // column target index
+    var remainder = client.geometry.x + 0.5 * client.geometry.width - Parameters.margin.left - properties.area.x;
+    remainder -= desktop.columns[i].clients[0].geometry.width + Parameters.gap;
+    while (remainder > 0)
     {
-      if (desktop.moveClient(1, client.clientIndex, client.columnIndex) !== 0)
-      {
-        desktop.swapClient(1, client.clientIndex, client.columnIndex);
-      }
+      i++;
+      remainder -= desktop.columns[i].clients[0].geometry.width + Parameters.gap;
     }
-    else if (diff.x < -Parameters.moveThreshold * columnWidth)
+    var column = desktop.columns[i];
+
+    var j = 0; // client target index
+    remainder = client.geometry.y + 0.5 * client.geometry.height - Parameters.margin.top - properties.area.y;
+    remainder -= column.clients[j].geometry.height + Parameters.gap;
+    while (remainder > 0)
     {
-      if (desktop.moveClient(-1, client.clientIndex, client.columnIndex) !== 0)
-      {
-        desktop.swapClient(-1, client.clientIndex, client.columnIndex);
-      }
+      j++;
+      remainder -= column.clients[j].geometry.height + Parameters.gap;
     }
 
-    return 0;
-  },
-  movedY: function (diff, client, desktop, clientHeight)
-  {
-    if (diff.y === 0) {return -1;}
-    if (diff.width !== 0 || diff.height !== 0) {return -1;}
+    if (client.columnIndex === i && client.clientIndex === j) {return 0;}
+    if (desktop.columns[client.columnIndex].minSpace() - client.minSpace + desktop.columns[i].clients[j].minSpace > 1 / desktop.ncolumns()) {return 0;} // check if target fit in current
+    if (desktop.columns[i].minSpace() - desktop.columns[i].clients[j].minSpace + client.minSpace > 1 / desktop.ncolumns()) {return 0;} // check if current fit in target
 
-    if (diff.y > Parameters.moveThreshold * clientHeight)
-    {
-      desktop.columns[client.columnIndex].swapClient(1, client.clientIndex);
-    }
-    else if (diff.y < -Parameters.moveThreshold * clientHeight)
-    {
-      desktop.columns[client.columnIndex].swapClient(-1, client.clientIndex);
-    }
-
+    desktop.columns[client.columnIndex].clients[client.clientIndex] = desktop.columns[i].clients[j];
+    desktop.columns[i].clients[j] = client;
     return 0;
   },
   validate: function (client)
@@ -839,9 +833,8 @@ var Client =
         height: client.geometry.height - client.geometryRender.height
       };
 
-      if (Client.resized(diff, client, desktop, properties.clientHeight, properties.columnWidth) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
-      if (Client.movedX(diff, client, desktop, properties.columnWidth) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
-      if (Client.movedY(diff, client, desktop, properties.clientHeight) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
+      if (Client.resized(diff, client, desktop, properties) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
+      if (Client.moved(diff, client, desktop, properties) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
 
       return 0;
     });
