@@ -25,10 +25,6 @@
         <label>increment and decrement size of the divider</label>
         <default>0.05</default>
       </entry>
-      <entry name="moveThreshold" type="double">
-        <label>move clients outside this fraction of its own size</label>
-        <default>0.5</default>
-      </entry>
       <entry name="opacity" type="double">
         <label>opacity of all clients</label>
         <default>0.9</default>

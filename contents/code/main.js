@@ -90,7 +90,6 @@ var Parameters =
   gap: Number(readConfig('gap', 16)),
   dividerBounds: Number(readConfig('dividerBounds', 0.3)),
   dividerStepSize: Number(readConfig('dividerStepSize', 0.05)),
-  moveThreshold: Number(readConfig('moveThreshold', 0.5)), // move clients outside this fraction of its own size
   opacity: Number(readConfig('opacity', 0.9)),
   noOpacity: Algorithm.toBool(readConfig('noOpacity', false)),
   noBorder: Algorithm.toBool(readConfig('noBorder', true)),
