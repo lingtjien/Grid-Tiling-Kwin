@@ -739,36 +739,35 @@ var Client =
 
     return 0;
   },
-  moved: function (diff, client, desktop, properties)
+  moved: function (diff, client, layer, properties)
   {
-    if (diff.x === 0 && diff.y === 0) {return -1;}
-    if (diff.width !== 0 || diff.height !== 0) {return -1;}
+    var target = layer.desktops[Converter.desktopIndex(client.desktop, client.screen)];
+    var current = layer.desktops[Converter.desktopIndex(client.desktopRender, client.screenRender)];
 
     var i = 0; // column target index
     var remainder = client.geometry.x + 0.5 * client.geometry.width - Parameters.margin.left - properties.area.x;
-    remainder -= desktop.columns[i].clients[0].geometry.width + Parameters.gap;
-    while (remainder > 0)
+    remainder -= target.columns[i].clients[0].geometry.width + Parameters.gap;
+    while (remainder > 0 && i < target.ncolumns() - 1)
     {
       i++;
-      remainder -= desktop.columns[i].clients[0].geometry.width + Parameters.gap;
+      remainder -= target.columns[i].clients[0].geometry.width + Parameters.gap;
     }
-    var column = desktop.columns[i];
+    var column = target.columns[i];
 
     var j = 0; // client target index
     remainder = client.geometry.y + 0.5 * client.geometry.height - Parameters.margin.top - properties.area.y;
     remainder -= column.clients[j].geometry.height + Parameters.gap;
-    while (remainder > 0)
+    while (remainder > 0 && j < column.nclients() - 1)
     {
       j++;
       remainder -= column.clients[j].geometry.height + Parameters.gap;
     }
 
-    if (client.columnIndex === i && client.clientIndex === j) {return 0;}
-    if (desktop.columns[client.columnIndex].minSpace() - client.minSpace + desktop.columns[i].clients[j].minSpace > 1 / desktop.ncolumns()) {return 0;} // check if target fit in current
-    if (desktop.columns[i].minSpace() - desktop.columns[i].clients[j].minSpace + client.minSpace > 1 / desktop.ncolumns()) {return 0;} // check if current fit in target
+    if (current.columns[client.columnIndex].minSpace() - client.minSpace + target.columns[i].clients[j].minSpace > 1 / current.ncolumns()) {return 0;} // check if target fit in current
+    if (target.columns[i].minSpace() - target.columns[i].clients[j].minSpace + client.minSpace > 1 / target.ncolumns()) {return 0;} // check if current fit in target
 
-    desktop.columns[client.columnIndex].clients[client.clientIndex] = desktop.columns[i].clients[j];
-    desktop.columns[i].clients[j] = client;
+    current.columns[client.columnIndex].clients[client.clientIndex] = target.columns[i].clients[j];
+    target.columns[i].clients[j] = client;
     return 0;
   },
   validate: function (client)
@@ -821,8 +820,9 @@ var Client =
       client = layout.getClient(client.windowId);
       if (client === -1) {return -1;}
 
-      var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
-      var properties = Client.properties(desktop.columns[client.columnIndex].nclients(), desktop.ncolumns(), client.desktopIndex);
+      var layer = layout.layers[client.layerIndex];
+      var desktop = layer.desktops[client.desktopIndex];
+      var properties = Client.properties(desktop.columns[client.columnIndex].nclients(), desktop.ncolumns(), Converter.desktopIndex(client.desktop, client.screen));
 
       var diff =
       {
@@ -833,7 +833,7 @@ var Client =
       };
 
       if (Client.resized(diff, client, desktop, properties) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
-      if (Client.moved(diff, client, desktop, properties) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
+      if (Client.moved(diff, client, layer, properties) === 0) {layer.render(client.layerIndex);}
 
       return 0;
     });
@@ -843,7 +843,7 @@ var Client =
       if (client === -1) {return -1;}
 
       var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
-      var properties = Client.properties(desktop.columns[client.columnIndex].nclients(), desktop.ncolumns(), client.desktopIndex);
+      var properties = Client.properties(desktop.columns[client.columnIndex].nclients(), desktop.ncolumns(), Converter.desktopIndex(client.desktop, client.screen));
 
       var diff =
       {
