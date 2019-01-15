@@ -853,7 +853,7 @@ var Client =
         height: client.geometry.height - client.geometryRender.height
       };
 
-      if (Client.resized(diff, client, desktop, properties.clientHeight, properties.columnWidth) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
+      if (Client.resized(diff, client, desktop, properties) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
 
       return 0;
     });
