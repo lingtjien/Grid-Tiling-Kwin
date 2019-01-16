@@ -271,10 +271,6 @@ function Column ()
         height: Math.floor(height)
       };
 
-      client.noBorder = Parameters.noBorder;
-      if (Parameters.noOpacity) {client.opacity = 1;}
-      else {client.opacity = Parameters.opacity;}
-
       // these properties are used internally only so they must be set first as they are used to check
       client.desktopRender = Converter.desktop(desktopIndex);
       client.screenRender = Converter.screen(desktopIndex);
@@ -285,6 +281,8 @@ function Column ()
       client.layerIndex = layerIndex;
 
       // these properties are from kwin and will thus trigger additional signals, these properties must be set last to prevent the signals that are hooked into this script from triggering before the internal properties have been set
+      client.noBorder = Parameters.noBorder;
+      client.opacity = Parameters.noOpacity ? 1 : Parameters.opacity;
       client.desktop = Converter.desktop(desktopIndex);
       client.screen = Converter.screen(desktopIndex);
       client.geometry = geometry;
