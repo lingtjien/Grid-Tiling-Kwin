@@ -745,21 +745,28 @@ var Client =
     var i = 0; // column target index
     var remainder = client.geometry.x + 0.5 * client.geometry.width - Parameters.margin.left - properties.area.x;
     remainder -= target.columns[i].clients[0].geometry.width + Parameters.gap;
-    while (remainder > 0 && i < target.ncolumns() - 1)
+    while (remainder > 0 && i < target.ncolumns() - target.nminimized() - 1)
     {
       i++;
       remainder -= target.columns[i].clients[0].geometry.width + Parameters.gap;
     }
+
+    for (var ii = 0; ii < target.ncolumns() && ii <= i; ii++)
+      if (target.columns[ii].nminimized() === target.columns[ii].nclients()) {i++;}
+
     var column = target.columns[i];
 
     var j = 0; // client target index
     remainder = client.geometry.y + 0.5 * client.geometry.height - Parameters.margin.top - properties.area.y;
     remainder -= column.clients[j].geometry.height + Parameters.gap;
-    while (remainder > 0 && j < column.nclients() - 1)
+    while (remainder > 0 && j < column.nclients() - column.nminimized() - 1)
     {
       j++;
       remainder -= column.clients[j].geometry.height + Parameters.gap;
     }
+
+    for (var jj = 0; jj < column.nclients() && jj <= j; jj++)
+      if (column.clients[jj].minimized) {j++;}
 
     if (current.columns[client.columnIndex].minSpace() - client.minSpace + target.columns[i].clients[j].minSpace > 1 / current.ncolumns()) {return 0;} // check if target fit in current
     if (target.columns[i].minSpace() - target.columns[i].clients[j].minSpace + client.minSpace > 1 / target.ncolumns()) {return 0;} // check if current fit in target
@@ -820,7 +827,7 @@ var Client =
 
       var layer = layout.layers[client.layerIndex];
       var desktop = layer.desktops[client.desktopIndex];
-      var properties = Client.properties(desktop.columns[client.columnIndex].nclients(), desktop.ncolumns(), Converter.desktopIndex(client.desktop, client.screen));
+      var properties = Client.properties(desktop.columns[client.columnIndex].nclients() - desktop.columns[client.columnIndex].nminimized(), desktop.ncolumns() - desktop.nminimized(), Converter.desktopIndex(client.desktop, client.screen));
 
       var diff =
       {
@@ -841,7 +848,7 @@ var Client =
       if (client === -1) {return -1;}
 
       var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
-      var properties = Client.properties(desktop.columns[client.columnIndex].nclients(), desktop.ncolumns(), Converter.desktopIndex(client.desktop, client.screen));
+      var properties = Client.properties(desktop.columns[client.columnIndex].nclients() - desktop.columns[client.columnIndex].nminimized(), desktop.ncolumns() - desktop.nminimized(), Converter.desktopIndex(client.desktop, client.screen));
 
       var diff =
       {
