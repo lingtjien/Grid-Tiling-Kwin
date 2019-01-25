@@ -744,29 +744,23 @@ var Client =
 
     var i = 0; // column target index
     var remainder = client.geometry.x + 0.5 * client.geometry.width - Parameters.margin.left - properties.area.x;
-    remainder -= target.columns[i].clients[0].geometry.width + Parameters.gap;
-    while (remainder > 0 && i < target.ncolumns() - target.nminimized() - 1)
+    for (; i < target.ncolumns() && remainder > 0; i++)
     {
-      i++;
+      if (target.columns[i].nminimized() === target.columns[i].nclients()) {continue;}
       remainder -= target.columns[i].clients[0].geometry.width + Parameters.gap;
     }
-
-    for (var ii = 0; ii < target.ncolumns() && ii <= i; ii++)
-      if (target.columns[ii].nminimized() === target.columns[ii].nclients()) {i++;}
+    if (i-- == 0) {return 0;}
 
     var column = target.columns[i];
 
     var j = 0; // client target index
     remainder = client.geometry.y + 0.5 * client.geometry.height - Parameters.margin.top - properties.area.y;
-    remainder -= column.clients[j].geometry.height + Parameters.gap;
-    while (remainder > 0 && j < column.nclients() - column.nminimized() - 1)
+    for (; j < column.nclients() && remainder > 0; j++)
     {
-      j++;
+      if (column.clients[j].minimized) {continue;}
       remainder -= column.clients[j].geometry.height + Parameters.gap;
     }
-
-    for (var jj = 0; jj < column.nclients() && jj <= j; jj++)
-      if (column.clients[jj].minimized) {j++;}
+    if (j-- == 0) {return 0;}
 
     if (current.columns[client.columnIndex].minSpace() - client.minSpace + target.columns[i].clients[j].minSpace > 1 / current.ncolumns()) {return 0;} // check if target fit in current
     if (target.columns[i].minSpace() - target.columns[i].clients[j].minSpace + client.minSpace > 1 / target.ncolumns()) {return 0;} // check if current fit in target
