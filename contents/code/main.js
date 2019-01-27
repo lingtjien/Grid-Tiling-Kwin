@@ -863,6 +863,7 @@ var Client =
       var c = client;
       return function ()
       {
+        if (c.desktop === c.desktopRender) {return -1;}
         var layer = layout.layers[c.layerIndex];
         var targetIndex = Converter.desktopIndex(c.desktop, c.screen);
 
@@ -885,6 +886,7 @@ var Client =
       var c = client;
       return function ()
       {
+        if (c.screen === c.screenRender) {return -1;}
         var layer = layout.layers[c.layerIndex];
         var targetIndex = Converter.desktopIndex(c.desktop, c.screen);
 
