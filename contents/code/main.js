@@ -4,9 +4,9 @@
 
 var Algorithm =
 {
-  toBool: function (value)
+  toBool: function (value) // QVariant can be compared with == but not === as it is a type of itself
   {
-    return value == true; // QVariant can be compared with == but not === as it is a type of itself
+    return value == true; // eslint-disable-line eqeqeq
   },
   smallest: function (value1, value2)
   {
@@ -751,7 +751,7 @@ var Client =
       if (target.columns[i].nminimized() === target.columns[i].nclients()) {continue;}
       remainder -= target.columns[i].clients[0].geometry.width + Parameters.gap;
     }
-    if (i-- == 0) {return -1;}
+    if (i-- === 0) {return -1;}
 
     var column = target.columns[i];
 
@@ -762,7 +762,7 @@ var Client =
       if (column.clients[j].minimized) {continue;}
       remainder -= column.clients[j].geometry.height + Parameters.gap;
     }
-    if (j-- == 0) {return -1;}
+    if (j-- === 0) {return -1;}
 
     if (current.columns[client.columnIndex].minSpace() - client.minSpace + target.columns[i].clients[j].minSpace > 1 / current.ncolumns()) {return 0;} // check if target fit in current
     if (target.columns[i].minSpace() - target.columns[i].clients[j].minSpace + client.minSpace > 1 / target.ncolumns()) {return 0;} // check if current fit in target

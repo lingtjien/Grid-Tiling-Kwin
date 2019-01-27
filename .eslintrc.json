@@ -78,6 +78,11 @@
     [
       "error",
       "always"
+    ],
+    "eqeqeq":
+    [
+      "error",
+      "always"
     ]
   }
 }
