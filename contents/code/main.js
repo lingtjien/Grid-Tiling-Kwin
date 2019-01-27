@@ -739,7 +739,9 @@ var Client =
   },
   moved: function (diff, client, layer, properties)
   {
-    var target = layer.desktops[Converter.desktopIndex(client.desktop, client.screen)];
+    var targetIndex = Converter.desktopIndex(client.desktop, client.screen);
+    if (targetIndex < 0 || targetIndex >= layer.ndesktops()) {return -1;}
+    var target = layer.desktops[targetIndex];
     var current = layer.desktops[Converter.desktopIndex(client.desktopRender, client.screenRender)];
 
     var i = 0; // column target index
@@ -749,7 +751,7 @@ var Client =
       if (target.columns[i].nminimized() === target.columns[i].nclients()) {continue;}
       remainder -= target.columns[i].clients[0].geometry.width + Parameters.gap;
     }
-    if (i-- == 0) {return 0;}
+    if (i-- == 0) {return -1;}
 
     var column = target.columns[i];
 
@@ -760,7 +762,7 @@ var Client =
       if (column.clients[j].minimized) {continue;}
       remainder -= column.clients[j].geometry.height + Parameters.gap;
     }
-    if (j-- == 0) {return 0;}
+    if (j-- == 0) {return -1;}
 
     if (current.columns[client.columnIndex].minSpace() - client.minSpace + target.columns[i].clients[j].minSpace > 1 / current.ncolumns()) {return 0;} // check if target fit in current
     if (target.columns[i].minSpace() - target.columns[i].clients[j].minSpace + client.minSpace > 1 / target.ncolumns()) {return 0;} // check if current fit in target
@@ -832,9 +834,9 @@ var Client =
       };
 
       if (Client.resized(diff, client, desktop, properties) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
-      if (Client.moved(diff, client, layer, properties) === 0) {layer.render(client.layerIndex);}
+      Client.moved(diff, client, layer, properties);
 
-      return 0;
+      return layer.render(client.layerIndex);
     });
     client.clientStepUserMovedResized.connect (function (client)
     {
