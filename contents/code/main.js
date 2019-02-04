@@ -920,11 +920,22 @@ workspace.clientActivated.connect (Client.tile); // clientAdded does not work fo
 
 workspace.clientRemoved.connect (function (client)
 {
-  if (!tiledClients.hasOwnProperty(client.windowId)) {return -1;}
-  delete tiledClients[client.windowId];
-  client = layout.getClient(client.windowId);
-  if (layout.removeClient(client.clientIndex, client.columnIndex, client.desktopIndex, client.layerIndex) !== 0) {return -1;}
-  return layout.render();
+  if (tiledClients.hasOwnProperty(client.windowId))
+  {
+    delete tiledClients[client.windowId];
+    client = layout.getClient(client.windowId);
+    if (layout.removeClient(client.clientIndex, client.columnIndex, client.desktopIndex, client.layerIndex) !== 0) {return -1;}
+    return layout.render();
+  }
+  else if (floatingClients.hasOwnProperty(client.windowId))
+  {
+    delete floatingClients[client.windowId];
+    return 0;
+  }
+  else
+  {
+    return -1;
+  }
 });
 
 workspace.clientMinimized.connect (function (client)
