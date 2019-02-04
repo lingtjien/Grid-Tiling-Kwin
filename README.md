@@ -58,7 +58,7 @@ Delete the linked or copied files that you created during installation. To remov
 ![](http://tiny.cc/move-desktop-screen)
 
 - swap clients within a virtual desktop
-  - dragging client outside the `moveThreshold`
+  - drag client on top of target
   - `Grid-Tiling: Swap *Left/Up/Down/Right*`
 
 ![](http://tiny.cc/swap-shortcut)
