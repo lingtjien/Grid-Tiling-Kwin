@@ -863,7 +863,7 @@ var Client =
       var c = client;
       return function ()
       {
-        if (c.desktop === c.desktopRender) {return -1;}
+        if (c.desktop === c.desktopRender || !tiledClients.hasOwnProperty(c.windowId)) {return -1;}
         var layer = layout.layers[c.layerIndex];
         var targetIndex = Converter.desktopIndex(c.desktop, c.screen);
 
@@ -886,7 +886,7 @@ var Client =
       var c = client;
       return function ()
       {
-        if (c.screen === c.screenRender) {return -1;}
+        if (c.screen === c.screenRender || !tiledClients.hasOwnProperty(c.windowId)) {return -1;}
         var layer = layout.layers[c.layerIndex];
         var targetIndex = Converter.desktopIndex(c.desktop, c.screen);
 
@@ -1014,22 +1014,12 @@ workspace.clientUnminimized.connect (function (client)
     var direction = entry.direction;
     return function ()
     {
-      var client = layout.getClient(workspace.activeClient.windowId);
-      if (client === -1) {return -1;}
-      var layer = layout.layers[client.layerIndex];
-
-      var start = client.desktopIndex;
-      var targetIndex = start + direction;
-      while (layer.moveDesktop(targetIndex, client.clientIndex, client.columnIndex, client.desktopIndex) !== 0)
-      {
-        targetIndex += direction;
-        if (targetIndex >= Converter.size()) {targetIndex = 0;}
-        if (targetIndex < 0) {targetIndex = Converter.size() - 1;}
-        if (targetIndex === start) {break;}
-      }
-
-      layer.render(client.layerIndex);
-      workspace.currentDesktop = client.desktop;
+      var client = workspace.activeClient;
+      if (!tiledClients.hasOwnProperty(client.windowId) && !floatingClients.hasOwnProperty(client.windowId)) {return -1;}
+      var desktopIndex = Converter.desktopIndex(client.desktop, client.screen);
+      client.desktop = Converter.desktop(desktopIndex + direction);
+      client.screen = Converter.screen(desktopIndex + direction);
+      if (floatingClients.hasOwnProperty(client.windowId)) {workspace.currentDesktop = client.desktop;}
       return 0;
     };
   })());
