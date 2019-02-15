@@ -18,8 +18,8 @@ var Algorithm =
     var split = input.split(',');
     for (var i = 0; i < split.length; i++)
     {
-      if (split[i].trim() === '') {split.splice(i, 1); continue;}
       split[i] = split[i].trim();
+      if (split[i] === '') {split.splice(i, 1); continue;}
     }
     return split;
   },
@@ -102,7 +102,9 @@ var Parameters =
   },
   minSpaces: Algorithm.createMinSpaces(readConfig('clientNames', 'texstudio, inkscape, krita, gimp, designer, creator, kdenlive, kdevelop, chromium, kate, spotify').toString(), readConfig('clientSpaces', '1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2').toString()),
   ignoredClients: Algorithm.trimSplitString('ksmserver, krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, '.concat(readConfig('ignoredClients', 'wine, overwatch').toString())),
-  ignoredCaptions: Algorithm.trimSplitString(readConfig('ignoredCaptions', 'Trace Bitmap (Shift+Alt+B), Document Properties (Shift+Ctrl+D)').toString())
+  ignoredCaptions: Algorithm.trimSplitString(readConfig('ignoredCaptions', 'Trace Bitmap (Shift+Alt+B), Document Properties (Shift+Ctrl+D)').toString()),
+  floatingClients: Algorithm.trimSplitString(readConfig('floatingClients', '').toString()),
+  floatingCaptions: Algorithm.trimSplitString(readConfig('floatingCaptions', '').toString())
 };
 
 // ------------------------------------------
@@ -695,6 +697,14 @@ function Layout ()
 
 }
 
+// ----
+// Data
+// ----
+
+var tiledClients = {}; // windowId of added clients
+var floatingClients = {}; // windowId of floating clients
+var layout = new Layout(); // main class, contains all methods
+
 // --------------
 // Client Methods
 // --------------
@@ -780,17 +790,6 @@ var Client =
     var clientCaption = client.caption.toString();
 
     var i;
-    for (i = 0; i < Parameters.ignoredCaptions.length; i++)
-    {
-      if (Parameters.ignoredCaptions[i] === clientCaption) {return -1;}
-    }
-
-    for (i = 0; i < Parameters.ignoredClients.length; i++)
-    {
-      if (clientClass.indexOf(Parameters.ignoredClients[i]) !== -1) {return -1;}
-      if (clientName.indexOf(Parameters.ignoredClients[i]) !== -1) {return -1;}
-    }
-
     var minSpace = Parameters.grids.smallestSpace();
     for (i = 0; i < Parameters.minSpaces.size(); i++)
     {
@@ -800,13 +799,36 @@ var Client =
         break;
       }
     }
-
     client.minSpace = minSpace;
+
+    if (Parameters.ignoredCaptions.indexOf(clientCaption) !== -1) {return -1;}
+    for (i = 0; i < Parameters.ignoredClients.length; i++)
+    {
+      if (clientClass.indexOf(Parameters.ignoredClients[i]) !== -1 || clientName.indexOf(Parameters.ignoredClients[i]) !== -1) {return -1;}
+    }
+
+    if (!floatingClients.hasOwnProperty(client.windowId))
+    {
+      if (Parameters.floatingCaptions.indexOf(clientCaption) !== -1)
+      {
+        floatingClients[client.windowId] = true;
+        return -1;
+      }
+      for (i = 0; i < Parameters.floatingClients.length; i++)
+      {
+        if (clientClass.indexOf(Parameters.floatingClients[i]) !== -1 || clientName.indexOf(Parameters.floatingClients[i]) !== -1)
+        {
+          floatingClients[client.windowId] = true;
+          return -1;
+        }
+      }
+    }
+
     return 0;
   },
   tile: function (client)
   {
-    if (client === null || tiledClients.hasOwnProperty(client.windowId) || floatingClients.hasOwnProperty(client.windowId)) {return -1;}
+    if (tiledClients.hasOwnProperty(client.windowId)) {return -1;}
     if (Client.validate(client) !== 0) {return -1;} // on succes adds minSpace to client
     if (layout.addClient(client) !== 0) {return -1;}
     tiledClients[client.windowId] = true;
@@ -912,11 +934,11 @@ var Client =
 // Connecting Workspace Signals
 // ----------------------------
 
-var tiledClients = {}; // windowId of added clients
-var floatingClients = {}; // windowId of floating clients
-var layout = new Layout(); // main class, contains all methods
-
-workspace.clientActivated.connect (Client.tile); // clientAdded does not work for a lot of clients
+workspace.clientActivated.connect (function (client) // clientAdded does not work for a lot of clients
+{
+  if (client === null || floatingClients.hasOwnProperty(client.windowId)) {return -1;}
+  Client.tile(client);
+});
 
 workspace.clientRemoved.connect (function (client)
 {
@@ -1125,8 +1147,8 @@ registerShortcut ('Grid-Tiling: Float', 'Grid-Tiling: Float', 'Meta+X', function
 {
   var client = layout.getClient(workspace.activeClient.windowId);
   if (client === -1 || !tiledClients.hasOwnProperty(client.windowId)) {return -1;}
-  delete tiledClients[client.windowId];
   floatingClients[client.windowId] = true;
+  delete tiledClients[client.windowId];
   if (layout.removeClient(client.clientIndex, client.columnIndex, client.desktopIndex, client.layerIndex) !== 0) {return -1;}
   return layout.render();
 });
@@ -1134,9 +1156,10 @@ registerShortcut ('Grid-Tiling: Float', 'Grid-Tiling: Float', 'Meta+X', function
 registerShortcut ('Grid-Tiling: Tile', 'Grid-Tiling: Tile', 'Meta+Z', function ()
 {
   var client = workspace.activeClient;
-  if (client === -1 || !floatingClients.hasOwnProperty(client.windowId)) {return -1;}
+  if (client === null || !floatingClients.hasOwnProperty(client.windowId)) {return -1;}
+  Client.tile(client);
   delete floatingClients[client.windowId];
-  return Client.tile(client);
+  return 0;
 });
 
 registerShortcut ('Grid-Tiling: Refresh', 'Grid-Tiling: Refresh', 'Meta+R', function ()

@@ -69,5 +69,13 @@
         <label>ignored captions</label>
         <default>Trace Bitmap (Shift+Alt+B), Document Properties (Shift+Ctrl+D)</default>
       </entry>
+      <entry name="floatingClients" type="string">
+        <label>floating clients</label>
+        <default></default>
+      </entry>
+      <entry name="floatingCaptions" type="string">
+        <label>floating captions</label>
+        <default></default>
+      </entry>
     </group>
 </kcfg>
