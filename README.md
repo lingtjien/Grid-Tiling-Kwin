@@ -104,12 +104,13 @@ Delete the linked or copied files that you created during installation. To remov
 
 ![](http://tiny.cc/close-desktop)
 
-- add clients to ignored lists (clients, captions) defined by `ignoredClients` and `ignoredCaptions`
 - set margins as defined by `topMargin` `bottomMargin` `leftMargin` `rightMargin`
 - set the gap size as defined by `gap`
 - set the opacity as defined by `opacity`
 - set default opacity toggle `noOpacity`
 - set default borders toggle `noBorders`
+- add clients to floating lists (clients, captions) defined by `floatingClients` and `floatingCaptions`, these clients start of as floating but can be tiled.
+- add clients to ignored lists (clients, captions) defined by `ignoredClients` and `ignoredCaptions`, these clients are completely ignored and can't be tiled.
 
 *Note: ignored client names do not have to be an exact match, whereas ignored captions do.*
 
