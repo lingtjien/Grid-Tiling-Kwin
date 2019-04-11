@@ -243,7 +243,7 @@ function Column ()
   };
 
   // rendering
-  this.render = function (x, width, areaY, areaHeight, columnIndex, desktopIndex, layerIndex)
+  this.render = function (x, width, areaY, areaHeight, columnIndex, desktopIndex, activityName)
   {
     var nminimized = this.nminimized();
 
@@ -280,7 +280,7 @@ function Column ()
       client.clientIndex = i;
       client.columnIndex = columnIndex;
       client.desktopIndex = desktopIndex;
-      client.layerIndex = layerIndex;
+      client.activityName = activityName;
 
       // these properties are from kwin and will thus trigger additional signals, these properties must be set last to prevent the signals that are hooked into this script from triggering before the internal properties have been set
       client.noBorder = Parameters.noBorder;
@@ -509,7 +509,7 @@ function Desktop (rows, columns)
   };
 
   // rendering
-  this.render = function (desktopIndex, layerIndex)
+  this.render = function (desktopIndex, activityName)
   {
     var check = 0;
 
@@ -532,7 +532,7 @@ function Desktop (rows, columns)
       current = columnWidth * divider;
       var width = -previous + columnWidth + current;
 
-      check += this.columns[i].render(x, width, area.y, area.height, i, desktopIndex, layerIndex);
+      check += this.columns[i].render(x, width, area.y, area.height, i, desktopIndex, activityName);
 
       x += width + Parameters.gap;
       previous = current;
@@ -542,7 +542,7 @@ function Desktop (rows, columns)
 
 }
 
-function Layer ()
+function Activity ()
 {
   this.desktops = [];
   this.ndesktops = function () {return this.desktops.length;};
@@ -624,12 +624,12 @@ function Layer ()
   };
 
   // rendering
-  this.render = function (layerIndex)
+  this.render = function (activityName)
   {
     var check = 0;
     for (var i = 0; i < this.ndesktops(); i++)
     {
-      check += this.desktops[i].render(i, layerIndex);
+      check += this.desktops[i].render(i, activityName);
     }
     return check;
   };
@@ -638,59 +638,56 @@ function Layer ()
 
 function Layout ()
 {
-  this.layers = [];
-  this.nlayers = function () {return this.layers.length;};
-
-  this.addLayer = function (layer)
-  {
-    this.layers.push(layer);
-    return 0;
-  };
-
-  this.removeLayer = function (layerIndex)
-  {
-    if (layerIndex < 0 || layerIndex >= this.nlayers()) {return -1;}
-    this.layers.splice(layerIndex, 1);
-    return 0;
-  };
+  this.activities = {};
 
   this.addClient = function (client)
   {
-    for (var i = 0; i < this.nlayers(); i++)
+    if (!this.activities.hasOwnProperty(workspace.currentActivity))
     {
-      if (this.layers[i].addClient(client) === 0) {return 0;}
+      var activity = new Activity();
+      this.activities[workspace.currentActivity] = activity;
     }
-    var layer = new Layer();
-    this.addLayer(layer);
-    return this.layers[this.nlayers() - 1].addClient(client);
+    return this.activities[workspace.currentActivity].addClient(client);
   };
 
-  this.removeClient = function (clientIndex, columnIndex, desktopIndex, layerIndex)
+  this.removeClient = function (clientIndex, columnIndex, desktopIndex, activityName)
   {
-    if (layerIndex < 0 || layerIndex >= this.nlayers()) {return -1;}
-    if (this.layers[layerIndex].removeClient(clientIndex, columnIndex, desktopIndex) !== 0) {return -1;}
-    if (this.layers[layerIndex].ndesktops() === 0) {return this.removeLayer(layerIndex);}
+    if (!this.activities.hasOwnProperty(activityName)) {return -1;}
+    if (this.activities[activityName].removeClient(clientIndex, columnIndex, desktopIndex) !== 0) {return -1;}
+    if (this.activities[activityName].ndesktops() === 0 || workspace.activities.indexOf(activityName) === -1) {delete this.activities[activityName];}
     return 0;
   };
 
   this.getClient = function (windowId)
   {
     var client = -1;
-    for (var i = 0; i < this.nlayers(); i++)
+    for (var activityName in this.activities)
     {
-      client = this.layers[i].getClient(windowId);
+      client = this.activities[activityName].getClient(windowId);
       if (client !== -1) {break;}
     }
     return client;
+  };
+
+  this.moveClient = function (client, activityName)
+  {
+    if (client.activityName === activityName || !this.activities.hasOwnProperty(client.activityName)) {return -1;}
+    if (!this.activities.hasOwnProperty(activityName))
+    {
+      var activity = new Activity();
+      this.activities[activityName] = activity;
+    }
+    if (this.removeClient(client.clientIndex, client.columnIndex, client.desktopIndex, client.activityName) !== 0) {return -1;}
+    return this.activities[activityName].addClient(client);
   };
 
   // rendering
   this.render = function ()
   {
     var check = 0;
-    for (var i = 0; i < this.nlayers(); i++)
+    for (var activityName in this.activities)
     {
-      check += this.layers[i].render(i);
+      check += this.activities[activityName].render(activityName);
     }
     return check;
   };
@@ -747,12 +744,12 @@ var Client =
 
     return 0;
   },
-  moved: function (diff, client, layer, properties)
+  moved: function (diff, client, activity, properties)
   {
     var targetIndex = Converter.desktopIndex(client.desktop, client.screen);
-    if (targetIndex < 0 || targetIndex >= layer.ndesktops()) {return -1;}
-    var target = layer.desktops[targetIndex];
-    var current = layer.desktops[Converter.desktopIndex(client.desktopRender, client.screenRender)];
+    if (targetIndex < 0 || targetIndex >= activity.ndesktops()) {return -1;}
+    var target = activity.desktops[targetIndex];
+    var current = activity.desktops[Converter.desktopIndex(client.desktopRender, client.screenRender)];
 
     var i = 0; // column target index
     var remainder = client.geometry.x + 0.5 * client.geometry.width - Parameters.margin.left - properties.area.x;
@@ -826,9 +823,18 @@ var Client =
 
     return 0;
   },
+  float: function (client)
+  {
+    if (floatingClients.hasOwnProperty(client.windowId)) {return -1;}
+    floatingClients[client.windowId] = true;
+    delete tiledClients[client.windowId];
+    layout.removeClient(client.clientIndex, client.columnIndex, client.desktopIndex, client.activityName);
+    return layout.render();
+  },
   tile: function (client)
   {
     if (tiledClients.hasOwnProperty(client.windowId)) {return -1;}
+    if (client.activities.length > 1) {return -1;}
     if (Client.validate(client) !== 0) {return -1;} // on succes adds minSpace to client
     if (layout.addClient(client) !== 0) {return -1;}
     tiledClients[client.windowId] = true;
@@ -843,8 +849,8 @@ var Client =
       client = layout.getClient(client.windowId);
       if (client === -1) {return -1;}
 
-      var layer = layout.layers[client.layerIndex];
-      var desktop = layer.desktops[client.desktopIndex];
+      var activity = layout.activities[client.activityName];
+      var desktop = activity.desktops[client.desktopIndex];
       var properties = Client.properties(desktop.columns[client.columnIndex].nclients() - desktop.columns[client.columnIndex].nminimized(), desktop.ncolumns() - desktop.nminimized(), Converter.desktopIndex(client.desktop, client.screen));
 
       var diff =
@@ -855,17 +861,17 @@ var Client =
         height: client.geometry.height - client.geometryRender.height
       };
 
-      if (Client.resized(diff, client, desktop, properties) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
-      Client.moved(diff, client, layer, properties);
+      if (Client.resized(diff, client, desktop, properties) === 0) {desktop.render(client.desktopIndex, client.activityName);}
+      Client.moved(diff, client, activity, properties);
 
-      return layer.render(client.layerIndex);
+      return activity.render(client.activityName);
     });
     client.clientStepUserMovedResized.connect (function (client)
     {
       client = layout.getClient(client.windowId);
       if (client === -1) {return -1;}
 
-      var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
+      var desktop = layout.activities[client.activityName].desktops[client.desktopIndex];
       var properties = Client.properties(desktop.columns[client.columnIndex].nclients() - desktop.columns[client.columnIndex].nminimized(), desktop.ncolumns() - desktop.nminimized(), Converter.desktopIndex(client.desktop, client.screen));
 
       var diff =
@@ -876,7 +882,7 @@ var Client =
         height: client.geometry.height - client.geometryRender.height
       };
 
-      if (Client.resized(diff, client, desktop, properties) === 0) {desktop.render(client.desktopIndex, client.layerIndex);}
+      if (Client.resized(diff, client, desktop, properties) === 0) {desktop.render(client.desktopIndex, client.activityName);}
 
       return 0;
     });
@@ -886,12 +892,12 @@ var Client =
       return function ()
       {
         if (c.desktop === c.desktopRender || !tiledClients.hasOwnProperty(c.windowId)) {return -1;}
-        var layer = layout.layers[c.layerIndex];
+        var activity = layout.activities[c.activityName];
         var targetIndex = Converter.desktopIndex(c.desktop, c.screen);
 
         var start = c.desktopIndex;
         var direction = targetIndex > c.desktopIndex ? 1 : -1;
-        while (layer.moveDesktop(targetIndex, c.clientIndex, c.columnIndex, c.desktopIndex) !== 0)
+        while (activity.moveDesktop(targetIndex, c.clientIndex, c.columnIndex, c.desktopIndex) !== 0)
         {
           targetIndex += direction;
           if (targetIndex >= Converter.size()) {targetIndex = 0;}
@@ -899,7 +905,7 @@ var Client =
           if (targetIndex === start) {return -1;}
         }
 
-        layer.render(c.layerIndex);
+        activity.render(c.activityName);
         workspace.currentDesktop = c.desktop; // switch to the new desktop
       };
     })());
@@ -909,12 +915,12 @@ var Client =
       return function ()
       {
         if (c.screen === c.screenRender || !tiledClients.hasOwnProperty(c.windowId)) {return -1;}
-        var layer = layout.layers[c.layerIndex];
+        var activity = layout.activities[c.activityName];
         var targetIndex = Converter.desktopIndex(c.desktop, c.screen);
 
         var start = c.desktopIndex;
         var direction = targetIndex > c.desktopIndex ? 1 : -1;
-        while (layer.moveDesktop(targetIndex, c.clientIndex, c.columnIndex, c.desktopIndex) !== 0)
+        while (activity.moveDesktop(targetIndex, c.clientIndex, c.columnIndex, c.desktopIndex) !== 0)
         {
           targetIndex += direction;
           if (targetIndex >= Converter.size()) {targetIndex = 0;}
@@ -922,9 +928,21 @@ var Client =
           if (targetIndex === start) {return -1;}
         }
 
-        layer.render(c.layerIndex);
+        activity.render(c.activityName);
       };
     })());
+    client.activitiesChanged.connect(function (client)
+    {
+      client = layout.getClient(client.windowId);
+      if (client === -1) {return -1;}
+
+      if (client.activities.length !== 1)
+      {
+        return Client.float(client);
+      }
+      layout.moveClient(client, client.activities[0]);
+      return layout.render();
+    });
 
     return 0;
   }
@@ -937,7 +955,8 @@ var Client =
 workspace.clientActivated.connect (function (client) // clientAdded does not work for a lot of clients
 {
   if (client === null || floatingClients.hasOwnProperty(client.windowId)) {return -1;}
-  Client.tile(client);
+  if (Client.tile(client) !== 0)
+    floatingClients[client.windowId] = true;
 });
 
 workspace.clientRemoved.connect (function (client)
@@ -946,7 +965,7 @@ workspace.clientRemoved.connect (function (client)
   {
     delete tiledClients[client.windowId];
     client = layout.getClient(client.windowId);
-    if (layout.removeClient(client.clientIndex, client.columnIndex, client.desktopIndex, client.layerIndex) !== 0) {return -1;}
+    if (layout.removeClient(client.clientIndex, client.columnIndex, client.desktopIndex, client.activityName) !== 0) {return -1;}
     return layout.render();
   }
   else if (floatingClients.hasOwnProperty(client.windowId))
@@ -965,7 +984,7 @@ workspace.clientMinimized.connect (function (client)
   client = layout.getClient(client.windowId);
   if (client === -1) {return -1;}
   client.minimized = true;
-  return layout.layers[client.layerIndex].desktops[client.desktopIndex].render(client.desktopIndex, client.layerIndex);
+  return layout.activities[client.activityName].desktops[client.desktopIndex].render(client.desktopIndex, client.activityName);
 });
 
 workspace.clientUnminimized.connect (function (client)
@@ -973,7 +992,7 @@ workspace.clientUnminimized.connect (function (client)
   client = layout.getClient(client.windowId);
   if (client === -1) {return -1;}
   client.minimized = false;
-  return layout.layers[client.layerIndex].desktops[client.desktopIndex].render(client.desktopIndex, client.layerIndex);
+  return layout.activities[client.activityName].desktops[client.desktopIndex].render(client.desktopIndex, client.activityName);
 });
 
 // ---------
@@ -995,12 +1014,12 @@ workspace.clientUnminimized.connect (function (client)
     {
       var client = layout.getClient(workspace.activeClient.windowId);
       if (client === -1) {return -1;}
-      var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
+      var desktop = layout.activities[client.activityName].desktops[client.desktopIndex];
 
       if (method === 'vertical' && desktop.columns[client.columnIndex].swapClient(direction, client.clientIndex) !== 0) {return -1;}
       if (method === 'horizontal' && desktop.swapClient(direction, client.clientIndex, client.columnIndex) !== 0) {return -1;}
 
-      return desktop.render(client.desktopIndex, client.layerIndex);
+      return desktop.render(client.desktopIndex, client.activityName);
     };
   })());
 });
@@ -1017,11 +1036,11 @@ workspace.clientUnminimized.connect (function (client)
     {
       var client = layout.getClient(workspace.activeClient.windowId);
       if (client === -1) {return -1;}
-      var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
+      var desktop = layout.activities[client.activityName].desktops[client.desktopIndex];
 
       if (desktop.moveClient(direction, client.clientIndex, client.columnIndex) !== 0 && desktop.swapClient(direction, client.clientIndex, client.columnIndex) !== 0) {return -1;}
 
-      return desktop.render(client.desktopIndex, client.layerIndex);
+      return desktop.render(client.desktopIndex, client.activityName);
     };
   })());
 });
@@ -1075,11 +1094,11 @@ workspace.clientUnminimized.connect (function (client)
     {
       var client = layout.getClient(workspace.activeClient.windowId);
       if (client === -1) {return -1;}
-      var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
+      var desktop = layout.activities[client.activityName].desktops[client.desktopIndex];
       desktop.columns[client.columnIndex].changeDivider('both', direction * Parameters.dividerStepSize, client.clientIndex);
       desktop.changeDivider('both', direction * Parameters.dividerStepSize, client.columnIndex);
 
-      return desktop.render(client.desktopIndex, client.layerIndex);
+      return desktop.render(client.desktopIndex, client.activityName);
     };
   })());
 });
@@ -1087,19 +1106,15 @@ workspace.clientUnminimized.connect (function (client)
 registerShortcut ('Grid-Tiling: Close Desktop', 'Grid-Tiling: Close Desktop', 'Meta+Q', function ()
 {
   // looping is done backwards as the array is decreased in size in every iteration thus forward looping will result in skipping elements
-  var j = Converter.currentIndex();
-  for (var i = layout.nlayers() - 1; i >= 0; i--)
+  if (!layout.activities.hasOwnProperty(workspace.currentActivity)) {return -1;}
+  var desktop = layout.activities[workspace.currentActivity].desktops[Converter.currentIndex()];
+
+  for (var i = desktop.ncolumns() - 1; i >= 0; i--)
   {
-    var layer = layout.layers[i];
-    if (j >= layer.ndesktops()) {continue;}
-    var desktop = layer.desktops[j];
-    for (var k = desktop.ncolumns() - 1; k >= 0; k--)
+    var column = desktop.columns[i];
+    for (var j = column.nclients() - 1; j >= 0; j--)
     {
-      var column = desktop.columns[k];
-      for (var l = column.nclients() - 1; l >= 0; l--)
-      {
-        column.clients[l].closeWindow();
-      }
+      column.clients[j].closeWindow();
     }
   }
   return 0; // render is not needed as the close signal is connected
@@ -1110,7 +1125,8 @@ registerShortcut ('Grid-Tiling: Maximize', 'Grid-Tiling: Maximize', 'Meta+M', fu
   var client = layout.getClient(workspace.activeClient.windowId);
   if (client === -1) {return -1;}
 
-  var desktop = layout.layers[client.layerIndex].desktops[client.desktopIndex];
+  if (!layout.activities.hasOwnProperty(workspace.currentActivity)) {return -1;}
+  var desktop = layout.activities[client.activityName].desktops[client.desktopIndex];
   for (var i = 0; i < desktop.ncolumns(); i++)
   {
     var column = desktop.columns[i];
@@ -1125,19 +1141,15 @@ registerShortcut ('Grid-Tiling: Maximize', 'Grid-Tiling: Maximize', 'Meta+M', fu
 
 registerShortcut ('Grid-Tiling: Unminimize Desktop', 'Grid-Tiling: Unminimize Desktop', 'Meta+,', function ()
 {
-  var j = Converter.currentIndex();
-  for (var i = layout.nlayers() - 1; i >= 0; i--)
+  if (!layout.activities.hasOwnProperty(workspace.currentActivity)) {return -1;}
+  var desktop = layout.activities[workspace.currentActivity].desktops[Converter.currentIndex()];
+
+  for (var i = desktop.ncolumns() - 1; i >= 0; i--)
   {
-    var layer = layout.layers[i];
-    if (j >= layer.ndesktops()) {continue;}
-    var desktop = layer.desktops[j];
-    for (var k = desktop.ncolumns() - 1; k >= 0; k--)
+    var column = desktop.columns[i];
+    for (var j = column.nclients() - 1; j >= 0; j--)
     {
-      var column = desktop.columns[k];
-      for (var l = column.nclients() - 1; l >= 0; l--)
-      {
-        column.clients[l].minimized = false;
-      }
+      column.clients[j].minimized = false;
     }
   }
   return 0; // render is not needed as the signal for unminimize has been connected to render
@@ -1146,11 +1158,8 @@ registerShortcut ('Grid-Tiling: Unminimize Desktop', 'Grid-Tiling: Unminimize De
 registerShortcut ('Grid-Tiling: Float', 'Grid-Tiling: Float', 'Meta+X', function ()
 {
   var client = layout.getClient(workspace.activeClient.windowId);
-  if (client === -1 || !tiledClients.hasOwnProperty(client.windowId)) {return -1;}
-  floatingClients[client.windowId] = true;
-  delete tiledClients[client.windowId];
-  if (layout.removeClient(client.clientIndex, client.columnIndex, client.desktopIndex, client.layerIndex) !== 0) {return -1;}
-  return layout.render();
+  if (client === -1) {return -1;}
+  return Client.float(client);
 });
 
 registerShortcut ('Grid-Tiling: Tile', 'Grid-Tiling: Tile', 'Meta+Z', function ()
