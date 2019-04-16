@@ -8,10 +8,9 @@ var Algorithm =
   {
     return value == true; // eslint-disable-line eqeqeq
   },
-  smallest: function (value1, value2)
+  min: function (value1, value2)
   {
-    if (value1 > value2) {return value2;}
-    else {return value1;}
+    return value1 > value2 ? value2 : value1;
   },
   trimSplitString: function (input)
   {
@@ -29,7 +28,7 @@ var Algorithm =
     {
       names: [],
       spaces: [],
-      size: function () {return Algorithm.smallest(this.names.length, this.spaces.length);}
+      size: function () {return Algorithm.min(this.names.length, this.spaces.length);}
     };
 
     var names = this.trimSplitString(clientNames);
@@ -48,7 +47,7 @@ var Algorithm =
     {
       rows: [],
       columns: [],
-      size: function () {return Algorithm.smallest(this.rows.length, this.columns.length);},
+      size: function () {return Algorithm.min(this.rows.length, this.columns.length);},
       smallestSpace: function ()
       {
         var smallest = 1;
@@ -955,8 +954,7 @@ var Client =
 workspace.clientActivated.connect (function (client) // clientAdded does not work for a lot of clients
 {
   if (client === null || floatingClients.hasOwnProperty(client.windowId)) {return -1;}
-  if (Client.tile(client) !== 0)
-    floatingClients[client.windowId] = true;
+  return Client.tile(client); // validate does floating already, do not check here and float on fail
 });
 
 workspace.clientRemoved.connect (function (client)
@@ -977,6 +975,20 @@ workspace.clientRemoved.connect (function (client)
   {
     return -1;
   }
+});
+
+workspace.activitiesChanged.connect(function (name)
+{
+  for (var activityName in layout.activities)
+  {
+    if (workspace.activities.indexOf(activityName) !== -1)
+    {
+      layout.activities[name] = layout.activities[activityName];
+      delete layout.activities[activityName];
+      return 0;
+    }
+  }
+  return -1;
 });
 
 workspace.clientMinimized.connect (function (client)
