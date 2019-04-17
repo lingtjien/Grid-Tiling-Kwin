@@ -34,7 +34,7 @@ var Algorithm =
     var names = this.trimSplitString(clientNames);
     var spaces = this.trimSplitString(clientSpaces);
 
-    for (var i = 0; i < this.smallest(names.length, spaces.length); i++)
+    for (var i = 0; i < Algorithm.min(names.length, spaces.length); i++)
     {
       minSpaces.names.push(names[i]);
       minSpaces.spaces.push(1 / Number(spaces[i]));
@@ -63,7 +63,7 @@ var Algorithm =
     var rows = this.trimSplitString(rowstring);
     var columns = this.trimSplitString(columnstring);
 
-    for (var i = 0; i < this.smallest(rows.length, columns.length); i++)
+    for (var i = 0; i < Algorithm.min(rows.length, columns.length); i++)
     {
       grids.rows.push(Number(rows[i]));
       grids.columns.push(Number(columns[i]));
@@ -975,20 +975,6 @@ workspace.clientRemoved.connect (function (client)
   {
     return -1;
   }
-});
-
-workspace.activitiesChanged.connect(function (name)
-{
-  for (var activityName in layout.activities)
-  {
-    if (workspace.activities.indexOf(activityName) !== -1)
-    {
-      layout.activities[name] = layout.activities[activityName];
-      delete layout.activities[activityName];
-      return 0;
-    }
-  }
-  return -1;
 });
 
 workspace.clientMinimized.connect (function (client)
