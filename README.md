@@ -151,8 +151,8 @@ Delete the linked or copied files that you created during installation. To remov
 - Moving clients between desktops using the action menu can sometimes result in wrong placement, just use the global refresh shortcut.
 - Spotify can sometimes not be defined as full or half client, because both the client name and class of spotify are blank at startup.
 - Dynamically resizing clients with the mouse can result in weird visual artifacts when dragged outside of the bounds, just use the global shortcut that refreshes the layout.
-- I don't use activities, so I don't know how this does with activities.
-- I don't use dynamic virtual desktops, no idea what happends. This was made with the intended use of using a set amount of virtual desktops. For the best result make sure you have more virtual desktops than you have clients normally, the script can handle more clients that can fit into all your virtual desktops but it then creates a new layer on top which will make it hard to interact with the clients in the layer underneath.
+-  This was made with the intended use of using a set amount of virtual desktops. For the best result make sure you have more virtual desktops than you have clients normally. The script can handle more clients but once all desktops are full, all new clients will start as floating instead of tiling until there is space again to tile new clients.
+- I don't use dynamic virtual desktops, but it should be able to deal with it as long as the clients are closed when the virtual desktop is removed.
 
 ## Extra Settings Info
 
