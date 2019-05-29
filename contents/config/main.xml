@@ -53,6 +53,10 @@
         <label>default state of borders on/off at start</label>
         <default>true</default>
       </entry>
+      <entry name="doNotAddClientToPreviousDesktop" type="bool">
+        <label>do not add client to previous desktop</label>
+        <default>false</default>
+      </entry>
       <entry name="clientNames" type="string">
         <label>names of the clients which define a minimum space</label>
         <default>texstudio, inkscape, krita, gimp, designer, creator, kdenlive, kdevelop, chromium, kate, spotify</default>

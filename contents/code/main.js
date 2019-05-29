@@ -103,7 +103,8 @@ var Parameters =
   ignoredClients: Algorithm.trimSplitString('ksmserver, krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, '.concat(readConfig('ignoredClients', 'wine, overwatch').toString())),
   ignoredCaptions: Algorithm.trimSplitString(readConfig('ignoredCaptions', 'Trace Bitmap (Shift+Alt+B), Document Properties (Shift+Ctrl+D)').toString()),
   floatingClients: Algorithm.trimSplitString(readConfig('floatingClients', '').toString()),
-  floatingCaptions: Algorithm.trimSplitString(readConfig('floatingCaptions', '').toString())
+  floatingCaptions: Algorithm.trimSplitString(readConfig('floatingCaptions', '').toString()),
+  doNotAddClientToPreviousDesktop: Algorithm.toBool(readConfig('doNotAddClientToPreviousDesktop', false))
 };
 
 // ------------------------------------------
@@ -575,7 +576,9 @@ function Activity ()
     if (this.desktops[index].addClient(client) === 0) {return 0;}
 
     // try to add to any of the desktops in the current array
-    for (var i = 0; i < this.ndesktops(); i++)
+    var i = 0;
+    if (Parameters.doNotAddClientToPreviousDesktop === true) {i = index + 1;}
+    for (i; i < this.ndesktops(); i++)
     {
       if (this.desktops[i].addClient(client) === 0) {return 0;}
     }

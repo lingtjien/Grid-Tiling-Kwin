@@ -315,6 +315,16 @@
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="QCheckBox" name="kcfg_doNotAddClientToPreviousDesktop">
+        <property name="text">
+         <string>Do not add client to previous desktop</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
     <item>
