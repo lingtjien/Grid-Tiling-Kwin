@@ -165,7 +165,7 @@ These are settings that you can adjust in KWin which are unrelated to this scrip
 4. Window Actions
 5. Modifier Key
 
-### Transparant Blurry Menu
+### Transparent Blurry Menu
 
 1. System Settings
 2. Application Style
