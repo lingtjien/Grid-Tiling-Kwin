@@ -562,29 +562,22 @@ function Activity ()
 
   this.addClient = function (client)
   {
-    var grid, desktop;
-
-    // try to add to current desktop
-    var index = Converter.currentIndex();
-    while (index >= this.ndesktops())
+    var start = Converter.currentIndex();
+    var i = start;
+    do
     {
-      grid = Algorithm.screenToGrid(Converter.screen(this.ndesktops()));
-      desktop = new Desktop(grid.row, grid.column);
-      if (this.addDesktop(desktop) !== 0) {return -1;}
-    }
-    if (this.desktops[index].addClient(client) === 0) {return 0;}
-
-    // try to add to any of the desktops in the current array
-    for (var i = 0; i < this.ndesktops(); i++)
-    {
+      if (i >= Converter.size()) {i = 0;}
+      while (i >= this.ndesktops())
+      {
+        var grid = Algorithm.screenToGrid(Converter.screen(this.ndesktops()));
+        var desktop = new Desktop(grid.row, grid.column);
+        if (this.addDesktop(desktop) !== 0) {return -1;}
+      }
       if (this.desktops[i].addClient(client) === 0) {return 0;}
+      i++;
     }
-
-    // make a new desktop (if possible) and add to that
-    grid = Algorithm.screenToGrid(Converter.screen(this.ndesktops()));
-    desktop = new Desktop(grid.row, grid.column);
-    if (this.addDesktop(desktop) !== 0) {return -1;}
-    return this.desktops[this.ndesktops() - 1].addClient(client);
+    while (i !== start);
+    return -1;
   };
 
   this.removeClient = function (clientIndex, columnIndex, desktopIndex)
