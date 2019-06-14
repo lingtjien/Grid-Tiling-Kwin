@@ -8,10 +8,6 @@ var Algorithm =
   {
     return value == true; // eslint-disable-line eqeqeq
   },
-  min: function (value1, value2)
-  {
-    return value1 > value2 ? value2 : value1;
-  },
   trimSplitString: function (input)
   {
     var split = input.split(',');
@@ -24,58 +20,31 @@ var Algorithm =
   },
   createMinSpaces: function (clientNames, clientSpaces)
   {
-    var minSpaces =
-    {
-      names: [],
-      spaces: [],
-      size: function () {return Algorithm.min(this.names.length, this.spaces.length);}
-    };
-
+    var minSpaces = {};
     var names = this.trimSplitString(clientNames);
     var spaces = this.trimSplitString(clientSpaces);
 
-    for (var i = 0; i < Algorithm.min(names.length, spaces.length); i++)
-    {
-      minSpaces.names.push(names[i]);
-      minSpaces.spaces.push(1 / Number(spaces[i]));
-    }
+    for (var i = 0; i < names.length && i < spaces.length; i++)
+      minSpaces[names[i]] = 1 / Number(spaces[i]);
     return minSpaces;
   },
   createGrids: function (rowstring, columnstring)
   {
-    var grids =
-    {
-      rows: [],
-      columns: [],
-      size: function () {return Algorithm.min(this.rows.length, this.columns.length);},
-      smallestSpace: function ()
-      {
-        var smallest = 1;
-        for (var i = 0; i < this.size(); i++)
-        {
-          var space = 1 / (this.rows[i] * this.columns[i]);
-          if (space < smallest) {smallest = space;}
-        }
-        return smallest;
-      }
-    };
-
     var rows = this.trimSplitString(rowstring);
     var columns = this.trimSplitString(columnstring);
-
-    for (var i = 0; i < Algorithm.min(rows.length, columns.length); i++)
-    {
-      grids.rows.push(Number(rows[i]));
-      grids.columns.push(Number(columns[i]));
-    }
-
-    return grids;
+    rows.forEach(function (row, i) {rows[i] = Number(row);});
+    columns.forEach(function (column, i) {columns[i] = Number(column);});
+    return {rows: rows, columns: columns};
   },
-  screenToGrid: function (screen)
+  smallestSpace: function (rows, columns)
   {
-    var index = 0;
-    if (screen < Parameters.grids.size()) {index = screen;}
-    return {row: Parameters.grids.rows[index], column: Parameters.grids.columns[index]};
+    var smallest = 1;
+    for (var i = 0; i < rows.length && i < columns.length; i++)
+    {
+      var space = 1 / (rows[i] * columns[i]);
+      if (space < smallest) {smallest = space;}
+    }
+    return smallest;
   }
 };
 
@@ -105,6 +74,7 @@ var Parameters =
   floatingClients: Algorithm.trimSplitString(readConfig('floatingClients', '').toString()),
   floatingCaptions: Algorithm.trimSplitString(readConfig('floatingCaptions', '').toString())
 };
+Parameters.smallestSpace = Algorithm.smallestSpace(Parameters.grids.rows, Parameters.grids.columns);
 
 // ------------------------------------------
 // Desktop Screen Row Column Index Converters
@@ -123,6 +93,12 @@ var Converter =
   size: function ()
   {
     return this.nrow() * this.ncol();
+  },
+  grid: function (screen, grids)
+  {
+    var index = 0;
+    if (screen < grids.rows.length && screen < grids.columns.length) {index = screen;}
+    return {row: grids.rows[index], column: grids.columns[index]};
   },
   desktopIndex: function (desktop, screen)
   {
@@ -569,7 +545,7 @@ function Activity ()
       if (i >= Converter.size()) {i = 0;}
       while (i >= this.ndesktops())
       {
-        var grid = Algorithm.screenToGrid(Converter.screen(this.ndesktops()));
+        var grid = Converter.grid(Converter.screen(this.ndesktops()), Parameters.grids);
         var desktop = new Desktop(grid.row, grid.column);
         if (this.addDesktop(desktop) !== 0) {return -1;}
       }
@@ -606,7 +582,7 @@ function Activity ()
     var client = this.desktops[desktopIndex].columns[columnIndex].clients[clientIndex];
     while (targetIndex >= this.ndesktops())
     {
-      var grid = Algorithm.screenToGrid(Converter.screen(this.ndesktops()));
+      var grid = Converter.grid(Converter.screen(this.ndesktops()), Parameters.grids);
       var desktop = new Desktop(grid.row, grid.column);
       if (this.addDesktop(desktop) === -1) {return -1;}
     }
@@ -773,44 +749,24 @@ var Client =
   validate: function (client)
   {
     if (client.specialWindow || client.dialog) {return -1;}
-
     var clientClass = client.resourceClass.toString();
     var clientName = client.resourceName.toString();
     var clientCaption = client.caption.toString();
 
-    var i;
-    var minSpace = Parameters.grids.smallestSpace();
-    for (i = 0; i < Parameters.minSpaces.size(); i++)
+    client.minSpace = Parameters.smallestSpace;
+    for (var name in Parameters.minSpaces)
     {
-      if (clientClass.indexOf(Parameters.minSpaces.names[i]) !== -1 || clientName.indexOf(Parameters.minSpaces.names[i]) !== -1)
+      if (clientClass.indexOf(name) !== -1 || clientName.indexOf(name) !== -1)
       {
-        minSpace = Parameters.minSpaces.spaces[i];
+        client.minSpace = Parameters.minSpaces[name];
         break;
       }
     }
-    client.minSpace = minSpace;
 
     if (Parameters.ignoredCaptions.indexOf(clientCaption) !== -1) {return -1;}
-    for (i = 0; i < Parameters.ignoredClients.length; i++)
+    for (var i = 0; i < Parameters.ignoredClients.length; i++)
     {
       if (clientClass.indexOf(Parameters.ignoredClients[i]) !== -1 || clientName.indexOf(Parameters.ignoredClients[i]) !== -1) {return -1;}
-    }
-
-    if (!floatingClients.hasOwnProperty(client.windowId))
-    {
-      if (Parameters.floatingCaptions.indexOf(clientCaption) !== -1)
-      {
-        floatingClients[client.windowId] = true;
-        return -1;
-      }
-      for (i = 0; i < Parameters.floatingClients.length; i++)
-      {
-        if (clientClass.indexOf(Parameters.floatingClients[i]) !== -1 || clientName.indexOf(Parameters.floatingClients[i]) !== -1)
-        {
-          floatingClients[client.windowId] = true;
-          return -1;
-        }
-      }
     }
 
     return 0;
@@ -820,7 +776,7 @@ var Client =
     if (floatingClients.hasOwnProperty(client.windowId)) {return -1;}
     floatingClients[client.windowId] = true;
     delete tiledClients[client.windowId];
-    layout.removeClient(client.clientIndex, client.columnIndex, client.desktopIndex, client.activityName);
+    if (layout.removeClient(client.clientIndex, client.columnIndex, client.desktopIndex, client.activityName) === -1) {return -1;}
     return layout.render();
   },
   tile: function (client)
@@ -828,8 +784,15 @@ var Client =
     if (tiledClients.hasOwnProperty(client.windowId)) {return -1;}
     if (client.activities.length > 1) {return -1;}
     if (Client.validate(client) !== 0) {return -1;} // on succes adds minSpace to client
+    if (!floatingClients.hasOwnProperty(client.windowId) && (Parameters.floatingCaptions.indexOf(client.caption.toString()) !== -1 || Parameters.floatingClients.some(function (name) {return client.resourceClass.toString().indexOf(name) !== -1 || client.resourceName.toString().indexOf(name) !== -1;})))
+    {
+      floatingClients[client.windowId] = true;
+      return -1;
+    }
+
     if (layout.addClient(client) !== 0) {return -1;}
     tiledClients[client.windowId] = true;
+    delete floatingClients[client.windowId];
     layout.render();
     workspace.currentDesktop = client.desktop;
 
@@ -1146,20 +1109,24 @@ registerShortcut ('Grid-Tiling: Unminimize Desktop', 'Grid-Tiling: Unminimize De
   return 0; // render is not needed as the signal for unminimize has been connected to render
 });
 
-registerShortcut ('Grid-Tiling: Float', 'Grid-Tiling: Float', 'Meta+X', function ()
-{
-  var client = layout.getClient(workspace.activeClient.windowId);
-  if (client === -1) {return -1;}
-  return Client.float(client);
-});
-
-registerShortcut ('Grid-Tiling: Tile', 'Grid-Tiling: Tile', 'Meta+Z', function ()
+registerShortcut ('Grid-Tiling: Tile/Float', 'Grid-Tiling: Tile/Float', 'Meta+Z', function ()
 {
   var client = workspace.activeClient;
-  if (client === null || !floatingClients.hasOwnProperty(client.windowId)) {return -1;}
-  Client.tile(client);
-  delete floatingClients[client.windowId];
-  return 0;
+  if (client === null)
+  {
+    return -1;
+  }
+  else if (floatingClients.hasOwnProperty(client.windowId))
+  {
+    return Client.tile(client);
+  }
+  else if (tiledClients.hasOwnProperty(client.windowId))
+  {
+    client = layout.getClient(client.windowId);
+    if (client === -1) {return -1;}
+    return Client.float(client);
+  }
+  return -1;
 });
 
 registerShortcut ('Grid-Tiling: Refresh', 'Grid-Tiling: Refresh', 'Meta+R', function ()
