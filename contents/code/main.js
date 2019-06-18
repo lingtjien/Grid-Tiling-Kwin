@@ -1057,56 +1057,45 @@ workspace.clientUnminimized.connect (function (client)
   })());
 });
 
-registerShortcut ('Grid-Tiling: Close Desktop', 'Grid-Tiling: Close Desktop', 'Meta+Q', function ()
-{
-  // looping is done backwards as the array is decreased in size in every iteration thus forward looping will result in skipping elements
-  if (!layout.activities.hasOwnProperty(workspace.currentActivity)) {return -1;}
-  var desktop = layout.activities[workspace.currentActivity].desktops[Converter.currentIndex()];
-
-  for (var i = desktop.ncolumns() - 1; i >= 0; i--)
-  {
-    var column = desktop.columns[i];
-    for (var j = column.nclients() - 1; j >= 0; j--)
-    {
-      column.clients[j].closeWindow();
-    }
-  }
-  return 0; // render is not needed as the close signal is connected
-});
-
-registerShortcut ('Grid-Tiling: Maximize', 'Grid-Tiling: Maximize', 'Meta+M', function ()
-{
-  var client = layout.getClient(workspace.activeClient.windowId);
-  if (client === -1) {return -1;}
-
-  if (!layout.activities.hasOwnProperty(workspace.currentActivity)) {return -1;}
-  var desktop = layout.activities[client.activityName].desktops[client.desktopIndex];
-  for (var i = 0; i < desktop.ncolumns(); i++)
-  {
-    var column = desktop.columns[i];
-    for (var j = 0; j < column.nclients(); j++)
-    {
-      if (column.clients[j].windowId === client.windowId) {column.clients[j].minimized = false;}
-      else {column.clients[j].minimized = true;}
-    }
-  }
-  return 0; // render is not needed as the signal for minimize has been connected to render
-});
-
-registerShortcut ('Grid-Tiling: Unminimize Desktop', 'Grid-Tiling: Unminimize Desktop', 'Meta+,', function ()
+registerShortcut ('Grid-Tiling: Minimize Others/Unminimize Desktop', 'Grid-Tiling: Minimize Others/Unminimize Desktop', 'Meta+M', function ()
 {
   if (!layout.activities.hasOwnProperty(workspace.currentActivity)) {return -1;}
   var desktop = layout.activities[workspace.currentActivity].desktops[Converter.currentIndex()];
-
-  for (var i = desktop.ncolumns() - 1; i >= 0; i--)
+  var i, j, column;
+  var nclients = 0, nminimized = 0;
+  for (i = 0; i < desktop.ncolumns(); i++)
   {
-    var column = desktop.columns[i];
-    for (var j = column.nclients() - 1; j >= 0; j--)
+    nclients += desktop.columns[i].nclients();
+    nminimized += desktop.columns[i].nminimized();
+  }
+
+  if (nclients - nminimized <= 1)
+  {
+    for (i = 0; i < desktop.ncolumns(); i++)
     {
-      column.clients[j].minimized = false;
+      column = desktop.columns[i];
+      for (j = 0; j < column.nclients(); j++)
+      {
+        column.clients[j].minimized = false;
+      }
     }
   }
-  return 0; // render is not needed as the signal for unminimize has been connected to render
+  else
+  {
+    var client = layout.getClient(workspace.activeClient.windowId);
+    if (client === -1) {return -1;}
+
+    for (i = 0; i < desktop.ncolumns(); i++)
+    {
+      column = desktop.columns[i];
+      for (j = 0; j < column.nclients(); j++)
+      {
+        if (column.clients[j].windowId === client.windowId) {column.clients[j].minimized = false;}
+        else {column.clients[j].minimized = true;}
+      }
+    }
+  }
+  return 0;
 });
 
 registerShortcut ('Grid-Tiling: Tile/Float', 'Grid-Tiling: Tile/Float', 'Meta+Z', function ()
@@ -1127,6 +1116,23 @@ registerShortcut ('Grid-Tiling: Tile/Float', 'Grid-Tiling: Tile/Float', 'Meta+Z'
     return Client.float(client);
   }
   return -1;
+});
+
+registerShortcut ('Grid-Tiling: Close Desktop', 'Grid-Tiling: Close Desktop', 'Meta+Q', function ()
+{
+  // looping is done backwards as the array is decreased in size in every iteration thus forward looping will result in skipping elements
+  if (!layout.activities.hasOwnProperty(workspace.currentActivity)) {return -1;}
+  var desktop = layout.activities[workspace.currentActivity].desktops[Converter.currentIndex()];
+
+  for (var i = desktop.ncolumns() - 1; i >= 0; i--)
+  {
+    var column = desktop.columns[i];
+    for (var j = column.nclients() - 1; j >= 0; j--)
+    {
+      column.clients[j].closeWindow();
+    }
+  }
+  return 0; // render is not needed as the close signal is connected
 });
 
 registerShortcut ('Grid-Tiling: Refresh', 'Grid-Tiling: Refresh', 'Meta+R', function ()
