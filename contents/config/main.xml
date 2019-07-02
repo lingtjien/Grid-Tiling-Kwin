@@ -63,7 +63,7 @@
       </entry>
       <entry name="ignoredClients" type="string">
         <label>ignored clients</label>
-        <default>wine, overwatch</default>
+        <default>wine, overwatch, yakuake</default>
       </entry>
       <entry name="ignoredCaptions" type="string">
         <label>ignored captions</label>
