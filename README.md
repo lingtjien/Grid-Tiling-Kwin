@@ -144,7 +144,7 @@ Delete the linked or copied files that you created during installation. To remov
 
 *If you use multiple screens you could also consider using the default shortcuts of KWin `Window To *Previous/Next* *Screen*` to `Meta+*PgDn/PgUp*` to easily move clients between screens*
 
-## Usefull To Know
+## Useful To Know
 - If you have kwin shortcuts added by the script that you no longer need or use (because they got renamed to something else for example), then you can delete the old unused shortcuts by first selecting kwin in the global shortcuts menu and then pressing the `remove the selected component` button (hover mouse over the button to see the text). This action does require you to not have the KWin script active.
 - When you adjust the settings in the menu, you need to turn the script off, apply it, turn it back on and apply it again to register the new values (or re-log/reboot).
 - Some applications do not render correctly on startup sometimes, just use the global refresh shortcut.
@@ -165,7 +165,7 @@ These are settings that you can adjust in KWin which are unrelated to this scrip
 4. Window Actions
 5. Modifier Key
 
-### Transparant Blurry Menu
+### Transparent Blurry Menu
 
 1. System Settings
 2. Application Style
