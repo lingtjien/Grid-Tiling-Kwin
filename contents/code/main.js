@@ -1021,7 +1021,7 @@ workspace.clientUnminimized.connect (function (client)
 });
 
 [
-  {text: 'Border', shortcut: 'P', variable: 'noBorder'},
+  {text: 'Border', shortcut: 'B', variable: 'noBorder'},
   {text: 'Opacity', shortcut: 'O', variable: 'noOpacity'}
 ].forEach (function (entry)
 {
@@ -1098,7 +1098,7 @@ registerShortcut ('Grid-Tiling: Minimize Others/Unminimize Desktop', 'Grid-Tilin
   return 0;
 });
 
-registerShortcut ('Grid-Tiling: Tile/Float', 'Grid-Tiling: Tile/Float', 'Meta+Z', function ()
+registerShortcut ('Grid-Tiling: Tile/Float', 'Grid-Tiling: Tile/Float', 'Meta+T', function ()
 {
   var client = workspace.activeClient;
   if (client === null)

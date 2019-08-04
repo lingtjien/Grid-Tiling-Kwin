@@ -80,13 +80,9 @@ Delete the linked or copied files that you created during installation. To remov
 
 ![](http://tiny.cc/minimize-shortcut)
 
-- maximize, minimizes all other clients on desktop `Grid-Tiling: Maximize`
+- minimizes all other clients or unminimizes all clients on the current desktop `Grid-Tiling: Minimize Others/Unminimize Desktop`
 
-![](http://tiny.cc/maximize-shortcut)
-
-- unminimize all clients on currect desktop `Grid-Tiling: Unminimize Desktop`
-
-![](http://tiny.cc/unminimize-desktop)
+![](http://tiny.cc/un-minimize_all-shortcut)
 
 - toggle between bordered clients `Grid-Tiling: Toggle Borders`
 
@@ -96,7 +92,7 @@ Delete the linked or copied files that you created during installation. To remov
 
 ![](http://tiny.cc/toggle-opacity)
 
-- dynamically float and tile clients `Grid-Tiling: *Float/Tile*`
+- dynamically float and tile clients `Grid-Tiling: Tile/Float`
 
 ![](http://tiny.cc/float-tile)
 
@@ -124,18 +120,16 @@ Delete the linked or copied files that you created during installation. To remov
 - set shortcuts `Grid-Tiling: Move *Previous/Next* Desktop` to `Meta+*Home/End*`
 - set shortcuts `Window One Desktop *Down/Up*` to `Meta+*PgDn/PgUp*` 
 
-- set shortcut `Grid-Tiling: Maximize` to `Meta+M`
-- set shortcut `Grid-Tiling: Unminimize Desktop` to `Meta+,`
+- set shortcut `Grid-Tiling: Minimize Others/Unminimize Desktop` to `Meta+M`
 - set shortcut `Minimize Window` to `Meta+N`
 
 - set shortcut `Grid-Tiling: Increase Size` to `Meta+=`
 - set shortcut `Grid-Tiling: Decrease Size` to `Meta+-`
 
 - set shortcut `Grid-Tiling: Toggle Opacity` to `Meta+O`
-- set shortcut `Grid-Tiling: Toggle Borders` to `Meta+P`
+- set shortcut `Grid-Tiling: Toggle Borders` to `Meta+B`
 
-- set shortcut `Grid-Tiling: Float` to `Meta+X`
-- set shortcut `Grid-Tiling: Tile` to `Meta+Z`
+- set shortcut `Grid-Tiling: Tile/Float` to `Meta+T`
 
 - set shortcut `Grid-Tiling: Close Desktop` to `Meta+Q`
 - set shortcut `Close Window` to `Meta+W`
