@@ -542,7 +542,6 @@ function Activity ()
     var i = start;
     do
     {
-      if (i >= Converter.size()) {i = 0;}
       while (i >= this.ndesktops())
       {
         var grid = Converter.grid(Converter.screen(this.ndesktops()), Parameters.grids);
@@ -550,7 +549,7 @@ function Activity ()
         if (this.addDesktop(desktop) !== 0) {return -1;}
       }
       if (this.desktops[i].addClient(client) === 0) {return 0;}
-      i++;
+      if (++i >= Converter.size()) {i = 0;}
     }
     while (i !== start);
     return -1;
