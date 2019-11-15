@@ -58,9 +58,7 @@ var Parameters =
   gap: Number(readConfig('gap', 16)),
   dividerBounds: Number(readConfig('dividerBounds', 0.3)),
   dividerStepSize: Number(readConfig('dividerStepSize', 0.05)),
-  opacity: Number(readConfig('opacity', 0.9)),
-  noOpacity: Algorithm.toBool(readConfig('noOpacity', false)),
-  noBorder: Algorithm.toBool(readConfig('noBorder', true)),
+  border: Algorithm.toBool(readConfig('border', false)),
   margin:
   {
     top: Number(readConfig('topMargin', 0)),
@@ -258,8 +256,7 @@ function Column ()
       client.activityName = activityName;
 
       // these properties are from kwin and will thus trigger additional signals, these properties must be set last to prevent the signals that are hooked into this script from triggering before the internal properties have been set
-      client.noBorder = Parameters.noBorder;
-      client.opacity = Parameters.noOpacity ? 1 : Parameters.opacity;
+      client.noBorder = !Parameters.border;
       client.desktop = Converter.desktop(desktopIndex);
       client.screen = Converter.screen(desktopIndex);
       client.geometry = geometry;
@@ -1020,22 +1017,6 @@ workspace.clientUnminimized.connect (function (client)
 });
 
 [
-  {text: 'Border', shortcut: 'B', variable: 'noBorder'},
-  {text: 'Opacity', shortcut: 'O', variable: 'noOpacity'}
-].forEach (function (entry)
-{
-  registerShortcut ('Grid-Tiling: Toggle ' + entry.text, 'Grid-Tiling: Toggle ' + entry.text, 'Meta+' + entry.shortcut, (function ()
-  {
-    var variable = entry.variable;
-    return function ()
-    {
-      Parameters[variable] = !Parameters[variable];
-      return layout.render();
-    };
-  })());
-});
-
-[
   {text: 'Increase', shortcut: '=', direction: 1},
   {text: 'Decrease', shortcut: '-', direction: -1}
 ].forEach (function (entry)
@@ -1134,7 +1115,19 @@ registerShortcut ('Grid-Tiling: Close Desktop', 'Grid-Tiling: Close Desktop', 'M
   return 0; // render is not needed as the close signal is connected
 });
 
+registerShortcut ('Grid-Tiling: Toggle Border', 'Grid-Tiling: Toggle Border', 'Meta+B', function ()
+{
+  Parameters.border = !Parameters.border;
+  return layout.render();
+});
+
 registerShortcut ('Grid-Tiling: Refresh', 'Grid-Tiling: Refresh', 'Meta+R', function ()
 {
+  var clients = workspace.clientList();
+  for (var i = 0; i < clients.length; i++)
+  {
+    if (clients[i] === null || floatingClients.hasOwnProperty(clients[i].windowId)) {continue;}
+    Client.tile(clients[i]);
+  }
   return layout.render();
 });
