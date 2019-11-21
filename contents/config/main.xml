@@ -25,9 +25,9 @@
         <label>increment and decrement size of the divider</label>
         <default>0.05</default>
       </entry>
-      <entry name="opacity" type="double">
-        <label>opacity of all clients</label>
-        <default>0.9</default>
+      <entry name="border" type="bool">
+        <label>default state of borders on/off at start</label>
+        <default>false</default>
       </entry>
       <entry name="topMargin" type="int">
         <label>amount of space at the top in px</label>
@@ -44,14 +44,6 @@
       <entry name="rightMargin" type="int">
         <label>amount of space at the right in px</label>
         <default>0</default>
-      </entry>
-      <entry name="noOpacity" type="bool">
-        <label>default state of opacity on/off at start</label>
-        <default>false</default>
-      </entry>
-      <entry name="noBorder" type="bool">
-        <label>default state of borders on/off at start</label>
-        <default>true</default>
       </entry>
       <entry name="clientNames" type="string">
         <label>names of the clients which define a minimum space</label>
