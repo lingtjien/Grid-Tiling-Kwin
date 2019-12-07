@@ -88,10 +88,6 @@ Delete the linked or copied files that you created during installation. To remov
 
 ![](http://tiny.cc/toggle-border)
 
-- toggle between opaque clients `Grid-Tiling: Toggle Opacity`
-
-![](http://tiny.cc/toggle-opacity)
-
 - dynamically float and tile clients `Grid-Tiling: Tile/Float`
 
 ![](http://tiny.cc/float-tile)
@@ -102,9 +98,7 @@ Delete the linked or copied files that you created during installation. To remov
 
 - set margins as defined by `topMargin` `bottomMargin` `leftMargin` `rightMargin`
 - set the gap size as defined by `gap`
-- set the opacity as defined by `opacity`
-- set default opacity toggle `noOpacity`
-- set default borders toggle `noBorders`
+- set default borders toggle `borders`
 - add clients to floating lists (clients, captions) defined by `floatingClients` and `floatingCaptions`, these clients start of as floating but can be tiled.
 - add clients to ignored lists (clients, captions) defined by `ignoredClients` and `ignoredCaptions`, these clients are completely ignored and can't be tiled.
 
@@ -126,7 +120,6 @@ Delete the linked or copied files that you created during installation. To remov
 - set shortcut `Grid-Tiling: Increase Size` to `Meta+=`
 - set shortcut `Grid-Tiling: Decrease Size` to `Meta+-`
 
-- set shortcut `Grid-Tiling: Toggle Opacity` to `Meta+O`
 - set shortcut `Grid-Tiling: Toggle Borders` to `Meta+B`
 
 - set shortcut `Grid-Tiling: Tile/Float` to `Meta+T`
@@ -158,14 +151,6 @@ These are settings that you can adjust in KWin which are unrelated to this scrip
 3. Window Behavior
 4. Window Actions
 5. Modifier Key
-
-### Transparent Blurry Menu
-
-1. System Settings
-2. Application Style
-3. Widget Style
-4. `configure`
-5. Transparency
 
 ### Changing Client Border Size
 
