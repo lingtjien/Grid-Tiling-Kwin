@@ -4,19 +4,25 @@
 
 var Algorithm =
 {
+  globalShortcut: function (name, shortcut, method)
+  {
+    registerShortcut(Parameters.prefix + name, Parameters.prefix + name, shortcut, method);
+  },
   toBool: function (value) // QVariant can be compared with == but not === as it is a type of itself
   {
     return value == true; // eslint-disable-line eqeqeq
   },
   trimSplitString: function (input)
   {
-    var split = input.split(',');
-    for (var i = 0; i < split.length; i++)
+    var splitted = [];
+    var raw = input.split(',');
+    for (var i = 0; i < raw.length; i++)
     {
-      split[i] = split[i].trim();
-      if (split[i] === '') {split.splice(i, 1); continue;}
+      var r = raw[i].trim();
+      if (r.length > 0)
+        splitted.push(r);
     }
-    return split;
+    return splitted;
   },
   createMinSpaces: function (clientNames, clientSpaces)
   {
@@ -30,21 +36,38 @@ var Algorithm =
   },
   createGrids: function (rowstring, columnstring)
   {
+    var grids = []; 
     var rows = this.trimSplitString(rowstring);
     var columns = this.trimSplitString(columnstring);
-    rows.forEach(function (row, i) {rows[i] = Number(row);});
-    columns.forEach(function (column, i) {columns[i] = Number(column);});
-    return {rows: rows, columns: columns};
+    for (var i = 0; i < rows.length && i < columns.length; i++)
+      grids.push({row: Number(rows[i]), column: Number(columns[i])});
+    return grids;
   },
-  smallestSpace: function (rows, columns)
+  smallestSpace: function (grids)
   {
     var smallest = 1;
-    for (var i = 0; i < rows.length && i < columns.length; i++)
+    for (var i = 0; i < grids.length; i++)
     {
-      var space = 1 / (rows[i] * columns[i]);
+      var space = 1 / (grids[i].row * grids[i].column);
       if (space < smallest) {smallest = space;}
     }
     return smallest;
+  },
+  desktop: function (desktopIndex)
+  {
+    return Math.floor(desktopIndex / workspace.numScreens) + 1; // indexing of desktops starts at 1 by Kwin
+  },
+  screen: function (desktopIndex)
+  {
+    return desktopIndex % workspace.numScreens;
+  },
+  desktopIndex: function (desktop, screen)
+  {
+    return workspace.numScreens * (desktop - 1) + screen;
+  },
+  currentIndex: function ()
+  {
+    return this.desktopIndex(workspace.currentDesktop, workspace.activeScreen);
   }
 };
 
@@ -54,6 +77,7 @@ var Algorithm =
 
 var Parameters =
 {
+  prefix: 'Grid-Tiling: ',
   grids: Algorithm.createGrids(readConfig('gridRows', '2, 2').toString(), readConfig('gridColumns', '2, 3').toString()),
   gap: Number(readConfig('gap', 16)),
   dividerBounds: Number(readConfig('dividerBounds', 0.3)),
@@ -72,49 +96,7 @@ var Parameters =
   floatingClients: Algorithm.trimSplitString(readConfig('floatingClients', '').toString()),
   floatingCaptions: Algorithm.trimSplitString(readConfig('floatingCaptions', '').toString())
 };
-Parameters.smallestSpace = Algorithm.smallestSpace(Parameters.grids.rows, Parameters.grids.columns);
-
-// ------------------------------------------
-// Desktop Screen Row Column Index Converters
-// ------------------------------------------
-
-var Converter =
-{
-  nrow: function ()
-  {
-    return workspace.desktopGridHeight;
-  },
-  ncol: function ()
-  {
-    return workspace.desktopGridWidth * workspace.numScreens; // addional screens add extra columns
-  },
-  size: function ()
-  {
-    return this.nrow() * this.ncol();
-  },
-  grid: function (screen, grids)
-  {
-    var index = 0;
-    if (screen < grids.rows.length && screen < grids.columns.length) {index = screen;}
-    return {row: grids.rows[index], column: grids.columns[index]};
-  },
-  desktopIndex: function (desktop, screen)
-  {
-    return workspace.numScreens * (desktop - 1) + screen;
-  },
-  desktop: function (desktopIndex)
-  {
-    return Math.floor(desktopIndex / workspace.numScreens) + 1; // indexing of desktops starts at 1 by Kwin
-  },
-  screen: function (desktopIndex)
-  {
-    return desktopIndex % workspace.numScreens;
-  },
-  currentIndex: function ()
-  {
-    return workspace.numScreens * (workspace.currentDesktop - 1) + workspace.activeScreen;
-  }
-};
+Parameters.smallestSpace = Algorithm.smallestSpace(Parameters.grids);
 
 // --------------
 // Layout Classes
@@ -245,10 +227,12 @@ function Column ()
         width: Math.floor(width),
         height: Math.floor(height)
       };
+      var desktop = Algorithm.desktop(desktopIndex);
+      var screen = Algorithm.screen(desktopIndex);
 
       // these properties are used internally only so they must be set first as they are used to check
-      client.desktopRender = Converter.desktop(desktopIndex);
-      client.screenRender = Converter.screen(desktopIndex);
+      client.desktopRender = desktop
+      client.screenRender = screen;
       client.geometryRender = geometry;
       client.clientIndex = i;
       client.columnIndex = columnIndex;
@@ -257,8 +241,8 @@ function Column ()
 
       // these properties are from kwin and will thus trigger additional signals, these properties must be set last to prevent the signals that are hooked into this script from triggering before the internal properties have been set
       client.noBorder = !Parameters.border;
-      client.desktop = Converter.desktop(desktopIndex);
-      client.screen = Converter.screen(desktopIndex);
+      client.desktop = desktop
+      client.screen = screen;
       client.geometry = geometry;
 
       y += height + Parameters.gap;
@@ -270,11 +254,11 @@ function Column ()
 
 }
 
-function Desktop (rows, columns)
+function Desktop (screen)
 {
-  this.maxRows = rows;
-  this.maxCols = columns;
-
+  this.screen = screen;
+  this.grid = function () {return this.screen < Parameters.grids.length ? Parameters.grids[0] : Parameters.grids[this.screen];}
+  
   this.columns = [];
   this.dividers = [];
 
@@ -292,7 +276,7 @@ function Desktop (rows, columns)
 
   this.addColumn = function (column, index)
   {
-    if (this.ncolumns() >= this.maxCols) {return -1;}
+    if (this.ncolumns() >= this.grid().column) {return -1;}
 
     // check if adding a new column won't decrease the size of the clients inside any of the existing columns below their minSpace
     for (var i = 0; i < this.ncolumns(); i++)
@@ -359,9 +343,9 @@ function Desktop (rows, columns)
   this.addClient = function (client)
   {
     var index = this.smallestColumn();
-    if (index !== -1 && this.columns[index].minSpace() + client.minSpace <= 1 / this.ncolumns() && this.columns[index].nclients() < this.maxRows)
+    if (index !== -1 && this.columns[index].minSpace() + client.minSpace <= 1 / this.ncolumns() && this.columns[index].nclients() < this.grid().row)
     {
-      if (this.ncolumns() >= this.maxCols || this.ncolumns() > this.columns[index].nclients())
+      if (this.ncolumns() >= this.grid().column || this.ncolumns() > this.columns[index].nclients())
       {
         return this.columns[index].addClient(client);
       }
@@ -430,7 +414,7 @@ function Desktop (rows, columns)
     var client = column.clients[clientIndex];
 
     var i = columnIndex + direction; // target to move client to
-    while (i >= 0 && i < this.ncolumns() && (this.columns[i].minSpace() + client.minSpace > 1 / this.ncolumns() || this.columns[i].nclients() >= this.maxRows))
+    while (i >= 0 && i < this.ncolumns() && (this.columns[i].minSpace() + client.minSpace > 1 / this.ncolumns() || this.columns[i].nclients() >= this.grid().row))
     {
       i += direction;
     }
@@ -485,7 +469,7 @@ function Desktop (rows, columns)
   {
     var check = 0;
 
-    var area = workspace.clientArea(0, Converter.screen(desktopIndex), Converter.desktop(desktopIndex));
+    var area = workspace.clientArea(0, Algorithm.screen(desktopIndex), Algorithm.desktop(desktopIndex));
     var nminimized = this.nminimized();
 
     var x = area.x + Parameters.margin.left + Parameters.gap; // first x coordinate
@@ -511,17 +495,17 @@ function Desktop (rows, columns)
     }
     return check;
   };
-
 }
 
 function Activity ()
 {
   this.desktops = [];
   this.ndesktops = function () {return this.desktops.length;};
+  this.maxDesktops = function () {return workspace.desktops * workspace.numScreens;};
 
   this.addDesktop = function (desktop)
   {
-    if (Converter.size() - this.ndesktops() < 1) {return -1;}
+    if (this.maxDesktops() - this.ndesktops() < 1) {return -1;}
     this.desktops.push(desktop);
     return 0;
   };
@@ -535,18 +519,17 @@ function Activity ()
 
   this.addClient = function (client)
   {
-    var start = Converter.currentIndex();
+    var start = Algorithm.desktopIndex(client.desktop, client.screen);
     var i = start;
     do
     {
       while (i >= this.ndesktops())
       {
-        var grid = Converter.grid(Converter.screen(this.ndesktops()), Parameters.grids);
-        var desktop = new Desktop(grid.row, grid.column);
+        var desktop = new Desktop(Algorithm.screen(i));
         if (this.addDesktop(desktop) !== 0) {return -1;}
       }
       if (this.desktops[i].addClient(client) === 0) {return 0;}
-      if (++i >= Converter.size()) {i = 0;}
+      if (++i >= this.maxDesktops()) {i = 0;}
     }
     while (i !== start);
     return -1;
@@ -578,8 +561,7 @@ function Activity ()
     var client = this.desktops[desktopIndex].columns[columnIndex].clients[clientIndex];
     while (targetIndex >= this.ndesktops())
     {
-      var grid = Converter.grid(Converter.screen(this.ndesktops()), Parameters.grids);
-      var desktop = new Desktop(grid.row, grid.column);
+      var desktop = new Desktop(Algorithm.screen(this.ndesktops()));
       if (this.addDesktop(desktop) === -1) {return -1;}
     }
 
@@ -672,9 +654,9 @@ var layout = new Layout(); // main class, contains all methods
 
 var Client =
 {
-  properties: function (nclients, ncolumns, desktopIndex)
+  properties: function (nclients, ncolumns, screen, desktop)
   {
-    var area = workspace.clientArea(0, Converter.screen(desktopIndex), Converter.desktop(desktopIndex));
+    var area = workspace.clientArea(0, screen, desktop);
 
     return {area: area, clientHeight: (area.height - Parameters.margin.top - Parameters.margin.bottom - ((nclients + 1) * Parameters.gap)) / nclients, columnWidth: (area.width - Parameters.margin.left - Parameters.margin.right - ((ncolumns + 1) * Parameters.gap)) / ncolumns};
   },
@@ -710,10 +692,10 @@ var Client =
   },
   moved: function (diff, client, activity, properties)
   {
-    var targetIndex = Converter.desktopIndex(client.desktop, client.screen);
+    var targetIndex = Algorithm.desktopIndex(client.desktop, client.screen);
     if (targetIndex < 0 || targetIndex >= activity.ndesktops()) {return -1;}
     var target = activity.desktops[targetIndex];
-    var current = activity.desktops[Converter.desktopIndex(client.desktopRender, client.screenRender)];
+    var current = activity.desktops[Algorithm.desktopIndex(client.desktopRender, client.screenRender)];
 
     var i = 0; // column target index
     var remainder = client.geometry.x + 0.5 * client.geometry.width - Parameters.margin.left - properties.area.x;
@@ -802,7 +784,7 @@ var Client =
 
       var activity = layout.activities[client.activityName];
       var desktop = activity.desktops[client.desktopIndex];
-      var properties = Client.properties(desktop.columns[client.columnIndex].nclients() - desktop.columns[client.columnIndex].nminimized(), desktop.ncolumns() - desktop.nminimized(), Converter.desktopIndex(client.desktop, client.screen));
+      var properties = Client.properties(desktop.columns[client.columnIndex].nclients() - desktop.columns[client.columnIndex].nminimized(), desktop.ncolumns() - desktop.nminimized(), client.desktop, client.screen);
 
       var diff =
       {
@@ -823,7 +805,7 @@ var Client =
       if (client === -1) {return -1;}
 
       var desktop = layout.activities[client.activityName].desktops[client.desktopIndex];
-      var properties = Client.properties(desktop.columns[client.columnIndex].nclients() - desktop.columns[client.columnIndex].nminimized(), desktop.ncolumns() - desktop.nminimized(), Converter.desktopIndex(client.desktop, client.screen));
+      var properties = Client.properties(desktop.columns[client.columnIndex].nclients() - desktop.columns[client.columnIndex].nminimized(), desktop.ncolumns() - desktop.nminimized(), client.desktop, client.screen);
 
       var diff =
       {
@@ -844,15 +826,15 @@ var Client =
       {
         if (c.desktop === c.desktopRender || !tiledClients.hasOwnProperty(c.windowId)) {return -1;}
         var activity = layout.activities[c.activityName];
-        var targetIndex = Converter.desktopIndex(c.desktop, c.screen);
+        var targetIndex = Algorithm.desktopIndex(c.desktop, c.screen);
 
         var start = c.desktopIndex;
         var direction = targetIndex > c.desktopIndex ? 1 : -1;
         while (activity.moveDesktop(targetIndex, c.clientIndex, c.columnIndex, c.desktopIndex) !== 0)
         {
           targetIndex += direction;
-          if (targetIndex >= Converter.size()) {targetIndex = 0;}
-          if (targetIndex < 0) {targetIndex = Converter.size() - 1;}
+          if (targetIndex >= activity.maxDesktops()) {targetIndex = 0;}
+          if (targetIndex < 0) {targetIndex = activity.maxDesktops() - 1;}
           if (targetIndex === start) {return -1;}
         }
 
@@ -867,15 +849,15 @@ var Client =
       {
         if (c.screen === c.screenRender || !tiledClients.hasOwnProperty(c.windowId)) {return -1;}
         var activity = layout.activities[c.activityName];
-        var targetIndex = Converter.desktopIndex(c.desktop, c.screen);
+        var targetIndex = Algorithm.desktopIndex(c.desktop, c.screen);
 
         var start = c.desktopIndex;
         var direction = targetIndex > c.desktopIndex ? 1 : -1;
         while (activity.moveDesktop(targetIndex, c.clientIndex, c.columnIndex, c.desktopIndex) !== 0)
         {
           targetIndex += direction;
-          if (targetIndex >= Converter.size()) {targetIndex = 0;}
-          if (targetIndex < 0) {targetIndex = Converter.size() - 1;}
+          if (targetIndex >= activity.maxDesktops()) {targetIndex = 0;}
+          if (targetIndex < 0) {targetIndex = activity.maxDesktops() - 1;}
           if (targetIndex === start) {return -1;}
         }
 
@@ -956,7 +938,7 @@ workspace.clientUnminimized.connect (function (client)
   {text: 'Right', shortcut: '', method: 'horizontal', direction: 1}
 ].forEach(function (entry)
 {
-  registerShortcut('Grid-Tiling: Swap ' + entry.text, 'Grid-Tiling: Swap ' + entry.text, 'Meta+Ctrl+' + entry.shortcut, (function ()
+  Algorithm.globalShortcut('Swap ' + entry.text, 'Meta+Ctrl+' + entry.shortcut, (function ()
   {
     var method = entry.method;
     var direction = entry.direction;
@@ -979,7 +961,7 @@ workspace.clientUnminimized.connect (function (client)
   {text: 'Right', shortcut: 'Right', direction: 1}
 ].forEach(function (entry)
 {
-  registerShortcut('Grid-Tiling: Move/Swap ' + entry.text, 'Grid-Tiling: Move/Swap ' + entry.text, 'Meta+Ctrl+' + entry.shortcut, (function ()
+  Algorithm.globalShortcut('Move/Swap ' + entry.text, 'Meta+Ctrl+' + entry.shortcut, (function ()
   {
     var direction = entry.direction;
     return function ()
@@ -995,25 +977,34 @@ workspace.clientUnminimized.connect (function (client)
   })());
 });
 
-[
-  {text: 'Previous', shortcut: 'Home', direction: -1},
-  {text: 'Next', shortcut: 'End', direction: 1}
-].forEach (function (entry)
+Algorithm.globalShortcut('Move Next Desktop/Screen', 'Meta+End', function ()
 {
-  registerShortcut ('Grid-Tiling: Move ' + entry.text + ' Desktop/Screen', 'Grid-Tiling: Move ' + entry.text + ' Desktop/Screen', 'Meta+' + entry.shortcut, (function ()
-  {
-    var direction = entry.direction;
-    return function ()
-    {
-      var client = workspace.activeClient;
-      if (!tiledClients.hasOwnProperty(client.windowId) && !floatingClients.hasOwnProperty(client.windowId)) {return -1;}
-      var desktopIndex = Converter.desktopIndex(client.desktop, client.screen);
-      client.desktop = Converter.desktop(desktopIndex + direction);
-      client.screen = Converter.screen(desktopIndex + direction);
-      if (floatingClients.hasOwnProperty(client.windowId)) {workspace.currentDesktop = client.desktop;}
-      return 0;
-    };
-  })());
+  var client = workspace.activeClient;
+  if (client.screen < workspace.numScreens - 1)
+    return client.screen++;
+  else
+    client.screen = 0;
+  
+  if (client.desktop < workspace.desktops) // indexing of desktops starts at 1 by Kwin
+    client.desktop++;
+  else
+    client.desktop = 0;
+  workspace.currentDesktop = client.desktop;
+});
+
+Algorithm.globalShortcut('Move Previous Desktop/Screen', 'Meta+Home', function ()
+{
+  var client = workspace.activeClient;
+  if (client.screen > 0)
+    return client.screen--;
+  else
+    client.screen = workspace.numScreens - 1;
+  
+  if (client.desktop > 1) // indexing of desktops starts at 1 by Kwin
+    client.desktop--;
+  else
+    client.desktop = workspace.desktops;
+  workspace.currentDesktop = client.desktop;
 });
 
 [
@@ -1021,7 +1012,7 @@ workspace.clientUnminimized.connect (function (client)
   {text: 'Decrease', shortcut: '-', direction: -1}
 ].forEach (function (entry)
 {
-  registerShortcut ('Grid-Tiling: ' + entry.text + ' Size', 'Grid-Tiling: ' + entry.text + ' Size', 'Meta+' + entry.shortcut, (function ()
+  Algorithm.globalShortcut(entry.text + ' Size', 'Meta+' + entry.shortcut, (function ()
   {
     var direction = entry.direction;
     return function ()
@@ -1037,10 +1028,10 @@ workspace.clientUnminimized.connect (function (client)
   })());
 });
 
-registerShortcut ('Grid-Tiling: Minimize Others/Unminimize Desktop', 'Grid-Tiling: Minimize Others/Unminimize Desktop', 'Meta+M', function ()
+Algorithm.globalShortcut('Minimize Others/Unminimize Desktop', 'Meta+M', function ()
 {
   if (!layout.activities.hasOwnProperty(workspace.currentActivity)) {return -1;}
-  var desktop = layout.activities[workspace.currentActivity].desktops[Converter.currentIndex()];
+  var desktop = layout.activities[workspace.currentActivity].desktops[Algorithm.currentIndex()];
   var i, j, column;
   var nclients = 0, nminimized = 0;
   for (i = 0; i < desktop.ncolumns(); i++)
@@ -1078,7 +1069,7 @@ registerShortcut ('Grid-Tiling: Minimize Others/Unminimize Desktop', 'Grid-Tilin
   return 0;
 });
 
-registerShortcut ('Grid-Tiling: Tile/Float', 'Grid-Tiling: Tile/Float', 'Meta+T', function ()
+Algorithm.globalShortcut('Tile/Float', 'Meta+T', function ()
 {
   var client = workspace.activeClient;
   if (client === null)
@@ -1098,11 +1089,11 @@ registerShortcut ('Grid-Tiling: Tile/Float', 'Grid-Tiling: Tile/Float', 'Meta+T'
   return -1;
 });
 
-registerShortcut ('Grid-Tiling: Close Desktop', 'Grid-Tiling: Close Desktop', 'Meta+Q', function ()
+Algorithm.globalShortcut('Close Desktop', 'Meta+Q', function ()
 {
   // looping is done backwards as the array is decreased in size in every iteration thus forward looping will result in skipping elements
   if (!layout.activities.hasOwnProperty(workspace.currentActivity)) {return -1;}
-  var desktop = layout.activities[workspace.currentActivity].desktops[Converter.currentIndex()];
+  var desktop = layout.activities[workspace.currentActivity].desktops[Algorithm.currentIndex()];
 
   for (var i = desktop.ncolumns() - 1; i >= 0; i--)
   {
@@ -1115,13 +1106,13 @@ registerShortcut ('Grid-Tiling: Close Desktop', 'Grid-Tiling: Close Desktop', 'M
   return 0; // render is not needed as the close signal is connected
 });
 
-registerShortcut ('Grid-Tiling: Toggle Border', 'Grid-Tiling: Toggle Border', 'Meta+B', function ()
+Algorithm.globalShortcut('Toggle Border', 'Meta+B', function ()
 {
   Parameters.border = !Parameters.border;
   return layout.render();
 });
 
-registerShortcut ('Grid-Tiling: Refresh', 'Grid-Tiling: Refresh', 'Meta+R', function ()
+Algorithm.globalShortcut('Refresh', 'Meta+R', function ()
 {
   var clients = workspace.clientList();
   for (var i = 0; i < clients.length; i++)
