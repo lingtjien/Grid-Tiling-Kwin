@@ -192,6 +192,16 @@ function Column ()
     return 0;
   };
 
+  this.focusClient = function (direction, clientIndex)
+  {
+    if (clientIndex < 0 || clientIndex >= this.nclients()) {return -1;}
+    var client = this.clients[clientIndex];
+    var i = clientIndex + direction; // target
+    if (i < 0 || i >= this.nclients()) {return -1;}
+    workspace.activeClient = this.clients[i];
+    return 0;
+  };
+
   this.changeDivider = function (direction, change, clientIndex)
   {
     if (clientIndex < 0 || clientIndex >= this.nclients()) {return -1;}
@@ -419,6 +429,24 @@ function Desktop (rows, columns)
     }
     column.clients[clientIndex] = this.columns[i].clients[clientIndex];
     this.columns[i].clients[clientIndex] = client;
+    return 0;
+  };
+
+  this.focusClient = function (direction, clientIndex, columnIndex)
+  {
+    if (columnIndex < 0 || columnIndex >= this.ncolumns()) {return -1;}
+    var column = this.columns[columnIndex];
+    if (clientIndex < 0 || clientIndex >= column.nclients()) {return -1;}
+    var client = column.clients[clientIndex];
+
+    var i = columnIndex + direction; // target
+    if (i < 0 || i >= this.ncolumns()) {return -1;}
+    while (this.columns[i].nclients() !== column.nclients())
+    {
+      i += direction;
+      if (i < 0 || i >= this.ncolumns()) {return this.swapColumn(direction, columnIndex);}
+    }
+    workspace.activeClient = this.columns[i].clients[clientIndex];
     return 0;
   };
 
@@ -1131,3 +1159,29 @@ registerShortcut ('Grid-Tiling: Refresh', 'Grid-Tiling: Refresh', 'Meta+R', func
   }
   return layout.render();
 });
+
+[
+  {text: 'Up', shortcut: 'Up', method: 'vertical', direction: -1},
+  {text: 'Down', shortcut: 'Down', method: 'vertical', direction: 1},
+  {text: 'Left', shortcut: 'Left', method: 'horizontal', direction: -1},
+  {text: 'Right', shortcut: 'Right', method: 'horizontal', direction: 1}
+].forEach(function (entry)
+{
+  registerShortcut('Grid-Tiling: Focus Window ' + entry.text, 'Grid-Tiling: Focus Window ' + entry.text, 'Meta+' + entry.shortcut, (function ()
+  {
+    var method = entry.method;
+    var direction = entry.direction;
+    return function ()
+    {
+      var client = layout.getClient(workspace.activeClient.windowId);
+      if (client === -1) {return -1;}
+      var desktop = layout.activities[client.activityName].desktops[client.desktopIndex];
+
+      if (method === 'vertical' && desktop.columns[client.columnIndex].focusClient(direction, client.clientIndex) !== 0) {return -1;}
+      if (method === 'horizontal' && desktop.focusClient(direction, client.clientIndex, client.columnIndex) !== 0) {return -1;}
+
+      return desktop.render(client.desktopIndex, client.activityName);
+    };
+  })());
+});
+
