@@ -1037,6 +1037,86 @@ workspace.clientUnminimized.connect (function (client)
   })());
 });
 
+[
+  {text: 'Left', shortcut: 'Left', direction: 'left'},
+  {text: 'Right', shortcut: 'Right', direction: 'right'}
+].forEach (function (entry)
+{
+  registerShortcut ('Grid-Tiling: Grow Column to ' + entry.text, 'Grid-Tiling: Grow Column to ' + entry.text, 'Meta+Shift+' + entry.shortcut, (function ()
+  {
+    var direction = entry.direction;
+    return function ()
+    {
+      var client = layout.getClient(workspace.activeClient.windowId);
+      if (client === -1) {return -1;}
+      var desktop = layout.activities[client.activityName].desktops[client.desktopIndex];
+      desktop.changeDivider(direction, Parameters.dividerStepSize, client.columnIndex);
+
+      return desktop.render(client.desktopIndex, client.activityName);
+    };
+  })());
+});
+
+[
+  {text: 'Up', shortcut: 'Up', direction: 'top'},
+  {text: 'Down', shortcut: 'Down', direction: 'bottom'}
+].forEach (function (entry)
+{
+  registerShortcut ('Grid-Tiling: Grow Window ' + entry.text, 'Grid-Tiling: Grow Window ' + entry.text, 'Meta+Shift+' + entry.shortcut, (function ()
+  {
+    var direction = entry.direction;
+    return function ()
+    {
+      var client = layout.getClient(workspace.activeClient.windowId);
+      if (client === -1) {return -1;}
+      var desktop = layout.activities[client.activityName].desktops[client.desktopIndex];
+      desktop.columns[client.columnIndex].changeDivider(direction, Parameters.dividerStepSize, client.clientIndex);
+
+      return desktop.render(client.desktopIndex, client.activityName);
+    };
+  })());
+});
+
+[
+  {text: 'Left', shortcut: 'Left', direction: 'left'},
+  {text: 'Right', shortcut: 'Right', direction: 'right'}
+].forEach (function (entry)
+{
+  registerShortcut ('Grid-Tiling: Shrink Column to ' + entry.text, 'Grid-Tiling: Shrink Column to ' + entry.text, 'Meta+Ctrl+Shift+' + entry.shortcut, (function ()
+  {
+    var direction = entry.direction;
+    return function ()
+    {
+      var client = layout.getClient(workspace.activeClient.windowId);
+      if (client === -1) {return -1;}
+      var desktop = layout.activities[client.activityName].desktops[client.desktopIndex];
+      desktop.changeDivider(direction, -1 * Parameters.dividerStepSize, client.columnIndex);
+
+      return desktop.render(client.desktopIndex, client.activityName);
+    };
+  })());
+});
+
+[
+  {text: 'Up', shortcut: 'Up', direction: 'top'},
+  {text: 'Down', shortcut: 'Down', direction: 'bottom'}
+].forEach (function (entry)
+{
+  registerShortcut ('Grid-Tiling: Shrink Window ' + entry.text, 'Grid-Tiling: Shrink Window ' + entry.text, 'Meta+Ctrl+Shift+' + entry.shortcut, (function ()
+  {
+    var direction = entry.direction;
+    return function ()
+    {
+      var client = layout.getClient(workspace.activeClient.windowId);
+      if (client === -1) {return -1;}
+      var desktop = layout.activities[client.activityName].desktops[client.desktopIndex];
+      desktop.columns[client.columnIndex].changeDivider(direction, -1 * Parameters.dividerStepSize, client.clientIndex);
+
+      return desktop.render(client.desktopIndex, client.activityName);
+    };
+  })());
+});
+
 registerShortcut ('Grid-Tiling: Minimize Others/Unminimize Desktop', 'Grid-Tiling: Minimize Others/Unminimize Desktop', 'Meta+M', function ()
 {
   if (!layout.activities.hasOwnProperty(workspace.currentActivity)) {return -1;}
