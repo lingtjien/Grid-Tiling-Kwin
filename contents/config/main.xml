@@ -69,5 +69,9 @@
         <label>floating captions</label>
         <default></default>
       </entry>
+      <entry name="startEnabled" type="bool">
+          <label>Enable tiling at start</label>
+          <default>true</default>
+      </entry>
     </group>
 </kcfg>

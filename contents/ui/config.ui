@@ -438,6 +438,20 @@
       </item>
      </layout>
     </item>
+    <item>
+     <widget class="Line" name="lineDivider5">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="kcfg_startEnabled">
+      <property name="text">
+       <string>Enable tiling at start</string>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
  </widget>

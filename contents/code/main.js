@@ -59,6 +59,7 @@ var Parameters =
   dividerBounds: Number(readConfig('dividerBounds', 0.3)),
   dividerStepSize: Number(readConfig('dividerStepSize', 0.05)),
   border: Algorithm.toBool(readConfig('border', false)),
+  enabled: readConfig('startEnabled', true),
   margin:
   {
     top: Number(readConfig('topMargin', 0)),
@@ -906,6 +907,7 @@ var Client =
 workspace.clientActivated.connect (function (client) // clientAdded does not work for a lot of clients
 {
   if (client === null || floatingClients.hasOwnProperty(client.windowId)) {return -1;}
+  if (!Parameters.enabled) {return Client.float(client);}
   return Client.tile(client); // validate does floating already, do not check here and float on fail
 });
 
@@ -1096,6 +1098,28 @@ registerShortcut ('Grid-Tiling: Tile/Float', 'Grid-Tiling: Tile/Float', 'Meta+T'
     return Client.float(client);
   }
   return -1;
+});
+
+registerShortcut ('Grid-Tiling: Toggle Tile/Float Current Desktop', 'Grid-Tiling: Toggle Tile/Float Current Desktop', 'Meta+Shift+T', function ()
+{
+  Parameters.enabled = !Parameters.enabled;
+
+  var clients = workspace.clientList();
+  if (Parameters.enabled) {
+    for (var i = 0; i < clients.length; i++)
+    {
+      if (clients[i] === null || clients[i].desktop !== workspace.currentDesktop) {continue;}
+      Client.tile(clients[i]);
+    }
+  } else {
+    for (var i = 0; i < clients.length; i++)
+    {
+      if (clients[i] === null || clients[i].desktop !== workspace.currentDesktop || floatingClients.hasOwnProperty(clients[i].windowId)) {continue;}
+      Client.float(clients[i]);
+    }
+  }
+
+  return layout.render();
 });
 
 registerShortcut ('Grid-Tiling: Close Desktop', 'Grid-Tiling: Close Desktop', 'Meta+Q', function ()
