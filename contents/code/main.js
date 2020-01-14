@@ -56,6 +56,8 @@ var Parameters =
 {
   grids: Algorithm.createGrids(readConfig('gridRows', '2, 2').toString(), readConfig('gridColumns', '2, 3').toString()),
   gap: Number(readConfig('gap', 16)),
+  initialGap: Number(readConfig('gap', 16)),
+  gapStepSize: Number(readConfig('gapStepSize', 5)),
   dividerBounds: Number(readConfig('dividerBounds', 0.3)),
   dividerStepSize: Number(readConfig('dividerStepSize', 0.05)),
   border: Algorithm.toBool(readConfig('border', false)),
@@ -66,6 +68,14 @@ var Parameters =
     left: Number(readConfig('leftMargin', 0)),
     right: Number(readConfig('rightMargin', 0))
   },
+  initialMargin:
+  {
+    top: Number(readConfig('topMargin', 0)),
+    bottom: Number(readConfig('bottomMargin', 0)),
+    left: Number(readConfig('leftMargin', 0)),
+    right: Number(readConfig('rightMargin', 0))
+  },
+  marginStepSize: Number(readConfig('marginStepSize', 5)),
   minSpaces: Algorithm.createMinSpaces(readConfig('clientNames', 'texstudio, inkscape, krita, gimp, designer, creator, kdenlive, kdevelop, chromium, kate, spotify').toString(), readConfig('clientSpaces', '1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2').toString()),
   ignoredClients: Algorithm.trimSplitString('ksmserver, krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, '.concat(readConfig('ignoredClients', 'wine, overwatch').toString())),
   ignoredCaptions: Algorithm.trimSplitString(readConfig('ignoredCaptions', 'Trace Bitmap (Shift+Alt+B), Document Properties (Shift+Ctrl+D)').toString()),
@@ -1035,6 +1045,53 @@ workspace.clientUnminimized.connect (function (client)
       return desktop.render(client.desktopIndex, client.activityName);
     };
   })());
+});
+
+[
+  {text: 'Increase', shortcut: '=', direction: 1},
+  {text: 'Decrease', shortcut: '-', direction: -1}
+].forEach (function (entry)
+{
+  registerShortcut ('Grid-Tiling: ' + entry.text + ' Gap Size', 'Grid-Tiling: ' + entry.text + ' Gap Size', 'Meta+Shift+' + entry.shortcut, (function ()
+  {
+    var direction = entry.direction;
+    return function ()
+    {
+      Parameters.gap = Parameters.gap + (direction * Parameters.gapStepSize);
+
+      return layout.render();
+    };
+  })());
+});
+
+[
+  {text: 'Increase', shortcut: '=', direction: 1},
+  {text: 'Decrease', shortcut: '-', direction: -1}
+].forEach (function (entry)
+{
+  registerShortcut ('Grid-Tiling: ' + entry.text + ' Margin Size', 'Grid-Tiling: ' + entry.text + ' Margin Size', 'Meta+Ctrl+' + entry.shortcut, (function ()
+  {
+    var direction = entry.direction;
+    return function ()
+    {
+      Parameters.margin = {
+        top: Parameters.margin.top + (direction * Parameters.marginStepSize),
+        bottom: Parameters.margin.bottom + (direction * Parameters.marginStepSize),
+        left: Parameters.margin.left + (direction * Parameters.marginStepSize),
+        right: Parameters.margin.right + (direction * Parameters.marginStepSize)
+      };
+
+      return layout.render();
+    };
+  })());
+});
+
+registerShortcut('Grid-Tiling: Reset Gaps & Margins', 'Grid-Tiling: Reset Gaps & Margins', 'Meta+Ctrl+Shift+-', function()
+{
+  Parameters.gap = Parameters.initialGap;
+  Parameters.margin = Parameters.initialMargin;
+
+  return layout.render();
 });
 
 registerShortcut ('Grid-Tiling: Minimize Others/Unminimize Desktop', 'Grid-Tiling: Minimize Others/Unminimize Desktop', 'Meta+M', function ()

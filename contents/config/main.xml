@@ -17,6 +17,10 @@
         <label>gap size between windows in px</label>
         <default>16</default>
       </entry>
+      <entry name="gapStepSize" type="int">
+        <label>increment and decrement size for gap shortcuts</label>
+        <default>5</default>
+      </entry>
       <entry name="dividerBounds" type="double">
         <label>divider from this value to 1-value</label>
         <default>0.3</default>
@@ -44,6 +48,10 @@
       <entry name="rightMargin" type="int">
         <label>amount of space at the right in px</label>
         <default>0</default>
+      </entry>
+      <entry name="marginStepSize" type="int">
+        <label>increment/decrement size for margin shortcuts</label>
+        <default>5</default>
       </entry>
       <entry name="clientNames" type="string">
         <label>names of the clients which define a minimum space</label>

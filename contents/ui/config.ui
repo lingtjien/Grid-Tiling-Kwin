@@ -158,13 +158,6 @@
         </property>
        </widget>
       </item>
-      <item>
-       <widget class="QCheckBox" name="kcfg_border">
-        <property name="text">
-         <string>Border</string>
-        </property>
-       </widget>
-      </item>
      </layout>
     </item>
     <item>
@@ -263,7 +256,53 @@
      </layout>
     </item>
     <item>
-     <widget class="Line" name="lineDivider2">
+      <widget class="Line" name="lineDivider2">
+        <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+        </property>
+      </widget>
+    </item>
+    <item>
+      <layout class="QHBoxLayout" name="additionnalParametersLayout">
+        <item>
+         <widget class="QLabel" name="gapStepSizeLabel">
+          <property name="text">
+           <string>Gap Step Size</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="kcfg_gapStepSize">
+          <property name="maximum">
+           <number>1000</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="marginStepSizeLabel">
+          <property name="text">
+           <string>Margin Step Size</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="kcfg_marginStepSize">
+          <property name="maximum">
+           <number>1000</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="kcfg_border">
+          <property name="text">
+           <string>Borders</string>
+          </property>
+         </widget>
+        </item>
+      </layout>
+    </item>
+    <item>
+     <widget class="Line" name="lineDivider3">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
@@ -353,7 +392,7 @@
      </layout>
     </item>
     <item>
-     <widget class="Line" name="lineDivider3">
+     <widget class="Line" name="lineDivider4">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
@@ -396,7 +435,7 @@
      </layout>
     </item>
     <item>
-     <widget class="Line" name="lineDivider4">
+     <widget class="Line" name="lineDivider5">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
