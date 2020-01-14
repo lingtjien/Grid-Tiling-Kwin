@@ -770,9 +770,16 @@ var Client =
   float: function (client)
   {
     if (floatingClients.hasOwnProperty(client.windowId)) {return -1;}
+    var initialGeometry;
+    if (tiledClients[client.windowId] && tiledClients[client.windowId].initialGeometry) {
+      initialGeometry = tiledClients[client.windowId].initialGeometry;
+    }
     floatingClients[client.windowId] = true;
     delete tiledClients[client.windowId];
     if (layout.removeClient(client.clientIndex, client.columnIndex, client.desktopIndex, client.activityName) === -1) {return -1;}
+    if (initialGeometry) {
+      client.geometry = initialGeometry;
+    }
     return layout.render();
   },
   tile: function (client)
@@ -787,7 +794,15 @@ var Client =
     }
 
     if (layout.addClient(client) !== 0) {return -1;}
-    tiledClients[client.windowId] = true;
+    tiledClients[client.windowId] = {
+      tiled: true,
+      initialGeometry: {
+        x: client.geometry.x,
+        y: client.geometry.y,
+        width: client.geometry.width,
+        height: client.geometry.height
+      }
+    };
     delete floatingClients[client.windowId];
     layout.render();
     workspace.currentDesktop = client.desktop;
