@@ -4,15 +4,11 @@
 
 var Algorithm =
 {
-  globalShortcut: function (name, shortcut, method)
-  {
-    registerShortcut(Parameters.prefix + name, Parameters.prefix + name, shortcut, method);
-  },
-  toBool: function (value) // QVariant can be compared with == but not === as it is a type of itself
+  toBool: function(value) // QVariant can be compared with == but not === as it is a type of itself
   {
     return value == true; // eslint-disable-line eqeqeq
   },
-  trimSplitString: function (input)
+  trimSplitString: function(input)
   {
     var splitted = [];
     var raw = input.split(',');
@@ -24,7 +20,7 @@ var Algorithm =
     }
     return splitted;
   },
-  createMinSpaces: function (clientNames, clientSpaces)
+  createMinSpaces: function(clientNames, clientSpaces)
   {
     var minSpaces = {};
     var names = this.trimSplitString(clientNames);
@@ -34,40 +30,25 @@ var Algorithm =
       minSpaces[names[i]] = 1 / Number(spaces[i]);
     return minSpaces;
   },
-  createGrids: function (rowstring, columnstring)
+  createGrids: function(rowstring, columnstring)
   {
-    var grids = []; 
+    var grids = [];
     var rows = this.trimSplitString(rowstring);
     var columns = this.trimSplitString(columnstring);
     for (var i = 0; i < rows.length && i < columns.length; i++)
       grids.push({row: Number(rows[i]), column: Number(columns[i])});
     return grids;
   },
-  smallestSpace: function (grids)
+  smallestSpace: function(grids)
   {
     var smallest = 1;
     for (var i = 0; i < grids.length; i++)
     {
       var space = 1 / (grids[i].row * grids[i].column);
-      if (space < smallest) {smallest = space;}
+      if (space < smallest)
+        smallest = space;
     }
     return smallest;
-  },
-  desktop: function (desktopIndex)
-  {
-    return Math.floor(desktopIndex / workspace.numScreens) + 1; // indexing of desktops starts at 1 by Kwin
-  },
-  screen: function (desktopIndex)
-  {
-    return desktopIndex % workspace.numScreens;
-  },
-  desktopIndex: function (desktop, screen)
-  {
-    return workspace.numScreens * (desktop - 1) + screen;
-  },
-  currentIndex: function ()
-  {
-    return this.desktopIndex(workspace.currentDesktop, workspace.activeScreen);
   }
 };
 
@@ -102,50 +83,47 @@ Parameters.smallestSpace = Algorithm.smallestSpace(Parameters.grids);
 // Layout Classes
 // --------------
 
-function Column ()
+function Column()
 {
   this.clients = [];
   this.dividers = [];
 
-  this.nclients = function () {return this.clients.length;};
-  this.ndividers = function () {return this.dividers.length;};
-  this.nminimized = function ()
+  this.nminimized = function()
   {
     var count = 0;
-    for (var i = 0; i < this.nclients(); i++)
+    for (var i = 0; i < this.clients.length; i++)
     {
-      if (this.clients[i].minimized) {count += 1;}
+      if (this.clients[i].minimized)
+        count += 1;
     }
     return count;
   };
 
-  this.minSpace = function ()
+  this.minSpace = function()
   {
     var sum = 0;
-    for (var i = 0; i < this.nclients(); i++)
-    {
+    for (var i = 0; i < this.clients.length; i++)
       sum += this.clients[i].minSpace;
-    }
     return sum;
   };
 
-  this.addClient = function (client) // the size is the total size of a virtual desktop this column can occupy
+  this.addClient = function(client) // the size is the total size of a virtual desktop this column can occupy
   {
     this.clients.push(client);
-    if (this.nclients() !== 0) {this.dividers.push(0);} // do not add a new divider when the first client is added to the column
+    if (this.clients.length !== 0)
+      this.dividers.push(0); // do not add a new divider when the first client is added to the column
     return 0;
   };
 
-  this.removeClient = function (clientIndex)
+  this.removeClient = function(clientIndex)
   {
-    if (clientIndex < 0 || clientIndex >= this.nclients()) {return -1;}
+    if (clientIndex < 0 || clientIndex >= this.clients.length)
+      return -1;
     this.clients.splice(clientIndex, 1);
     if (clientIndex === 0)
     {
       if (this.dividers.length > 0)
-      {
         this.dividers.splice(0, 1);
-      }
     }
     else
     {
@@ -154,67 +132,78 @@ function Column ()
     return 0;
   };
 
-  this.getClient = function (windowId)
+  this.getClient = function(windowId)
   {
-    for (var i = 0; i < this.nclients(); i++)
+    for (var i = 0; i < this.clients.length; i++)
     {
-      if (this.clients[i].windowId === windowId) {return this.clients[i];}
+      if (this.clients[i].windowId === windowId)
+        return this.clients[i];
     }
     return -1;
   };
 
-  this.swapClient = function (direction, clientIndex)
+  this.swapClient = function(direction, clientIndex)
   {
-    if (clientIndex < 0 || clientIndex >= this.nclients()) {return -1;}
+    if (clientIndex < 0 || clientIndex >= this.clients.length)
+      return -1;
     var client = this.clients[clientIndex];
     var i = clientIndex + direction; // target to swap client with
-    if (i < 0 || i >= this.nclients()) {return -1;}
+    if (i < 0 || i >= this.clients.length)
+      return -1;
     this.clients[clientIndex] = this.clients[i];
     this.clients[i] = client;
     return 0;
   };
 
-  this.changeDivider = function (direction, change, clientIndex)
+  this.changeDivider = function(direction, change, clientIndex)
   {
-    if (clientIndex < 0 || clientIndex >= this.nclients()) {return -1;}
+    if (clientIndex < 0 || clientIndex >= this.clients.length)
+      return -1;
 
     // changes the divider that is for the client itself
-    if (clientIndex !== this.nclients() - 1 && (direction === 'bottom' || direction === 'both'))
+    if (clientIndex !== this.clients.length - 1 && (direction === 'bottom' || direction === 'both'))
     {
       this.dividers[clientIndex] += change;
-      if (this.dividers[clientIndex] > Parameters.dividerBounds) {this.dividers[clientIndex] = Parameters.dividerBounds;}
-      if (this.dividers[clientIndex] < -Parameters.dividerBounds) {this.dividers[clientIndex] = -Parameters.dividerBounds;}
+      if (this.dividers[clientIndex] > Parameters.dividerBounds)
+        this.dividers[clientIndex] = Parameters.dividerBounds;
+      if (this.dividers[clientIndex] < -Parameters.dividerBounds)
+        this.dividers[clientIndex] = -Parameters.dividerBounds;
     }
 
     // changes the divider that is for the client before this one
     if (clientIndex !== 0 && (direction === 'top' || direction === 'both'))
     {
       this.dividers[clientIndex - 1] -= change;
-      if (this.dividers[clientIndex - 1] > Parameters.dividerBounds) {this.dividers[clientIndex - 1] = Parameters.dividerBounds;}
-      if (this.dividers[clientIndex - 1] < -Parameters.dividerBounds) {this.dividers[clientIndex - 1] = -Parameters.dividerBounds;}
+      if (this.dividers[clientIndex - 1] > Parameters.dividerBounds)
+        this.dividers[clientIndex - 1] = Parameters.dividerBounds;
+      if (this.dividers[clientIndex - 1] < -Parameters.dividerBounds)
+        this.dividers[clientIndex - 1] = -Parameters.dividerBounds;
     }
 
     return 0;
   };
 
   // rendering
-  this.render = function (x, width, areaY, areaHeight, columnIndex, desktopIndex, activityName)
+  this.render = function(x, width, areaY, areaHeight, columnIndex, screenIndex, desktopIndex, activityName)
   {
     var nminimized = this.nminimized();
 
     var y = areaY + Parameters.margin.top + Parameters.gap;
-    var clientHeight = (areaHeight - Parameters.margin.top - Parameters.margin.bottom - ((this.nclients() - nminimized + 1) * Parameters.gap)) / (this.nclients() - nminimized);
+    var clientHeight = (areaHeight - Parameters.margin.top - Parameters.margin.bottom - ((this.clients.length - nminimized + 1) * Parameters.gap)) / (this.clients.length - nminimized);
 
     var current = 0;
     var previous = 0;
     var divider = 0;
-    for (var i = 0; i < this.nclients(); i++)
+    for (var i = 0; i < this.clients.length; i++)
     {
       var client = this.clients[i];
-      if (client.minimized) {continue;}
+      if (client.minimized)
+        continue;
 
-      if (i === this.nclients() - 1 || (i < this.nclients() - 1 && this.clients[i + 1].minimized)) {divider = 0;}
-      else {divider = this.dividers[i];}
+      if (i === this.clients.length - 1 || (i < this.clients.length - 1 && this.clients[i + 1].minimized))
+        divider = 0;
+      else
+        divider = this.dividers[i];
 
       current = clientHeight * divider;
       var height = clientHeight + current - previous;
@@ -227,22 +216,19 @@ function Column ()
         width: Math.floor(width),
         height: Math.floor(height)
       };
-      var desktop = Algorithm.desktop(desktopIndex);
-      var screen = Algorithm.screen(desktopIndex);
 
       // these properties are used internally only so they must be set first as they are used to check
-      client.desktopRender = desktop
-      client.screenRender = screen;
       client.geometryRender = geometry;
       client.clientIndex = i;
       client.columnIndex = columnIndex;
+      client.screenIndex = screenIndex;
       client.desktopIndex = desktopIndex;
       client.activityName = activityName;
 
       // these properties are from kwin and will thus trigger additional signals, these properties must be set last to prevent the signals that are hooked into this script from triggering before the internal properties have been set
       client.noBorder = !Parameters.border;
-      client.desktop = desktop
-      client.screen = screen;
+      client.desktop = desktopIndex + 1; // KWin desktop index starting at 1
+      client.screen = screenIndex;
       client.geometry = geometry;
 
       y += height + Parameters.gap;
@@ -251,56 +237,56 @@ function Column ()
     }
     return 0;
   };
-
 }
 
-function Desktop (screen)
+function Screen() // eslint-disable-line no-redeclare
 {
-  this.screen = screen;
-  this.grid = function () {return this.screen < Parameters.grids.length ? Parameters.grids[0] : Parameters.grids[this.screen];}
-  
   this.columns = [];
   this.dividers = [];
 
-  this.ncolumns = function () {return this.columns.length;};
-  this.ndividers = function () {return this.dividers.length;};
-  this.nminimized = function ()
+  this.nminimized = function()
   {
     var count = 0;
-    for (var i = 0; i < this.ncolumns(); i++)
+    for (var i = 0; i < this.columns.length; i++)
     {
-      if (this.columns[i].nminimized() === this.columns[i].nclients()) {count += 1;}
+      if (this.columns[i].nminimized() === this.columns[i].clients.length)
+        count += 1;
     }
     return count;
   };
 
-  this.addColumn = function (column, index)
+  this.addColumn = function(column, maxColumns, index)
   {
-    if (this.ncolumns() >= this.grid().column) {return -1;}
+    if (this.columns.length >= maxColumns)
+      return -1;
 
     // check if adding a new column won't decrease the size of the clients inside any of the existing columns below their minSpace
-    for (var i = 0; i < this.ncolumns(); i++)
+    for (var i = 0; i < this.columns.length; i++)
     {
-      if (this.columns[i].minSpace() > 1 / (this.ncolumns() + 1)) {return -1;}
+      if (this.columns[i].minSpace() > 1 / (this.columns.length + 1))
+        return -1;
     }
 
     // do not add a new divider when the first column is added to the desktop
     if (index === undefined)
     {
       this.columns.push(column);
-      if (this.ncolumns() > 1) {this.dividers.push(0);}
+      if (this.columns.length > 1)
+        this.dividers.push(0);
     }
     else
     {
       this.columns.splice(index, 0, column);
-      if (this.ncolumns() > 1) {this.dividers.splice(index, 0, 0);}
+      if (this.columns.length > 1)
+        this.dividers.splice(index, 0, 0);
     }
     return 0;
   };
 
-  this.removeColumn = function (columnIndex)
+  this.removeColumn = function(columnIndex)
   {
-    if (columnIndex < 0 || columnIndex >= this.ncolumns()) {return -1;}
+    if (columnIndex < 0 || columnIndex >= this.columns.length)
+      return -1;
     this.columns.splice(columnIndex, 1);
     if (columnIndex === 0)
     {
@@ -316,11 +302,11 @@ function Desktop (screen)
     return 0;
   };
 
-  this.smallestColumn = function ()
+  this.smallestColumn = function()
   {
     var index = -1;
     var space = 1;
-    for (var i = 0; i < this.ncolumns(); i++)
+    for (var i = 0; i < this.columns.length; i++)
     {
       var minSpace = this.columns[i].minSpace();
       if (minSpace < space)
@@ -330,7 +316,7 @@ function Desktop (screen)
       }
       else if (minSpace === space && index !== -1)
       {
-        if (this.columns[i].nclients() < this.columns[index].nclients())
+        if (this.columns[i].clients.length < this.columns[index].clients.length)
         {
           index = i;
           space = minSpace;
@@ -340,97 +326,106 @@ function Desktop (screen)
     return index;
   };
 
-  this.addClient = function (client)
+  this.addClient = function(client, maxRows, maxColumns)
   {
     var index = this.smallestColumn();
-    if (index !== -1 && this.columns[index].minSpace() + client.minSpace <= 1 / this.ncolumns() && this.columns[index].nclients() < this.grid().row)
+    if (index !== -1 && this.columns[index].minSpace() + client.minSpace <= 1 / this.columns.length && this.columns[index].clients.length < maxRows)
     {
-      if (this.ncolumns() >= this.grid().column || this.ncolumns() > this.columns[index].nclients())
-      {
+      if (this.columns.length >= maxColumns || this.columns.length > this.columns[index].clients.length)
         return this.columns[index].addClient(client);
-      }
     }
 
-    var column = new Column();
-    if (client.minSpace > 1 / (this.ncolumns() + 1)) {return -1;}
-    if (this.addColumn(column) === -1) {return -1;}
-    return this.columns[this.ncolumns() - 1].addClient(client);
+    if (client.minSpace > 1 / (this.columns.length + 1) || this.addColumn(new Column(), maxColumns) === -1)
+      return -1;
+    return this.columns[this.columns.length - 1].addClient(client);
   };
 
-  this.removeClient = function (clientIndex, columnIndex)
+  this.removeClient = function(clientIndex, columnIndex)
   {
-    if (columnIndex < 0 || columnIndex >= this.ncolumns()) {return -1;}
-    if (this.columns[columnIndex].removeClient(clientIndex) !== 0) {return -1;}
-    if (this.columns[columnIndex].nclients() === 0) {return this.removeColumn(columnIndex);}
+    if (columnIndex < 0 || columnIndex >= this.columns.length)
+      return -1;
+    if (this.columns[columnIndex].removeClient(clientIndex) !== 0)
+      return -1;
+    if (this.columns[columnIndex].clients.length === 0)
+      return this.removeColumn(columnIndex);
     return 0;
   };
 
-  this.getClient = function (windowId)
+  this.getClient = function(windowId)
   {
     var client = -1;
-    for (var i = 0; i < this.ncolumns(); i++)
+    for (var i = 0; i < this.columns.length; i++)
     {
       client = this.columns[i].getClient(windowId);
-      if (client !== -1) {break;}
+      if (client !== -1)
+        break;
     }
     return client;
   };
 
-  this.swapColumn = function (direction, columnIndex)
+  this.swapColumn = function(direction, columnIndex)
   {
-    if (columnIndex < 0 || columnIndex >= this.ncolumns()) {return -1;}
+    if (columnIndex < 0 || columnIndex >= this.columns.length)
+      return -1;
     var column = this.columns[columnIndex];
     var i = columnIndex + direction; // target to swap client with
-    if (i < 0 || i >= this.ncolumns()) {return -1;}
+    if (i < 0 || i >= this.columns.length)
+      return -1;
     this.columns[columnIndex] = this.columns[i];
     this.columns[i] = column;
     return 0;
   };
 
-  this.swapClient = function (direction, clientIndex, columnIndex)
+  this.swapClient = function(direction, clientIndex, columnIndex)
   {
-    if (columnIndex < 0 || columnIndex >= this.ncolumns()) {return -1;}
+    if (columnIndex < 0 || columnIndex >= this.columns.length)
+      return -1;
     var column = this.columns[columnIndex];
-    if (clientIndex < 0 || clientIndex >= column.nclients()) {return -1;}
+    if (clientIndex < 0 || clientIndex >= column.clients.length)
+      return -1;
     var client = column.clients[clientIndex];
 
     var i = columnIndex + direction; // target to swap client with
-    if (i < 0 || i >= this.ncolumns()) {return -1;}
-    while (this.columns[i].nclients() !== column.nclients())
+    if (i < 0 || i >= this.columns.length)
+      return -1;
+    while (this.columns[i].clients.length !== column.clients.length)
     {
       i += direction;
-      if (i < 0 || i >= this.ncolumns()) {return this.swapColumn(direction, columnIndex);}
+      if (i < 0 || i >= this.columns.length)
+        return this.swapColumn(direction, columnIndex);
     }
     column.clients[clientIndex] = this.columns[i].clients[clientIndex];
     this.columns[i].clients[clientIndex] = client;
     return 0;
   };
 
-  this.moveClient = function (direction, clientIndex, columnIndex)
+  this.moveClient = function(direction, maxRows, maxColumns, clientIndex, columnIndex)
   {
-    if (columnIndex < 0 || columnIndex >= this.ncolumns()) {return -1;}
+    if (columnIndex < 0 || columnIndex >= this.columns.length)
+      return -1;
     var column = this.columns[columnIndex];
-    if (clientIndex < 0 || clientIndex >= column.nclients()) {return -1;}
+    if (clientIndex < 0 || clientIndex >= column.clients.length)
+      return -1;
     var client = column.clients[clientIndex];
 
     var i = columnIndex + direction; // target to move client to
-    while (i >= 0 && i < this.ncolumns() && (this.columns[i].minSpace() + client.minSpace > 1 / this.ncolumns() || this.columns[i].nclients() >= this.grid().row))
-    {
+    while (i >= 0 && i < this.columns.length && (this.columns[i].minSpace() + client.minSpace > 1 / this.columns.length || this.columns[i].clients.length >= maxRows))
       i += direction;
-    }
 
-    if (i < 0 || i >= this.ncolumns())
+    if (i < 0 || i >= this.columns.length)
     {
       var c = new Column();
       c.addClient(client);
       if (i < 0)
       {
-        if (this.addColumn(c, 0) === -1) {return -1;}
+        if (this.addColumn(c, maxColumns, 0) === -1)
+          return -1;
         return this.removeClient(clientIndex, columnIndex + 1);
       }
       else
       {
-        if (this.addColumn(c) === -1) {return -1;}
+        if (this.addColumn(c, maxColumns) === -1)
+          return -1;
         return this.removeClient(clientIndex, columnIndex);
       }
     }
@@ -441,54 +436,62 @@ function Desktop (screen)
     }
   };
 
-  this.changeDivider = function (direction, change, columnIndex)
+  this.changeDivider = function(direction, change, columnIndex)
   {
-    if (columnIndex < 0 || columnIndex >= this.ncolumns()) {return -1;}
+    if (columnIndex < 0 || columnIndex >= this.columns.length)
+      return -1;
 
     // changes the divider that is for the client itself
-    if (columnIndex !== this.ncolumns() - 1 && (direction === 'right' || direction === 'both'))
+    if (columnIndex !== this.columns.length - 1 && (direction === 'right' || direction === 'both'))
     {
       this.dividers[columnIndex] += change;
-      if (this.dividers[columnIndex] > Parameters.dividerBounds) {this.dividers[columnIndex] = Parameters.dividerBounds;}
-      if (this.dividers[columnIndex] < -Parameters.dividerBounds) {this.dividers[columnIndex] = -Parameters.dividerBounds;}
+      if (this.dividers[columnIndex] > Parameters.dividerBounds)
+        this.dividers[columnIndex] = Parameters.dividerBounds;
+      if (this.dividers[columnIndex] < -Parameters.dividerBounds)
+        this.dividers[columnIndex] = -Parameters.dividerBounds;
     }
 
     // changes the divider that is for the client before this one
     if (columnIndex !== 0 && (direction === 'left' || direction === 'both'))
     {
       this.dividers[columnIndex - 1] -= change;
-      if (this.dividers[columnIndex - 1] > Parameters.dividerBounds) {this.dividers[columnIndex - 1] = Parameters.dividerBounds;}
-      if (this.dividers[columnIndex - 1] < -Parameters.dividerBounds) {this.dividers[columnIndex - 1] = -Parameters.dividerBounds;}
+      if (this.dividers[columnIndex - 1] > Parameters.dividerBounds)
+        this.dividers[columnIndex - 1] = Parameters.dividerBounds;
+      if (this.dividers[columnIndex - 1] < -Parameters.dividerBounds)
+        this.dividers[columnIndex - 1] = -Parameters.dividerBounds;
     }
 
     return 0;
   };
 
   // rendering
-  this.render = function (desktopIndex, activityName)
+  this.render = function(screenIndex, desktopIndex, activityName)
   {
     var check = 0;
 
-    var area = workspace.clientArea(0, Algorithm.screen(desktopIndex), Algorithm.desktop(desktopIndex));
+    var area = workspace.clientArea(0, screenIndex, desktopIndex + 1);
     var nminimized = this.nminimized();
 
     var x = area.x + Parameters.margin.left + Parameters.gap; // first x coordinate
-    var columnWidth = (area.width - Parameters.margin.left - Parameters.margin.right - ((this.ncolumns() - nminimized + 1) * Parameters.gap)) / (this.ncolumns() - nminimized); // width per column
+    var columnWidth = (area.width - Parameters.margin.left - Parameters.margin.right - ((this.columns.length - nminimized + 1) * Parameters.gap)) / (this.columns.length - nminimized); // width per column
 
     var current = 0;
     var previous = 0;
     var divider = 0;
-    for (var i = 0; i < this.ncolumns(); i++)
+    for (var i = 0; i < this.columns.length; i++)
     {
-      if (this.columns[i].nminimized() === this.columns[i].nclients()) {continue;}
+      if (this.columns[i].nminimized() === this.columns[i].clients.length)
+        continue;
 
-      if (i === this.ncolumns() - 1 || (i < this.ncolumns() - 1 && this.columns[i + 1].nminimized() === this.columns[i + 1].nclients())) {divider = 0;}
-      else {divider = this.dividers[i];}
+      if (i === this.columns.length - 1 || (i < this.columns.length - 1 && this.columns[i + 1].nminimized() === this.columns[i + 1].clients.length))
+        divider = 0;
+      else
+        divider = this.dividers[i];
 
       current = columnWidth * divider;
       var width = -previous + columnWidth + current;
 
-      check += this.columns[i].render(x, width, area.y, area.height, i, desktopIndex, activityName);
+      check += this.columns[i].render(x, width, area.y, area.height, i, screenIndex, desktopIndex, activityName);
 
       x += width + Parameters.gap;
       previous = current;
@@ -497,147 +500,218 @@ function Desktop (screen)
   };
 }
 
-function Activity ()
+function Desktop()
 {
-  this.desktops = [];
-  this.ndesktops = function () {return this.desktops.length;};
-  this.maxDesktops = function () {return workspace.desktops * workspace.numScreens;};
+  this.screens = [];
 
-  this.addDesktop = function (desktop)
+  this.addScreen = function(screen)
   {
-    if (this.maxDesktops() - this.ndesktops() < 1) {return -1;}
-    this.desktops.push(desktop);
+    if (this.screens.length >= workspace.numScreens)
+      return -1;
+    this.screens.push(screen);
     return 0;
   };
 
-  this.removeDesktop = function (desktopIndex)
+  this.addClient = function(client)
   {
-    if (desktopIndex < 0 || desktopIndex >= this.ndesktops()) {return -1;}
-    this.desktops.splice(desktopIndex, 1);
-    return 0;
-  };
-
-  this.addClient = function (client)
-  {
-    var start = Algorithm.desktopIndex(client.desktop, client.screen);
-    var i = start;
+    var i = workspace.activeScreen;
     do
     {
-      while (i >= this.ndesktops())
+      while (i >= this.screens.length)
       {
-        var desktop = new Desktop(Algorithm.screen(i));
-        if (this.addDesktop(desktop) !== 0) {return -1;}
+        if (this.addScreen(new Screen()) !== 0)
+          return -1;
       }
-      if (this.desktops[i].addClient(client) === 0) {return 0;}
-      if (++i >= this.maxDesktops()) {i = 0;}
+      if (this.screens[i].addClient(client, Parameters.grids[i].row, Parameters.grids[i].column) === 0)
+        return 0;
+      if (++i >= workspace.numScreens)
+        i = 0;
     }
-    while (i !== start);
+    while (i !== workspace.activeScreen);
     return -1;
   };
 
-  this.removeClient = function (clientIndex, columnIndex, desktopIndex)
+  this.removeClient = function(clientIndex, columnIndex, screenIndex)
   {
-    if (desktopIndex < 0 || desktopIndex >= this.ndesktops()) {return -1;}
-    if (this.desktops[desktopIndex].removeClient(clientIndex, columnIndex) !== 0) {return -1;}
-    // do not remove the desktop to prevent moving of desktops when desktops are closed
+    if (screenIndex < 0 || screenIndex >= this.screens.length)
+      return -1;
+    if (this.screens[screenIndex].removeClient(clientIndex, columnIndex) !== 0)
+      return -1;
+    // do not remove the screen to prevent moving of clients when screens are closed
     return 0;
   };
 
-  this.getClient = function (windowId)
+  this.getClient = function(windowId)
   {
     var client = -1;
-    for (var i = 0; i < this.ndesktops(); i++)
+    for (var i = 0; i < this.screens.length; i++)
     {
-      client = this.desktops[i].getClient(windowId);
-      if (client !== -1) {break;}
+      client = this.screens[i].getClient(windowId);
+      if (client !== -1)
+        break;
     }
     return client;
   };
 
-  this.moveDesktop = function (targetIndex, clientIndex, columnIndex, desktopIndex)
+  this.moveClient = function(targetIndex, clientIndex, columnIndex, screenIndex)
   {
-    if (desktopIndex < 0 || desktopIndex >= this.ndesktops() || targetIndex < 0 || targetIndex === desktopIndex) {return -1;}
+    if (screenIndex < 0 || screenIndex >= this.screens.length || targetIndex < 0 || targetIndex === screenIndex)
+      return -1;
 
-    var client = this.desktops[desktopIndex].columns[columnIndex].clients[clientIndex];
-    while (targetIndex >= this.ndesktops())
+    var client = this.screens[screenIndex].columns[columnIndex].clients[clientIndex];
+    while (targetIndex >= this.screens.length)
     {
-      var desktop = new Desktop(Algorithm.screen(this.ndesktops()));
-      if (this.addDesktop(desktop) === -1) {return -1;}
+      if (this.addScreen(new Screen()) === -1)
+        return -1;
     }
 
-    if (this.desktops[targetIndex].addClient(client) === -1) {return -1;}
-    return this.desktops[desktopIndex].removeClient(clientIndex, columnIndex);
+    if (this.screens[targetIndex].addClient(client) === -1)
+      return -1;
+    return this.screens[screenIndex].removeClient(clientIndex, columnIndex);
   };
 
-  // rendering
-  this.render = function (activityName)
+  this.render = function(desktopIndex, activityName)
   {
     var check = 0;
-    for (var i = 0; i < this.ndesktops(); i++)
-    {
-      check += this.desktops[i].render(i, activityName);
-    }
+    for (var i = 0; i < this.screens.length; i++)
+      check += this.screens[i].render(i, desktopIndex, activityName);
     return check;
   };
-
 }
 
-function Layout ()
+function Activity()
 {
-  this.activities = {};
+  this.desktops = [];
 
-  this.addClient = function (client)
+  this.addDesktop = function(desktop)
   {
-    if (!this.activities.hasOwnProperty(workspace.currentActivity))
-    {
-      var activity = new Activity();
-      this.activities[workspace.currentActivity] = activity;
-    }
-    return this.activities[workspace.currentActivity].addClient(client);
-  };
-
-  this.removeClient = function (clientIndex, columnIndex, desktopIndex, activityName)
-  {
-    if (!this.activities.hasOwnProperty(activityName)) {return -1;}
-    if (this.activities[activityName].removeClient(clientIndex, columnIndex, desktopIndex) !== 0) {return -1;}
-    if (this.activities[activityName].ndesktops() === 0 || workspace.activities.indexOf(activityName) === -1) {delete this.activities[activityName];}
+    if (this.desktops.length >= workspace.desktops)
+      return -1;
+    this.desktops.push(desktop);
     return 0;
   };
 
-  this.getClient = function (windowId)
+  this.addClient = function(client)
+  {
+    var i = client.desktop - 1;
+    do
+    {
+      while (i >= this.desktops.length)
+      {
+        if (this.addDesktop(new Desktop()) !== 0)
+          return -1;
+      }
+      if (this.desktops[i].addClient(client) === 0)
+        return 0;
+      if (++i >= workspace.desktops)
+        i = 0;
+    }
+    while (i !== client.desktop - 1);
+    return -1;
+  };
+
+  this.removeClient = function(clientIndex, columnIndex, screenIndex, desktopIndex)
+  {
+    if (desktopIndex < 0 || desktopIndex >= this.desktops.length)
+      return -1;
+    if (this.desktops[desktopIndex].removeClient(clientIndex, columnIndex, screenIndex) !== 0)
+      return -1;
+    // do not remove the desktop to prevent moving of clients when desktops are closed
+    return 0;
+  };
+
+  this.getClient = function(windowId)
+  {
+    var client = -1;
+    for (var i = 0; i < this.desktops.length; i++)
+    {
+      client = this.desktops[i].getClient(windowId);
+      if (client !== -1)
+        break;
+    }
+    return client;
+  };
+
+  this.moveClient = function(targetIndex, clientIndex, columnIndex, screenIndex, desktopIndex)
+  {
+    if (desktopIndex < 0 || desktopIndex >= this.desktops.length || targetIndex < 0 || targetIndex === desktopIndex)
+      return -1;
+
+    var client = this.desktops[desktopIndex].screens[screenIndex].columns[columnIndex].clients[clientIndex];
+    while (targetIndex >= this.desktops.length)
+    {
+      if (this.addDesktop(new Desktop()) === -1)
+        return -1;
+    }
+
+    if (this.desktops[targetIndex].addClient(client) === -1)
+      return -1;
+    return this.desktops[desktopIndex].removeClient(clientIndex, columnIndex, screenIndex);
+  };
+
+  // rendering
+  this.render = function(activityName)
+  {
+    var check = 0;
+    for (var i = 0; i < this.desktops.length; i++)
+      check += this.desktops[i].render(i, activityName);
+    return check;
+  };
+}
+
+function Layout()
+{
+  this.activities = {};
+
+  this.addClient = function(client)
+  {
+    if (!this.activities.hasOwnProperty(workspace.currentActivity))
+      this.activities[workspace.currentActivity] = new Activity();
+    return this.activities[workspace.currentActivity].addClient(client);
+  };
+
+  this.removeClient = function(clientIndex, columnIndex, screenIndex, desktopIndex, activityName)
+  {
+    if (!this.activities.hasOwnProperty(activityName))
+      return -1;
+    if (this.activities[activityName].removeClient(clientIndex, columnIndex, screenIndex, desktopIndex) !== 0)
+      return -1;
+    if (this.activities[activityName].desktops.length === 0 || workspace.activities.indexOf(activityName) === -1)
+      delete this.activities[activityName];
+    return 0;
+  };
+
+  this.getClient = function(windowId)
   {
     var client = -1;
     for (var activityName in this.activities)
     {
       client = this.activities[activityName].getClient(windowId);
-      if (client !== -1) {break;}
+      if (client !== -1)
+        break;
     }
     return client;
   };
 
-  this.moveClient = function (client, activityName)
+  this.moveClient = function(client, activityName)
   {
-    if (client.activityName === activityName || !this.activities.hasOwnProperty(client.activityName)) {return -1;}
+    if (client.activityName === activityName || !this.activities.hasOwnProperty(client.activityName))
+      return -1;
     if (!this.activities.hasOwnProperty(activityName))
-    {
-      var activity = new Activity();
-      this.activities[activityName] = activity;
-    }
-    if (this.removeClient(client.clientIndex, client.columnIndex, client.desktopIndex, client.activityName) !== 0) {return -1;}
+      this.activities[activityName] = new Activity();
+    if (this.removeClient(client.clientIndex, client.columnIndex, client.desktopIndex, client.activityName) !== 0)
+      return -1;
     return this.activities[activityName].addClient(client);
   };
 
   // rendering
-  this.render = function ()
+  this.render = function()
   {
     var check = 0;
     for (var activityName in this.activities)
-    {
       check += this.activities[activityName].render(activityName);
-    }
     return check;
   };
-
 }
 
 // ----
@@ -654,250 +728,240 @@ var layout = new Layout(); // main class, contains all methods
 
 var Client =
 {
-  properties: function (nclients, ncolumns, screen, desktop)
+  valid: function(client)
   {
-    var area = workspace.clientArea(0, screen, desktop);
-
-    return {area: area, clientHeight: (area.height - Parameters.margin.top - Parameters.margin.bottom - ((nclients + 1) * Parameters.gap)) / nclients, columnWidth: (area.width - Parameters.margin.left - Parameters.margin.right - ((ncolumns + 1) * Parameters.gap)) / ncolumns};
+    return client !== null && client.activities.length <= 1;
   },
-  resized: function (diff, client, desktop, properties)
+  managed: function(client)
   {
-    if (diff.width === 0 && diff.height === 0) {return -1;}
-
-    if (diff.width !== 0)
-    {
-      if (diff.x === 0)
-      {
-        desktop.changeDivider('right', diff.width / properties.columnWidth, client.columnIndex);
-      }
-      else
-      {
-        desktop.changeDivider('left', diff.width / properties.columnWidth, client.columnIndex);
-      }
-    }
-
-    if (diff.height !== 0)
-    {
-      if (diff.y === 0)
-      {
-        desktop.columns[client.columnIndex].changeDivider('bottom', diff.height / properties.clientHeight, client.clientIndex);
-      }
-      else
-      {
-        desktop.columns[client.columnIndex].changeDivider('top', diff.height / properties.clientHeight, client.clientIndex);
-      }
-    }
-
-    return 0;
+    return floatingClients.hasOwnProperty(client.windowId) || tiledClients.hasOwnProperty(client.windowId);
   },
-  moved: function (diff, client, activity, properties)
+  ignored: function(client)
   {
-    var targetIndex = Algorithm.desktopIndex(client.desktop, client.screen);
-    if (targetIndex < 0 || targetIndex >= activity.ndesktops()) {return -1;}
-    var target = activity.desktops[targetIndex];
-    var current = activity.desktops[Algorithm.desktopIndex(client.desktopRender, client.screenRender)];
-
-    var i = 0; // column target index
-    var remainder = client.geometry.x + 0.5 * client.geometry.width - Parameters.margin.left - properties.area.x;
-    for (; i < target.ncolumns() && remainder > 0; i++)
+    if (client.specialWindow || client.dialog || Parameters.ignoredCaptions.indexOf(client.caption.toString()) !== -1)
+      return true;
+    for (var i = 0; i < Parameters.ignoredClients.length; i++)
     {
-      if (target.columns[i].nminimized() === target.columns[i].nclients()) {continue;}
-      remainder -= target.columns[i].clients[0].geometry.width + Parameters.gap;
+      if (client.resourceClass.toString().indexOf(Parameters.ignoredClients[i]) !== -1 || client.resourceName.toString().indexOf(Parameters.ignoredClients[i]) !== -1)
+        return true;
     }
-    if (i-- === 0) {return -1;}
-
-    var column = target.columns[i];
-
-    var j = 0; // client target index
-    remainder = client.geometry.y + 0.5 * client.geometry.height - Parameters.margin.top - properties.area.y;
-    for (; j < column.nclients() && remainder > 0; j++)
-    {
-      if (column.clients[j].minimized) {continue;}
-      remainder -= column.clients[j].geometry.height + Parameters.gap;
-    }
-    if (j-- === 0) {return -1;}
-
-    if (current.columns[client.columnIndex].minSpace() - client.minSpace + target.columns[i].clients[j].minSpace > 1 / current.ncolumns()) {return 0;} // check if target fit in current
-    if (target.columns[i].minSpace() - target.columns[i].clients[j].minSpace + client.minSpace > 1 / target.ncolumns()) {return 0;} // check if current fit in target
-
-    current.columns[client.columnIndex].clients[client.clientIndex] = target.columns[i].clients[j];
-    target.columns[i].clients[j] = client;
-    return 0;
+    return false;
   },
-  validate: function (client)
+  addMinSpace: function(client)
   {
-    if (client.specialWindow || client.dialog) {return -1;}
-    var clientClass = client.resourceClass.toString();
-    var clientName = client.resourceName.toString();
-    var clientCaption = client.caption.toString();
-
     client.minSpace = Parameters.smallestSpace;
     for (var name in Parameters.minSpaces)
     {
-      if (clientClass.indexOf(name) !== -1 || clientName.indexOf(name) !== -1)
+      if (client.resourceClass.toString().indexOf(name) !== -1 || client.resourceName.toString().indexOf(name) !== -1)
       {
         client.minSpace = Parameters.minSpaces[name];
         break;
       }
     }
-
-    if (Parameters.ignoredCaptions.indexOf(clientCaption) !== -1) {return -1;}
-    for (var i = 0; i < Parameters.ignoredClients.length; i++)
-    {
-      if (clientClass.indexOf(Parameters.ignoredClients[i]) !== -1 || clientName.indexOf(Parameters.ignoredClients[i]) !== -1) {return -1;}
-    }
-
-    return 0;
+    return client;
   },
-  float: function (client)
+  float: function(client)
   {
-    if (floatingClients.hasOwnProperty(client.windowId)) {return -1;}
     floatingClients[client.windowId] = true;
-    delete tiledClients[client.windowId];
-    if (layout.removeClient(client.clientIndex, client.columnIndex, client.desktopIndex, client.activityName) === -1) {return -1;}
+    client.keepAbove = true;
+    if (tiledClients.hasOwnProperty(client.windowId))
+    {
+      delete tiledClients[client.windowId];
+      client = layout.getClient(client.windowId);
+      if (layout.removeClient(client.clientIndex, client.columnIndex, client.screenIndex, client.desktopIndex, client.activityName) === -1)
+        return -1;
+    }
     return layout.render();
   },
-  tile: function (client)
+  tile: function(client)
   {
-    if (tiledClients.hasOwnProperty(client.windowId)) {return -1;}
-    if (client.activities.length > 1) {return -1;}
-    if (Client.validate(client) !== 0) {return -1;} // on succes adds minSpace to client
-    if (!floatingClients.hasOwnProperty(client.windowId) && (Parameters.floatingCaptions.indexOf(client.caption.toString()) !== -1 || Parameters.floatingClients.some(function (name) {return client.resourceClass.toString().indexOf(name) !== -1 || client.resourceName.toString().indexOf(name) !== -1;})))
-    {
-      floatingClients[client.windowId] = true;
+    if (layout.addClient(Client.addSignals(Client.addMinSpace(client))) !== 0)
       return -1;
-    }
-
-    if (layout.addClient(client) !== 0) {return -1;}
     tiledClients[client.windowId] = true;
-    delete floatingClients[client.windowId];
+    client.keepAbove = false;
+    if (floatingClients.hasOwnProperty(client.windowId))
+      delete floatingClients[client.windowId];
     layout.render();
     workspace.currentDesktop = client.desktop;
+    return 0;
+  },
+  resized: function(client, screen)
+  {
+    var diff = {
+      x: client.geometry.x - client.geometryRender.x,
+      y: client.geometry.y - client.geometryRender.y,
+      width: client.geometry.width - client.geometryRender.width,
+      height: client.geometry.height - client.geometryRender.height
+    };
+    if (diff.width === 0 && diff.height === 0)
+      return -1;
 
-    // -------------------------
-    // Connecting Client Signals
-    // -------------------------
-    client.clientFinishUserMovedResized.connect (function (client)
+    var area = workspace.clientArea(0, client.screen, client.desktop);
+    var nclients = screen.columns[client.columnIndex].clients.length - screen.columns[client.columnIndex].nminimized();
+    var ncolumns = screen.columns.length - screen.nminimized();
+    var clientHeight = (area.height - Parameters.margin.top - Parameters.margin.bottom - ((nclients + 1) * Parameters.gap)) / nclients;
+    var columnWidth = (area.width - Parameters.margin.left - Parameters.margin.right - ((ncolumns + 1) * Parameters.gap)) / ncolumns;
+    if (diff.width !== 0)
     {
-      client = layout.getClient(client.windowId);
-      if (client === -1) {return -1;}
-
-      var activity = layout.activities[client.activityName];
-      var desktop = activity.desktops[client.desktopIndex];
-      var properties = Client.properties(desktop.columns[client.columnIndex].nclients() - desktop.columns[client.columnIndex].nminimized(), desktop.ncolumns() - desktop.nminimized(), client.desktop, client.screen);
-
-      var diff =
-      {
-        x: client.geometry.x - client.geometryRender.x,
-        y: client.geometry.y - client.geometryRender.y,
-        width: client.geometry.width - client.geometryRender.width,
-        height: client.geometry.height - client.geometryRender.height
-      };
-
-      if (Client.resized(diff, client, desktop, properties) === 0) {desktop.render(client.desktopIndex, client.activityName);}
-      Client.moved(diff, client, activity, properties);
-
-      return activity.render(client.activityName);
-    });
-    client.clientStepUserMovedResized.connect (function (client)
+      if (diff.x === 0)
+        screen.changeDivider('right', diff.width / columnWidth, client.columnIndex);
+      else
+        screen.changeDivider('left', diff.width / columnWidth, client.columnIndex);
+    }
+    if (diff.height !== 0)
     {
-      client = layout.getClient(client.windowId);
-      if (client === -1) {return -1;}
+      if (diff.y === 0)
+        screen.columns[client.columnIndex].changeDivider('bottom', diff.height / clientHeight, client.clientIndex);
+      else
+        screen.columns[client.columnIndex].changeDivider('top', diff.height / clientHeight, client.clientIndex);
+    }
+    return 0;
+  },
+  moved: function(client, columns)
+  {
+    var area = workspace.clientArea(0, client.screen, client.desktop);
+    var i = 0; // column target index
+    var remainder = client.geometry.x + 0.5 * client.geometry.width - Parameters.margin.left - area.x;
+    for (; i < columns.length && remainder > 0; i++)
+    {
+      if (columns[i].nminimized() === columns[i].clients.length)
+        continue;
+      remainder -= columns[i].clients[0].geometry.width + Parameters.gap;
+    }
+    if (i-- === 0)
+      return -1;
 
-      var desktop = layout.activities[client.activityName].desktops[client.desktopIndex];
-      var properties = Client.properties(desktop.columns[client.columnIndex].nclients() - desktop.columns[client.columnIndex].nminimized(), desktop.ncolumns() - desktop.nminimized(), client.desktop, client.screen);
+    var j = 0; // client target index
+    remainder = client.geometry.y + 0.5 * client.geometry.height - Parameters.margin.top - area.y;
+    for (; j < columns[i].clients.length && remainder > 0; j++)
+    {
+      if (columns[i].clients[j].minimized)
+        continue;
+      remainder -= columns[i].clients[j].geometry.height + Parameters.gap;
+    }
+    if (j-- === 0)
+      return -1;
 
-      var diff =
-      {
-        x: client.geometry.x - client.geometryRender.x,
-        y: client.geometry.y - client.geometryRender.y,
-        width: client.geometry.width - client.geometryRender.width,
-        height: client.geometry.height - client.geometryRender.height
-      };
-
-      if (Client.resized(diff, client, desktop, properties) === 0) {desktop.render(client.desktopIndex, client.activityName);}
-
+    if (columns[client.columnIndex].minSpace() - client.minSpace + columns[i].clients[j].minSpace > 1 / columns.length) // check if target fit in current
       return 0;
-    });
-    client.desktopChanged.connect ((function ()
-    {
-      var c = client;
-      return function ()
-      {
-        if (c.desktop === c.desktopRender || !tiledClients.hasOwnProperty(c.windowId)) {return -1;}
-        var activity = layout.activities[c.activityName];
-        var targetIndex = Algorithm.desktopIndex(c.desktop, c.screen);
+    if (columns[i].minSpace() - columns[i].clients[j].minSpace + client.minSpace > 1 / columns.length) // check if current fit in target
+      return 0;
 
-        var start = c.desktopIndex;
-        var direction = targetIndex > c.desktopIndex ? 1 : -1;
-        while (activity.moveDesktop(targetIndex, c.clientIndex, c.columnIndex, c.desktopIndex) !== 0)
-        {
-          targetIndex += direction;
-          if (targetIndex >= activity.maxDesktops()) {targetIndex = 0;}
-          if (targetIndex < 0) {targetIndex = activity.maxDesktops() - 1;}
-          if (targetIndex === start) {return -1;}
-        }
-
-        activity.render(c.activityName);
-        workspace.currentDesktop = c.desktop; // switch to the new desktop
-      };
-    })());
-    client.screenChanged.connect ((function ()
-    {
-      var c = client;
-      return function ()
-      {
-        if (c.screen === c.screenRender || !tiledClients.hasOwnProperty(c.windowId)) {return -1;}
-        var activity = layout.activities[c.activityName];
-        var targetIndex = Algorithm.desktopIndex(c.desktop, c.screen);
-
-        var start = c.desktopIndex;
-        var direction = targetIndex > c.desktopIndex ? 1 : -1;
-        while (activity.moveDesktop(targetIndex, c.clientIndex, c.columnIndex, c.desktopIndex) !== 0)
-        {
-          targetIndex += direction;
-          if (targetIndex >= activity.maxDesktops()) {targetIndex = 0;}
-          if (targetIndex < 0) {targetIndex = activity.maxDesktops() - 1;}
-          if (targetIndex === start) {return -1;}
-        }
-
-        activity.render(c.activityName);
-      };
-    })());
-    client.activitiesChanged.connect(function (client)
-    {
-      client = layout.getClient(client.windowId);
-      if (client === -1) {return -1;}
-
-      if (client.activities.length !== 1)
-      {
-        return Client.float(client);
-      }
-      layout.moveClient(client, client.activities[0]);
-      return layout.render();
-    });
-
+    columns[client.columnIndex].clients[client.clientIndex] = columns[i].clients[j];
+    columns[i].clients[j] = client;
     return 0;
   }
 };
 
 // ----------------------------
-// Connecting Workspace Signals
+// Connecting KWin Signals
 // ----------------------------
 
-workspace.clientActivated.connect (function (client) // clientAdded does not work for a lot of clients
+Client.addSignals = function(client)
 {
-  if (client === null || floatingClients.hasOwnProperty(client.windowId)) {return -1;}
-  return Client.tile(client); // validate does floating already, do not check here and float on fail
+  client.clientFinishUserMovedResized.connect(function(client)
+  {
+    client = layout.getClient(client.windowId);
+    if (client === -1)
+      return -1;
+
+    var screen = layout.activities[client.activityName].desktops[client.desktopIndex].screens[client.screenIndex];
+    if (Client.resized(client, screen) === 0 || Client.moved(client, screen.columns) === 0)
+      return screen.render(client.screenIndex, client.desktopIndex, client.activityName);
+    return 0;
+  });
+  client.clientStepUserMovedResized.connect(function(client)
+  {
+    client = layout.getClient(client.windowId);
+    if (client === -1)
+      return -1;
+
+    var screen = layout.activities[client.activityName].desktops[client.desktopIndex].screens[client.screenIndex];
+    if (Client.resized(client, screen) === 0)
+      screen.render(client.screenIndex, client.desktopIndex, client.activityName);
+    return 0;
+  });
+  client.desktopChanged.connect((function()
+  {
+    var c = client;
+    return function()
+    {
+      if (c.desktop === c.desktopIndex + 1 || !tiledClients.hasOwnProperty(c.windowId))
+        return -1;
+      var activity = layout.activities[c.activityName];
+      var targetIndex = c.desktop - 1;
+      var start = c.desktopIndex;
+      var direction = targetIndex > c.desktopIndex ? 1 : -1;
+      while (activity.moveClient(targetIndex, c.clientIndex, c.columnIndex, c.screenIndex, c.desktopIndex) !== 0)
+      {
+        targetIndex += direction;
+        if (targetIndex >= workspace.desktops)
+          targetIndex = 0;
+        if (targetIndex < 0)
+          targetIndex = workspace.desktops - 1;
+        if (targetIndex === start)
+          return -1;
+      }
+
+      activity.render(c.activityName);
+      workspace.currentDesktop = c.desktop; // switch to the new desktop
+    };
+  })());
+  client.screenChanged.connect((function()
+  {
+    var c = client;
+    return function()
+    {
+      if (c.screen === c.screenIndex || !tiledClients.hasOwnProperty(c.windowId))
+        return -1;
+      var desktop = layout.activities[c.activityName].desktops[c.desktopIndex];
+      var targetIndex = c.screen;
+      var start = c.screenIndex;
+      var direction = targetIndex > c.desktopIndex ? 1 : -1;
+      while (desktop.moveClient(targetIndex, c.clientIndex, c.columnIndex, c.screenIndex) !== 0)
+      {
+        targetIndex += direction;
+        if (targetIndex >= workspace.numScreens)
+          targetIndex = 0;
+        if (targetIndex < 0)
+          targetIndex = workspace.numScreens - 1;
+        if (targetIndex === start)
+          return -1;
+      }
+
+      desktop.render(c.desktopIndex, c.activityName);
+    };
+  })());
+  client.activitiesChanged.connect(function(client)
+  {
+    client = layout.getClient(client.windowId);
+    if (client === -1)
+      return -1;
+    if (client.activities.length !== 1)
+      return Client.float(client);
+    layout.moveClient(client, client.activities[0]);
+    return layout.render();
+  });
+  return client;
+};
+
+workspace.clientActivated.connect(function(client) // clientAdded does not work for a lot of clients
+{
+  if (!Client.valid(client) || Client.managed(client) || Client.ignored(client))
+    return -1;
+  if (Parameters.floatingCaptions.indexOf(client.caption.toString()) !== -1 || Parameters.floatingClients.some(function(name) {return client.resourceClass.toString().indexOf(name) !== -1 || client.resourceName.toString().indexOf(name) !== -1;}) || Client.tile(client) !== 0)
+    floatingClients[client.windowId] = true;
+  return 0;
 });
 
-workspace.clientRemoved.connect (function (client)
+workspace.clientRemoved.connect(function(client)
 {
   if (tiledClients.hasOwnProperty(client.windowId))
   {
     delete tiledClients[client.windowId];
     client = layout.getClient(client.windowId);
-    if (layout.removeClient(client.clientIndex, client.columnIndex, client.desktopIndex, client.activityName) !== 0) {return -1;}
+    if (layout.removeClient(client.clientIndex, client.columnIndex, client.screenIndex, client.desktopIndex, client.activityName) !== 0)
+      return -1;
     return layout.render();
   }
   else if (floatingClients.hasOwnProperty(client.windowId))
@@ -911,47 +975,57 @@ workspace.clientRemoved.connect (function (client)
   }
 });
 
-workspace.clientMinimized.connect (function (client)
+workspace.clientMinimized.connect(function(client)
 {
   client = layout.getClient(client.windowId);
-  if (client === -1) {return -1;}
+  if (client === -1)
+    return -1;
   client.minimized = true;
-  return layout.activities[client.activityName].desktops[client.desktopIndex].render(client.desktopIndex, client.activityName);
+  return layout.activities[client.activityName].desktops[client.desktopIndex].screens[client.screenIndex].render(client.screenIndex, client.desktopIndex, client.activityName);
 });
 
-workspace.clientUnminimized.connect (function (client)
+workspace.clientUnminimized.connect(function(client)
 {
   client = layout.getClient(client.windowId);
-  if (client === -1) {return -1;}
+  if (client === -1)
+    return -1;
   client.minimized = false;
-  return layout.activities[client.activityName].desktops[client.desktopIndex].render(client.desktopIndex, client.activityName);
+  return layout.activities[client.activityName].desktops[client.desktopIndex].screens[client.screenIndex].render(client.screenIndex, client.desktopIndex, client.activityName);
 });
 
 // ---------
 // Shortcuts
 // ---------
 
+function GlobalShortcut(name, shortcut, method)
+{
+  registerShortcut(Parameters.prefix + name, Parameters.prefix + name, shortcut, method);
+}
+
 [
   {text: 'Up', shortcut: 'Up', method: 'vertical', direction: -1},
   {text: 'Down', shortcut: 'Down', method: 'vertical', direction: 1},
   {text: 'Left', shortcut: '', method: 'horizontal', direction: -1},
   {text: 'Right', shortcut: '', method: 'horizontal', direction: 1}
-].forEach(function (entry)
+].forEach(function(entry)
 {
-  Algorithm.globalShortcut('Swap ' + entry.text, 'Meta+Ctrl+' + entry.shortcut, (function ()
+  GlobalShortcut('Swap ' + entry.text, 'Meta+Ctrl+' + entry.shortcut, (function()
   {
     var method = entry.method;
     var direction = entry.direction;
-    return function ()
+    return function()
     {
       var client = layout.getClient(workspace.activeClient.windowId);
-      if (client === -1) {return -1;}
-      var desktop = layout.activities[client.activityName].desktops[client.desktopIndex];
+      if (client === -1)
+        return -1;
+      var screen = layout.activities[client.activityName].desktops[client.desktopIndex].screens[client.screenIndex];
 
-      if (method === 'vertical' && desktop.columns[client.columnIndex].swapClient(direction, client.clientIndex) !== 0) {return -1;}
-      if (method === 'horizontal' && desktop.swapClient(direction, client.clientIndex, client.columnIndex) !== 0) {return -1;}
+      if (method === 'vertical' && screen.columns[client.columnIndex].swapClient(direction, client.clientIndex) !== 0)
+        return -1;
+      if (method === 'horizontal' && screen.swapClient(direction, client.clientIndex, client.columnIndex) !== 0)
+        return -1;
 
-      return desktop.render(client.desktopIndex, client.activityName);
+      return screen.render(client.screenIndex, client.desktopIndex, client.activityName);
     };
   })());
 });
@@ -959,32 +1033,34 @@ workspace.clientUnminimized.connect (function (client)
 [
   {text: 'Left', shortcut: 'Left', direction: -1},
   {text: 'Right', shortcut: 'Right', direction: 1}
-].forEach(function (entry)
+].forEach(function(entry)
 {
-  Algorithm.globalShortcut('Move/Swap ' + entry.text, 'Meta+Ctrl+' + entry.shortcut, (function ()
+  GlobalShortcut('Move/Swap ' + entry.text, 'Meta+Ctrl+' + entry.shortcut, (function()
   {
     var direction = entry.direction;
-    return function ()
+    return function()
     {
       var client = layout.getClient(workspace.activeClient.windowId);
-      if (client === -1) {return -1;}
-      var desktop = layout.activities[client.activityName].desktops[client.desktopIndex];
+      if (client === -1)
+        return -1;
+      var screen = layout.activities[client.activityName].desktops[client.desktopIndex].screens[client.screenIndex];
+      var grid = Parameters.grids[client.screenIndex];
+      if (screen.moveClient(direction, grid.row, grid.column, client.clientIndex, client.columnIndex) !== 0 && screen.swapClient(direction, client.clientIndex, client.columnIndex) !== 0)
+        return -1;
 
-      if (desktop.moveClient(direction, client.clientIndex, client.columnIndex) !== 0 && desktop.swapClient(direction, client.clientIndex, client.columnIndex) !== 0) {return -1;}
-
-      return desktop.render(client.desktopIndex, client.activityName);
+      return screen.render(client.screenIndex, client.desktopIndex, client.activityName);
     };
   })());
 });
 
-Algorithm.globalShortcut('Move Next Desktop/Screen', 'Meta+End', function ()
+GlobalShortcut('Move Next Desktop/Screen', 'Meta+End', function()
 {
   var client = workspace.activeClient;
   if (client.screen < workspace.numScreens - 1)
     return client.screen++;
   else
     client.screen = 0;
-  
+
   if (client.desktop < workspace.desktops) // indexing of desktops starts at 1 by Kwin
     client.desktop++;
   else
@@ -992,14 +1068,14 @@ Algorithm.globalShortcut('Move Next Desktop/Screen', 'Meta+End', function ()
   workspace.currentDesktop = client.desktop;
 });
 
-Algorithm.globalShortcut('Move Previous Desktop/Screen', 'Meta+Home', function ()
+GlobalShortcut('Move Previous Desktop/Screen', 'Meta+Home', function()
 {
   var client = workspace.activeClient;
   if (client.screen > 0)
     return client.screen--;
   else
     client.screen = workspace.numScreens - 1;
-  
+
   if (client.desktop > 1) // indexing of desktops starts at 1 by Kwin
     client.desktop--;
   else
@@ -1010,42 +1086,44 @@ Algorithm.globalShortcut('Move Previous Desktop/Screen', 'Meta+Home', function (
 [
   {text: 'Increase', shortcut: '=', direction: 1},
   {text: 'Decrease', shortcut: '-', direction: -1}
-].forEach (function (entry)
+].forEach(function(entry)
 {
-  Algorithm.globalShortcut(entry.text + ' Size', 'Meta+' + entry.shortcut, (function ()
+  GlobalShortcut(entry.text + ' Size', 'Meta+' + entry.shortcut, (function()
   {
     var direction = entry.direction;
-    return function ()
+    return function()
     {
       var client = layout.getClient(workspace.activeClient.windowId);
-      if (client === -1) {return -1;}
-      var desktop = layout.activities[client.activityName].desktops[client.desktopIndex];
-      desktop.columns[client.columnIndex].changeDivider('both', direction * Parameters.dividerStepSize, client.clientIndex);
-      desktop.changeDivider('both', direction * Parameters.dividerStepSize, client.columnIndex);
+      if (client === -1)
+        return -1;
+      var screen = layout.activities[client.activityName].desktops[client.desktopIndex].screens[client.screenIndex];
+      screen.columns[client.columnIndex].changeDivider('both', direction * Parameters.dividerStepSize, client.clientIndex);
+      screen.changeDivider('both', direction * Parameters.dividerStepSize, client.columnIndex);
 
-      return desktop.render(client.desktopIndex, client.activityName);
+      return screen.render(client.screenIndex, client.desktopIndex, client.activityName);
     };
   })());
 });
 
-Algorithm.globalShortcut('Minimize Others/Unminimize Desktop', 'Meta+M', function ()
+GlobalShortcut('Minimize Others/Unminimize Desktop', 'Meta+M', function()
 {
-  if (!layout.activities.hasOwnProperty(workspace.currentActivity)) {return -1;}
-  var desktop = layout.activities[workspace.currentActivity].desktops[Algorithm.currentIndex()];
+  if (!layout.activities.hasOwnProperty(workspace.currentActivity))
+    return -1;
+  var screen = layout.activities[workspace.currentActivity].desktops[workspace.currentDesktop - 1].screens[workspace.activeScreen];
   var i, j, column;
   var nclients = 0, nminimized = 0;
-  for (i = 0; i < desktop.ncolumns(); i++)
+  for (i = 0; i < screen.columns.length; i++)
   {
-    nclients += desktop.columns[i].nclients();
-    nminimized += desktop.columns[i].nminimized();
+    nclients += screen.columns[i].clients.length;
+    nminimized += screen.columns[i].nminimized();
   }
 
   if (nclients - nminimized <= 1)
   {
-    for (i = 0; i < desktop.ncolumns(); i++)
+    for (i = 0; i < screen.columns.length; i++)
     {
-      column = desktop.columns[i];
-      for (j = 0; j < column.nclients(); j++)
+      column = screen.columns[i];
+      for (j = 0; j < column.clients.length; j++)
       {
         column.clients[j].minimized = false;
       }
@@ -1054,70 +1132,66 @@ Algorithm.globalShortcut('Minimize Others/Unminimize Desktop', 'Meta+M', functio
   else
   {
     var client = layout.getClient(workspace.activeClient.windowId);
-    if (client === -1) {return -1;}
+    if (client === -1)
+      return -1;
 
-    for (i = 0; i < desktop.ncolumns(); i++)
+    for (i = 0; i < screen.columns.length; i++)
     {
-      column = desktop.columns[i];
-      for (j = 0; j < column.nclients(); j++)
+      column = screen.columns[i];
+      for (j = 0; j < column.clients.length; j++)
       {
-        if (column.clients[j].windowId === client.windowId) {column.clients[j].minimized = false;}
-        else {column.clients[j].minimized = true;}
+        if (column.clients[j].windowId === client.windowId)
+          column.clients[j].minimized = false;
+        else
+          column.clients[j].minimized = true;
       }
     }
   }
   return 0;
 });
 
-Algorithm.globalShortcut('Tile/Float', 'Meta+T', function ()
+GlobalShortcut('Tile/Float', 'Meta+T', function()
 {
   var client = workspace.activeClient;
-  if (client === null)
-  {
+  if (!Client.valid(client) || Client.ignored(client))
     return -1;
-  }
   else if (floatingClients.hasOwnProperty(client.windowId))
-  {
     return Client.tile(client);
-  }
   else if (tiledClients.hasOwnProperty(client.windowId))
-  {
-    client = layout.getClient(client.windowId);
-    if (client === -1) {return -1;}
     return Client.float(client);
-  }
-  return -1;
+  return 0;
 });
 
-Algorithm.globalShortcut('Close Desktop', 'Meta+Q', function ()
+GlobalShortcut('Close Desktop', 'Meta+Q', function()
 {
   // looping is done backwards as the array is decreased in size in every iteration thus forward looping will result in skipping elements
-  if (!layout.activities.hasOwnProperty(workspace.currentActivity)) {return -1;}
-  var desktop = layout.activities[workspace.currentActivity].desktops[Algorithm.currentIndex()];
+  if (!layout.activities.hasOwnProperty(workspace.currentActivity))
+    return -1;
+  var screen = layout.activities[workspace.currentActivity].desktops[workspace.currentDesktop - 1].screens[workspace.activeScreen];
 
-  for (var i = desktop.ncolumns() - 1; i >= 0; i--)
+  for (var i = screen.columns.length - 1; i >= 0; i--)
   {
-    var column = desktop.columns[i];
-    for (var j = column.nclients() - 1; j >= 0; j--)
-    {
+    var column = screen.columns[i];
+    for (var j = column.clients.length - 1; j >= 0; j--)
       column.clients[j].closeWindow();
-    }
   }
   return 0; // render is not needed as the close signal is connected
 });
 
-Algorithm.globalShortcut('Toggle Border', 'Meta+B', function ()
+GlobalShortcut('Toggle Border', 'Meta+B', function()
 {
   Parameters.border = !Parameters.border;
   return layout.render();
 });
 
-Algorithm.globalShortcut('Refresh', 'Meta+R', function ()
+GlobalShortcut('Refresh', 'Meta+R', function()
 {
   var clients = workspace.clientList();
   for (var i = 0; i < clients.length; i++)
   {
-    if (clients[i] === null || floatingClients.hasOwnProperty(clients[i].windowId)) {continue;}
+    var client = clients[i];
+    if (!Client.valid(client) || Client.managed(client) || Client.ignored(client))
+      continue;
     Client.tile(clients[i]);
   }
   return layout.render();

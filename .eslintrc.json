@@ -43,6 +43,10 @@
       "error",
       {"max": 1}
     ],
+    "no-prototype-builtins":
+    [
+      "off"
+    ],
     "no-multi-spaces":
     [
       "error"
@@ -74,10 +78,15 @@
       "error",
       "never"
     ],
+    "func-call-spacing":
+    [
+      "error",
+      "never"
+    ],
     "space-before-function-paren":
     [
       "error",
-      "always"
+      "never"
     ],
     "eqeqeq":
     [
