@@ -665,6 +665,7 @@ function Layout ()
 
 var tiledClients = {}; // windowId of added clients
 var floatingClients = {}; // windowId of floating clients
+var floatingDesktops = {}; // ids of desktops where tiling is disabled
 var layout = new Layout(); // main class, contains all methods
 
 // --------------
@@ -907,7 +908,7 @@ var Client =
 workspace.clientActivated.connect (function (client) // clientAdded does not work for a lot of clients
 {
   if (client === null || floatingClients.hasOwnProperty(client.windowId)) {return -1;}
-  if (!Parameters.enabled) {return Client.float(client);}
+  if (Parameters.enabled === floatingDesktops.hasOwnProperty(Converter.currentIndex())) {return Client.float(client);}
   return Client.tile(client); // validate does floating already, do not check here and float on fail
 });
 
@@ -1102,20 +1103,23 @@ registerShortcut ('Grid-Tiling: Tile/Float', 'Grid-Tiling: Tile/Float', 'Meta+T'
 
 registerShortcut ('Grid-Tiling: Toggle Tile/Float Current Desktop', 'Grid-Tiling: Toggle Tile/Float Current Desktop', 'Meta+Shift+T', function ()
 {
-  Parameters.enabled = !Parameters.enabled;
+  var different;
+  if (floatingDesktops.hasOwnProperty(Converter.currentIndex())) {
+    delete floatingDesktops[Converter.currentIndex()];
+    different = false;
+  } else {
+    floatingDesktops[Converter.currentIndex()] = true;
+    different = true;
+  }
 
   var clients = workspace.clientList();
-  if (Parameters.enabled) {
-    for (var i = 0; i < clients.length; i++)
-    {
-      if (clients[i] === null || clients[i].desktop !== workspace.currentDesktop) {continue;}
-      Client.tile(clients[i]);
-    }
-  } else {
-    for (var i = 0; i < clients.length; i++)
-    {
-      if (clients[i] === null || clients[i].desktop !== workspace.currentDesktop || floatingClients.hasOwnProperty(clients[i].windowId)) {continue;}
+  for (var i = 0; i < clients.length; i++)
+  {
+    if (clients[i] === null || clients[i].desktop !== workspace.currentDesktop) {continue;}
+    if (Parameters.enabled === different) {
       Client.float(clients[i]);
+    } else {
+      Client.tile(clients[i]);
     }
   }
 
