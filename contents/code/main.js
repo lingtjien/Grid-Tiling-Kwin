@@ -59,7 +59,7 @@ var Parameters =
   dividerBounds: Number(readConfig('dividerBounds', 0.3)),
   dividerStepSize: Number(readConfig('dividerStepSize', 0.05)),
   border: Algorithm.toBool(readConfig('border', false)),
-  enabled: readConfig('startEnabled', true),
+  enabled: (readConfig('startEnabled', true) === true),
   margin:
   {
     top: Number(readConfig('topMargin', 0)),
