@@ -714,14 +714,6 @@ function Layout()
   };
 }
 
-// ----
-// Data
-// ----
-
-var tiledClients = {}; // windowId of added clients
-var floatingClients = {}; // windowId of floating clients
-var layout = new Layout(); // main class, contains all methods
-
 // --------------
 // Client Methods
 // --------------
@@ -730,7 +722,7 @@ var Client =
 {
   valid: function(client)
   {
-    return client !== null && client.activities.length <= 1;
+    return client && client.activities.length <= 1;
   },
   managed: function(client)
   {
@@ -850,6 +842,14 @@ var Client =
     columns[client.columnIndex].clients[client.clientIndex] = columns[i].clients[j];
     columns[i].clients[j] = client;
     return 0;
+  },
+  init: function(client)
+  {
+    if (!Client.valid(client) || Client.managed(client) || Client.ignored(client))
+      return -1;
+    if (Parameters.floatingCaptions.indexOf(client.caption.toString()) !== -1 || Parameters.floatingClients.some(function(name) {return client.resourceClass.toString().indexOf(name) !== -1 || client.resourceName.toString().indexOf(name) !== -1;}) || Client.tile(client) !== 0)
+      floatingClients[client.windowId] = true;
+    return 0;
   }
 };
 
@@ -947,11 +947,7 @@ Client.addSignals = function(client)
 
 workspace.clientActivated.connect(function(client) // clientAdded does not work for a lot of clients
 {
-  if (!Client.valid(client) || Client.managed(client) || Client.ignored(client))
-    return -1;
-  if (Parameters.floatingCaptions.indexOf(client.caption.toString()) !== -1 || Parameters.floatingClients.some(function(name) {return client.resourceClass.toString().indexOf(name) !== -1 || client.resourceName.toString().indexOf(name) !== -1;}) || Client.tile(client) !== 0)
-    floatingClients[client.windowId] = true;
-  return 0;
+  return Client.init(client);
 });
 
 workspace.clientRemoved.connect(function(client)
@@ -1162,37 +1158,43 @@ GlobalShortcut('Tile/Float', 'Meta+T', function()
   return 0;
 });
 
-GlobalShortcut('Close Desktop', 'Meta+Q', function()
-{
-  // looping is done backwards as the array is decreased in size in every iteration thus forward looping will result in skipping elements
-  if (!layout.activities.hasOwnProperty(workspace.currentActivity))
-    return -1;
-  var screen = layout.activities[workspace.currentActivity].desktops[workspace.currentDesktop - 1].screens[workspace.activeScreen];
-
-  for (var i = screen.columns.length - 1; i >= 0; i--)
-  {
-    var column = screen.columns[i];
-    for (var j = column.clients.length - 1; j >= 0; j--)
-      column.clients[j].closeWindow();
-  }
-  return 0; // render is not needed as the close signal is connected
-});
-
 GlobalShortcut('Toggle Border', 'Meta+B', function()
 {
   Parameters.border = !Parameters.border;
   return layout.render();
 });
 
+GlobalShortcut('Close Desktop', 'Meta+Q', function()
+{
+  // looping is done backwards as the array is decreased in size in every iteration thus forward looping will result in skipping elements
+  var clients = workspace.clientList();
+  for (var i = clients.length - 1; i >= 0; i--)
+  {
+    var client = clients[i];
+    if (!client || client.screen !== workspace.activeScreen || client.desktop !== workspace.currentDesktop || client.activities[0] !== workspace.currentActivity)
+      continue;
+    client.closeWindow();
+  }
+});
+
 GlobalShortcut('Refresh', 'Meta+R', function()
+{
+  InitAll();
+  return layout.render();
+});
+
+// ----
+// Main
+// ----
+
+var tiledClients = {}; // windowId of added clients
+var floatingClients = {}; // windowId of floating clients
+var layout = new Layout(); // main class, contains all methods
+
+function InitAll()
 {
   var clients = workspace.clientList();
   for (var i = 0; i < clients.length; i++)
-  {
-    var client = clients[i];
-    if (!Client.valid(client) || Client.managed(client) || Client.ignored(client))
-      continue;
-    Client.tile(clients[i]);
-  }
-  return layout.render();
-});
+    Client.init(clients[i]);
+}
+InitAll();
