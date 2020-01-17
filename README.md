@@ -37,22 +37,22 @@ Delete the linked or copied files that you created during installation. To remov
 
 ## Functionality
 - automatically tile clients, up to any grid size of clients per desktop
-  - new clients are first attempted to be added to your current desktop, to the column with the least number of clients.
+  - new clients are first attempted to be added the desktop and screen the client was started on, to the column with the most amount of space left
   - the size of the grid (row & column) is supplied in the UI per screen and separated by a comma (first element in row & column are for your first screen and so forth...)
-  - you **must** supply a grid for every screens that you have connected (or plan to connect)
+  - you **must** supply a grid for every screens that you have connected (and plan to connect)
 
 ![](http://tiny.cc/tiling-2x2)
 ![](http://tiny.cc/tiling-2x3)
 
 - restriction of minimum space a client can occupy on a virtual desktop, as in the amount of clients this client can share a virtual desktop with
-  - the minimum is defined by an **integer** larger or equal to `1`
+  - a list of comma seperated numbers, larger or equal to `1`
   - defaults to the maximum which is the number of rows multiplied by columns (of the largest grid)
   - a size of `1` is the largest which means that it can only ever exist alone on a virtual desktop, size of `2` means that it can exist with one other client together on a virtual desktop and so forth...
 
 ![](http://tiny.cc/minsize-1)
 ![](http://tiny.cc/minsize-2)
 
-- move clients between virtual desktops (supports the default KWin shortcuts). `Grid-Tiling: Move *Next/Previous* Desktop/Screen` moves the client to the next desktop or screen that has space.
+- move clients between virtual desktops (supports the default KWin shortcuts). `Grid-Tiling: Move *Next/Previous* Desktop/Screen` moves the client to the next desktop or screen that has space, prioritizes screen over desktop.
 
 ![](http://tiny.cc/move-desktop-screen)
 

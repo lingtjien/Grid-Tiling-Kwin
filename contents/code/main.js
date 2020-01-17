@@ -514,7 +514,7 @@ function Desktop()
 
   this.addClient = function(client)
   {
-    var i = workspace.activeScreen;
+    var i = client.screen;
     do
     {
       while (i >= this.screens.length)
@@ -527,7 +527,7 @@ function Desktop()
       if (++i >= workspace.numScreens)
         i = 0;
     }
-    while (i !== workspace.activeScreen);
+    while (i !== client.screen);
     return -1;
   };
 
@@ -1171,15 +1171,14 @@ GlobalShortcut('Close Desktop', 'Meta+Q', function()
   for (var i = clients.length - 1; i >= 0; i--)
   {
     var client = clients[i];
-    if (!client || client.screen !== workspace.activeScreen || client.desktop !== workspace.currentDesktop || client.activities[0] !== workspace.currentActivity)
-      continue;
-    client.closeWindow();
+    if (client && client.screen === workspace.activeScreen && client.desktop === workspace.currentDesktop && client.activities.indexOf(workspace.currentActivity) !== -1)
+      client.closeWindow();
   }
 });
 
 GlobalShortcut('Refresh', 'Meta+R', function()
 {
-  InitAll();
+  InitClients();
   return layout.render();
 });
 
@@ -1191,10 +1190,10 @@ var tiledClients = {}; // windowId of added clients
 var floatingClients = {}; // windowId of floating clients
 var layout = new Layout(); // main class, contains all methods
 
-function InitAll()
+function InitClients()
 {
   var clients = workspace.clientList();
   for (var i = 0; i < clients.length; i++)
     Client.init(clients[i]);
 }
-InitAll();
+InitClients();
