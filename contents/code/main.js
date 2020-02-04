@@ -976,7 +976,6 @@ workspace.clientMinimized.connect(function(client)
   client = layout.getClient(client.windowId);
   if (client === -1)
     return -1;
-  client.minimized = true;
   return layout.activities[client.activityName].desktops[client.desktopIndex].screens[client.screenIndex].render(client.screenIndex, client.desktopIndex, client.activityName);
 });
 
@@ -985,7 +984,6 @@ workspace.clientUnminimized.connect(function(client)
   client = layout.getClient(client.windowId);
   if (client === -1)
     return -1;
-  client.minimized = false;
   return layout.activities[client.activityName].desktops[client.desktopIndex].screens[client.screenIndex].render(client.screenIndex, client.desktopIndex, client.activityName);
 });
 
