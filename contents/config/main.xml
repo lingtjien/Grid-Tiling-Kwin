@@ -5,11 +5,11 @@
       http://www.kde.org/standards/kcfg/1.0/kcfg.xsd" >
     <kcfgfile name=""/>
     <group name="">
-      <entry name="gridRows" type="string">
+      <entry name="row" type="string">
         <label>the number of rows a grid uses, can be supplied differently per screen</label>
         <default>2, 2</default>
       </entry>
-      <entry name="gridColumns" type="string">
+      <entry name="column" type="string">
         <label>the number of columns a grid uses, can be supplied differently per screen</label>
         <default>2, 3</default>
       </entry>
@@ -17,57 +17,53 @@
         <label>gap size between windows in px</label>
         <default>16</default>
       </entry>
-      <entry name="dividerBounds" type="double">
+      <entry name="dividerBound" type="double">
         <label>divider from this value to 1-value</label>
-        <default>0.3</default>
+        <default>0.4</default>
       </entry>
       <entry name="dividerStepSize" type="double">
         <label>increment and decrement size of the divider</label>
         <default>0.05</default>
       </entry>
+      <entry name="tile" type="bool">
+        <label>default state of tiling on/off at start</label>
+        <default>true</default>
+      </entry>
       <entry name="border" type="bool">
         <label>default state of borders on/off at start</label>
         <default>false</default>
       </entry>
-      <entry name="topMargin" type="int">
+      <entry name="marginTop" type="int">
         <label>amount of space at the top in px</label>
         <default>0</default>
       </entry>
-      <entry name="bottomMargin" type="int">
+      <entry name="marginBottom" type="int">
         <label>amount of space at the bottom in px</label>
         <default>0</default>
       </entry>
-      <entry name="leftMargin" type="int">
+      <entry name="marginLeft" type="int">
         <label>amount of space at the left in px</label>
         <default>0</default>
       </entry>
-      <entry name="rightMargin" type="int">
+      <entry name="marginRight" type="int">
         <label>amount of space at the right in px</label>
         <default>0</default>
       </entry>
-      <entry name="clientNames" type="string">
+      <entry name="minSpaceName" type="string">
         <label>names of the clients which define a minimum space</label>
         <default>texstudio, inkscape, krita, gimp, designer, creator, kdenlive, kdevelop, chromium, kate, spotify</default>
       </entry>
-      <entry name="clientSpaces" type="string">
+      <entry name="minSpaceValue" type="string">
         <label>minimum spaces of the clients which define a mimimum space</label>
         <default>1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2</default>
       </entry>
-      <entry name="ignoredClients" type="string">
+      <entry name="ignoredName" type="string">
         <label>ignored clients</label>
         <default>wine, overwatch</default>
       </entry>
-      <entry name="ignoredCaptions" type="string">
+      <entry name="ignoredCaption" type="string">
         <label>ignored captions</label>
         <default>Trace Bitmap (Shift+Alt+B), Document Properties (Shift+Ctrl+D)</default>
-      </entry>
-      <entry name="floatingClients" type="string">
-        <label>floating clients</label>
-        <default></default>
-      </entry>
-      <entry name="floatingCaptions" type="string">
-        <label>floating captions</label>
-        <default></default>
       </entry>
     </group>
 </kcfg>

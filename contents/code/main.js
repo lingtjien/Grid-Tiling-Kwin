@@ -59,23 +59,22 @@ var Algorithm =
 var Parameters =
 {
   prefix: 'Grid-Tiling: ',
-  grids: Algorithm.createGrids(readConfig('gridRows', '2, 2').toString(), readConfig('gridColumns', '2, 3').toString()),
+  grids: Algorithm.createGrids(readConfig('row', '2, 2').toString(), readConfig('column', '2, 3').toString()),
   gap: Number(readConfig('gap', 16)),
-  dividerBounds: Number(readConfig('dividerBounds', 0.3)),
+  dividerBounds: Number(readConfig('dividerBound', 0.4)),
   dividerStepSize: Number(readConfig('dividerStepSize', 0.05)),
+  tile: Algorithm.toBool(readConfig('tile', true)),
   border: Algorithm.toBool(readConfig('border', false)),
   margin:
   {
-    top: Number(readConfig('topMargin', 0)),
-    bottom: Number(readConfig('bottomMargin', 0)),
-    left: Number(readConfig('leftMargin', 0)),
-    right: Number(readConfig('rightMargin', 0))
+    top: Number(readConfig('marginTop', 0)),
+    bottom: Number(readConfig('marginBottom', 0)),
+    left: Number(readConfig('marginLeft', 0)),
+    right: Number(readConfig('marginRight', 0))
   },
-  minSpaces: Algorithm.createMinSpaces(readConfig('clientNames', 'texstudio, inkscape, krita, gimp, designer, creator, kdenlive, kdevelop, chromium, kate, spotify').toString(), readConfig('clientSpaces', '1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2').toString()),
-  ignoredClients: Algorithm.trimSplitString('ksmserver, krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, '.concat(readConfig('ignoredClients', 'wine, overwatch').toString())),
-  ignoredCaptions: Algorithm.trimSplitString(readConfig('ignoredCaptions', 'Trace Bitmap (Shift+Alt+B), Document Properties (Shift+Ctrl+D)').toString()),
-  floatingClients: Algorithm.trimSplitString(readConfig('floatingClients', '').toString()),
-  floatingCaptions: Algorithm.trimSplitString(readConfig('floatingCaptions', '').toString())
+  minSpaces: Algorithm.createMinSpaces(readConfig('minSpaceName', 'texstudio, inkscape, krita, gimp, designer, creator, kdenlive, kdevelop, chromium, kate, spotify').toString(), readConfig('minSpaceValue', '1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2').toString()),
+  ignoredClients: Algorithm.trimSplitString('ksmserver, krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, '.concat(readConfig('ignoredName', 'wine, overwatch').toString())),
+  ignoredCaptions: Algorithm.trimSplitString(readConfig('ignoredCaption', 'Trace Bitmap (Shift+Alt+B), Document Properties (Shift+Ctrl+D)').toString())
 };
 Parameters.smallestSpace = Algorithm.smallestSpace(Parameters.grids);
 
@@ -847,7 +846,7 @@ var Client =
   {
     if (!Client.valid(client) || Client.managed(client) || Client.ignored(client))
       return -1;
-    if (Parameters.floatingCaptions.indexOf(client.caption.toString()) !== -1 || Parameters.floatingClients.some(function(name) {return client.resourceClass.toString().indexOf(name) !== -1 || client.resourceName.toString().indexOf(name) !== -1;}) || Client.tile(client) !== 0)
+    if (!Parameters.tile || Client.tile(client) !== 0)
       floatingClients[client.windowId] = true;
     return 0;
   }
@@ -1154,6 +1153,11 @@ GlobalShortcut('Tile/Float', 'Meta+T', function()
   else if (tiledClients.hasOwnProperty(client.windowId))
     return Client.float(client);
   return 0;
+});
+
+GlobalShortcut('Toggle Tile', 'Meta+Shift+T', function()
+{
+  Parameters.tile = !Parameters.tile;
 });
 
 GlobalShortcut('Toggle Border', 'Meta+B', function()

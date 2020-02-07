@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>480</width>
-    <height>550</height>
+    <height>510</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>480</width>
-    <height>550</height>
+    <height>510</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -23,86 +23,107 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>10</y>
+     <y>0</y>
      <width>460</width>
-     <height>531</height>
+     <height>503</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="main">
     <item>
-     <layout class="QVBoxLayout" name="gridLayout">
+     <layout class="QHBoxLayout" name="gridHeaderLayout">
       <item>
-       <layout class="QHBoxLayout" name="gridTextLayout">
-        <item>
-         <spacer name="gridTextLeftSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QLabel" name="gridTextLabel">
-          <property name="toolTip">
-           <string/>
-          </property>
-          <property name="text">
-           <string>Grid Sizes</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="gridTextRightSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
+       <spacer name="gridHeaderLeftSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="gridRowsLayout">
-        <item>
-         <widget class="QLabel" name="gridRowsLabel">
-          <property name="text">
-           <string>Row</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="kcfg_gridRows"/>
-        </item>
-       </layout>
+       <widget class="QLabel" name="gridHeaderLabel">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Grid Size</string>
+        </property>
+       </widget>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="gridColumnsLayout">
-        <item>
-         <widget class="QLabel" name="gridColumnsLabel">
-          <property name="text">
-           <string>Column</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="kcfg_gridColumns"/>
-        </item>
-       </layout>
+       <spacer name="gridHeaderRightSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="rowLayout">
+      <item>
+       <widget class="QLabel" name="rowLabel">
+        <property name="text">
+         <string>Row</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="kcfg_row"/>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="columnLayout">
+      <item>
+       <widget class="QLabel" name="columnLabel">
+        <property name="text">
+         <string>Column</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="kcfg_column"/>
       </item>
      </layout>
     </item>
     <item>
      <widget class="Line" name="lineDivider0">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="toggleLayout">
+      <item>
+       <widget class="QCheckBox" name="kcfg_tile">
+        <property name="text">
+         <string>Tile</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="kcfg_border">
+        <property name="text">
+         <string>Border</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="Line" name="lineDivider1">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
@@ -125,14 +146,14 @@
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="dividerBoundsLabel">
+       <widget class="QLabel" name="dividerBoundLabel">
         <property name="text">
-         <string>Bounds</string>
+         <string>Bound</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QDoubleSpinBox" name="kcfg_dividerBounds">
+       <widget class="QDoubleSpinBox" name="kcfg_dividerBound">
         <property name="maximum">
          <double>0.500000000000000</double>
         </property>
@@ -158,108 +179,6 @@
         </property>
        </widget>
       </item>
-      <item>
-       <widget class="QCheckBox" name="kcfg_border">
-        <property name="text">
-         <string>Border</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <widget class="Line" name="lineDivider1">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <layout class="QVBoxLayout" name="marginLayout">
-      <item>
-       <layout class="QHBoxLayout" name="marginsTextLayout">
-        <item>
-         <spacer name="marginsTextLeftSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QLabel" name="marginsTextLabel">
-          <property name="layoutDirection">
-           <enum>Qt::LeftToRight</enum>
-          </property>
-          <property name="text">
-           <string>Margins</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="marginsTextRightSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="marginSizesLayout">
-        <item>
-         <widget class="QLabel" name="leftLabel">
-          <property name="text">
-           <string>Left</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QSpinBox" name="kcfg_leftMargin"/>
-        </item>
-        <item>
-         <widget class="QLabel" name="bottomLabel">
-          <property name="text">
-           <string>Bottom</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QSpinBox" name="kcfg_bottomMargin"/>
-        </item>
-        <item>
-         <widget class="QLabel" name="topLabel">
-          <property name="text">
-           <string>Top</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QSpinBox" name="kcfg_topMargin"/>
-        </item>
-        <item>
-         <widget class="QLabel" name="rightLabel">
-          <property name="text">
-           <string>Right</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QSpinBox" name="kcfg_rightMargin"/>
-        </item>
-       </layout>
-      </item>
      </layout>
     </item>
     <item>
@@ -270,85 +189,86 @@
      </widget>
     </item>
     <item>
-     <layout class="QVBoxLayout" name="clientLayout">
+     <layout class="QHBoxLayout" name="marginHeaderLayout">
       <item>
-       <layout class="QHBoxLayout" name="clientTextLayout">
-        <item>
-         <spacer name="clientTextLeftSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QLabel" name="clientTextLabel">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Client Min Space</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="clientTextRightSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
+       <spacer name="marginHeaderLeftSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="clientNamesLayout">
-        <item>
-         <widget class="QLabel" name="clientNamesLabel">
-          <property name="text">
-           <string>Name</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="kcfg_clientNames">
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-       </layout>
+       <widget class="QLabel" name="marginHeaderLabel">
+        <property name="layoutDirection">
+         <enum>Qt::LeftToRight</enum>
+        </property>
+        <property name="text">
+         <string>Margin</string>
+        </property>
+       </widget>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="clientSpacesLayout">
-        <item>
-         <widget class="QLabel" name="clientSpacesLabel">
-          <property name="text">
-           <string>Space</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="kcfg_clientSpaces">
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-       </layout>
+       <spacer name="marginHeaderRightSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="marginLayout">
+      <item>
+       <widget class="QLabel" name="marginLeftLabel">
+        <property name="text">
+         <string>Left</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="kcfg_marginLeft"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="marginBottomLabel">
+        <property name="text">
+         <string>Bottom</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="kcfg_marginBottom"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="marginTopLabel">
+        <property name="text">
+         <string>Top</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="kcfg_marginTop"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="marginRightLabel">
+        <property name="text">
+         <string>Right</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="kcfg_marginRight"/>
       </item>
      </layout>
     </item>
@@ -360,16 +280,59 @@
      </widget>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="floatingClientsLayout">
+     <layout class="QHBoxLayout" name="minSpaceHeaderLayout">
       <item>
-       <widget class="QLabel" name="floatingClientsLabel">
+       <spacer name="minSpaceHeaderLeftSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="minSpaceHeaderLabel">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="text">
-         <string>Floating Clients</string>
+         <string>Client Min Space</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="kcfg_floatingClients">
+       <spacer name="minSpaceHeaderRightSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="minSpaceNameLayout">
+      <item>
+       <widget class="QLabel" name="minSpaceNameLabel">
+        <property name="text">
+         <string>Name</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="kcfg_minSpaceName">
         <property name="text">
          <string/>
         </property>
@@ -378,16 +341,16 @@
      </layout>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="floatingCaptionsLayout">
+     <layout class="QHBoxLayout" name="minSpaceValueLayout">
       <item>
-       <widget class="QLabel" name="floatingCaptionsLabel">
+       <widget class="QLabel" name="minSpaceValueLabel">
         <property name="text">
-         <string>Floating Captions</string>
+         <string>Space</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="kcfg_floatingCaptions">
+       <widget class="QLineEdit" name="kcfg_minSpaceValue">
         <property name="text">
          <string/>
         </property>
@@ -403,16 +366,59 @@
      </widget>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="ignoredClientsLayout">
+     <layout class="QHBoxLayout" name="ignoredHeaderLayout">
       <item>
-       <widget class="QLabel" name="ignoredClientsLabel">
+       <spacer name="ignoredHeaderLeftSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="ignoredHeaderLabel">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="text">
-         <string>Ignored Clients</string>
+         <string>Client Ignored</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="kcfg_ignoredClients">
+       <spacer name="ignoredHeaderRightSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="ignoredNameLayout">
+      <item>
+       <widget class="QLabel" name="ignoredNameLabel">
+        <property name="text">
+         <string>Name</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="kcfg_ignoredName">
         <property name="text">
          <string/>
         </property>
@@ -421,16 +427,16 @@
      </layout>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="ignoredCaptionsLayout">
+     <layout class="QHBoxLayout" name="ignoredCaptionLayout">
       <item>
-       <widget class="QLabel" name="ignoredCaptionsLabel">
+       <widget class="QLabel" name="ignoredCaptionLabel">
         <property name="text">
-         <string>Ignored Captions</string>
+         <string>Caption</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="kcfg_ignoredCaptions">
+       <widget class="QLineEdit" name="kcfg_ignoredCaption">
         <property name="text">
          <string/>
         </property>
