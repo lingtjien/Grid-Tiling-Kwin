@@ -59,10 +59,15 @@ var Algorithm =
 var Parameters =
 {
   prefix: 'Grid-Tiling: ',
-  grids: Algorithm.createGrids(readConfig('row', '2, 2').toString(), readConfig('column', '2, 3').toString()),
-  gap: Number(readConfig('gap', 16)),
-  dividerBounds: Number(readConfig('dividerBound', 0.4)),
-  dividerStepSize: Number(readConfig('dividerStepSize', 0.05)),
+  grids: Algorithm.createGrids(readConfig('rows', '2, 2').toString(), readConfig('columns', '2, 3').toString()),
+  gap: {
+    value: Number(readConfig('gap', 16)),
+    show: Algorithm.toBool(readConfig('gapShow', true))
+  },
+  divider: {
+    bound: Number(readConfig('dividerBound', 0.4)),
+    step: Number(readConfig('dividerStep', 0.05)),
+  },
   tile: Algorithm.toBool(readConfig('tile', true)),
   border: Algorithm.toBool(readConfig('border', false)),
   margin:
@@ -72,9 +77,11 @@ var Parameters =
     left: Number(readConfig('marginLeft', 0)),
     right: Number(readConfig('marginRight', 0))
   },
-  minSpaces: Algorithm.createMinSpaces(readConfig('minSpaceName', 'texstudio, inkscape, krita, gimp, designer, creator, kdenlive, kdevelop, chromium, kate, spotify').toString(), readConfig('minSpaceValue', '1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2').toString()),
-  ignoredClients: Algorithm.trimSplitString('ksmserver, krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, '.concat(readConfig('ignoredName', 'wine, overwatch').toString())),
-  ignoredCaptions: Algorithm.trimSplitString(readConfig('ignoredCaption', 'Trace Bitmap (Shift+Alt+B), Document Properties (Shift+Ctrl+D)').toString())
+  minSpaces: Algorithm.createMinSpaces(readConfig('minSpaceNames', 'texstudio, inkscape, krita, gimp, designer, creator, kdenlive, kdevelop, chromium, kate, spotify').toString(), readConfig('minSpaceValues', '1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2').toString()),
+  ignored: {
+    names: Algorithm.trimSplitString('ksmserver, krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, '.concat(readConfig('ignoredNames', 'wine, overwatch').toString())),
+    captions: Algorithm.trimSplitString(readConfig('ignoredCaptions', 'Trace Bitmap (Shift+Alt+B), Document Properties (Shift+Ctrl+D)').toString())
+  }
 };
 Parameters.smallestSpace = Algorithm.smallestSpace(Parameters.grids);
 
@@ -163,20 +170,20 @@ function Column()
     if (clientIndex !== this.clients.length - 1 && (direction === 'bottom' || direction === 'both'))
     {
       this.dividers[clientIndex] += change;
-      if (this.dividers[clientIndex] > Parameters.dividerBounds)
-        this.dividers[clientIndex] = Parameters.dividerBounds;
-      if (this.dividers[clientIndex] < -Parameters.dividerBounds)
-        this.dividers[clientIndex] = -Parameters.dividerBounds;
+      if (this.dividers[clientIndex] > Parameters.divider.bound)
+        this.dividers[clientIndex] = Parameters.divider.bound;
+      if (this.dividers[clientIndex] < -Parameters.divider.bound)
+        this.dividers[clientIndex] = -Parameters.divider.bound;
     }
 
     // changes the divider that is for the client before this one
     if (clientIndex !== 0 && (direction === 'top' || direction === 'both'))
     {
       this.dividers[clientIndex - 1] -= change;
-      if (this.dividers[clientIndex - 1] > Parameters.dividerBounds)
-        this.dividers[clientIndex - 1] = Parameters.dividerBounds;
-      if (this.dividers[clientIndex - 1] < -Parameters.dividerBounds)
-        this.dividers[clientIndex - 1] = -Parameters.dividerBounds;
+      if (this.dividers[clientIndex - 1] > Parameters.divider.bound)
+        this.dividers[clientIndex - 1] = Parameters.divider.bound;
+      if (this.dividers[clientIndex - 1] < -Parameters.divider.bound)
+        this.dividers[clientIndex - 1] = -Parameters.divider.bound;
     }
 
     return 0;
@@ -185,10 +192,11 @@ function Column()
   // rendering
   this.render = function(x, width, areaY, areaHeight, columnIndex, screenIndex, desktopIndex, activityName)
   {
+    var gap = Parameters.gap.show ? Parameters.gap.value : 0;
     var nminimized = this.nminimized();
 
-    var y = areaY + Parameters.margin.top + Parameters.gap;
-    var clientHeight = (areaHeight - Parameters.margin.top - Parameters.margin.bottom - ((this.clients.length - nminimized + 1) * Parameters.gap)) / (this.clients.length - nminimized);
+    var y = areaY + Parameters.margin.top + gap;
+    var clientHeight = (areaHeight - Parameters.margin.top - Parameters.margin.bottom - ((this.clients.length - nminimized + 1) * gap)) / (this.clients.length - nminimized);
 
     var current = 0;
     var previous = 0;
@@ -230,7 +238,7 @@ function Column()
       client.screen = screenIndex;
       client.geometry = geometry;
 
-      y += height + Parameters.gap;
+      y += height + gap;
 
       previous = current;
     }
@@ -444,20 +452,20 @@ function Screen() // eslint-disable-line no-redeclare
     if (columnIndex !== this.columns.length - 1 && (direction === 'right' || direction === 'both'))
     {
       this.dividers[columnIndex] += change;
-      if (this.dividers[columnIndex] > Parameters.dividerBounds)
-        this.dividers[columnIndex] = Parameters.dividerBounds;
-      if (this.dividers[columnIndex] < -Parameters.dividerBounds)
-        this.dividers[columnIndex] = -Parameters.dividerBounds;
+      if (this.dividers[columnIndex] > Parameters.divider.bound)
+        this.dividers[columnIndex] = Parameters.divider.bound;
+      if (this.dividers[columnIndex] < -Parameters.divider.bound)
+        this.dividers[columnIndex] = -Parameters.divider.bound;
     }
 
     // changes the divider that is for the client before this one
     if (columnIndex !== 0 && (direction === 'left' || direction === 'both'))
     {
       this.dividers[columnIndex - 1] -= change;
-      if (this.dividers[columnIndex - 1] > Parameters.dividerBounds)
-        this.dividers[columnIndex - 1] = Parameters.dividerBounds;
-      if (this.dividers[columnIndex - 1] < -Parameters.dividerBounds)
-        this.dividers[columnIndex - 1] = -Parameters.dividerBounds;
+      if (this.dividers[columnIndex - 1] > Parameters.divider.bound)
+        this.dividers[columnIndex - 1] = Parameters.divider.bound;
+      if (this.dividers[columnIndex - 1] < -Parameters.divider.bound)
+        this.dividers[columnIndex - 1] = -Parameters.divider.bound;
     }
 
     return 0;
@@ -471,8 +479,9 @@ function Screen() // eslint-disable-line no-redeclare
     var area = workspace.clientArea(0, screenIndex, desktopIndex + 1);
     var nminimized = this.nminimized();
 
-    var x = area.x + Parameters.margin.left + Parameters.gap; // first x coordinate
-    var columnWidth = (area.width - Parameters.margin.left - Parameters.margin.right - ((this.columns.length - nminimized + 1) * Parameters.gap)) / (this.columns.length - nminimized); // width per column
+    var gap = Parameters.gap.show ? Parameters.gap.value : 0;
+    var x = area.x + Parameters.margin.left + gap; // first x coordinate
+    var columnWidth = (area.width - Parameters.margin.left - Parameters.margin.right - ((this.columns.length - nminimized + 1) * gap)) / (this.columns.length - nminimized); // width per column
 
     var current = 0;
     var previous = 0;
@@ -492,7 +501,7 @@ function Screen() // eslint-disable-line no-redeclare
 
       check += this.columns[i].render(x, width, area.y, area.height, i, screenIndex, desktopIndex, activityName);
 
-      x += width + Parameters.gap;
+      x += width + gap;
       previous = current;
     }
     return check;
@@ -729,11 +738,11 @@ var Client =
   },
   ignored: function(client)
   {
-    if (client.specialWindow || client.dialog || Parameters.ignoredCaptions.indexOf(client.caption.toString()) !== -1)
+    if (client.specialWindow || client.dialog || Parameters.ignored.captions.indexOf(client.caption.toString()) !== -1)
       return true;
-    for (var i = 0; i < Parameters.ignoredClients.length; i++)
+    for (var i = 0; i < Parameters.ignored.names.length; i++)
     {
-      if (client.resourceClass.toString().indexOf(Parameters.ignoredClients[i]) !== -1 || client.resourceName.toString().indexOf(Parameters.ignoredClients[i]) !== -1)
+      if (client.resourceClass.toString().indexOf(Parameters.ignored.names[i]) !== -1 || client.resourceName.toString().indexOf(Parameters.ignored.names[i]) !== -1)
         return true;
     }
     return false;
@@ -778,6 +787,7 @@ var Client =
   },
   resized: function(client, screen)
   {
+    var gap = Parameters.gap.show ? Parameters.gap.value : 0;
     var diff = {
       x: client.geometry.x - client.geometryRender.x,
       y: client.geometry.y - client.geometryRender.y,
@@ -790,8 +800,8 @@ var Client =
     var area = workspace.clientArea(0, client.screen, client.desktop);
     var nclients = screen.columns[client.columnIndex].clients.length - screen.columns[client.columnIndex].nminimized();
     var ncolumns = screen.columns.length - screen.nminimized();
-    var clientHeight = (area.height - Parameters.margin.top - Parameters.margin.bottom - ((nclients + 1) * Parameters.gap)) / nclients;
-    var columnWidth = (area.width - Parameters.margin.left - Parameters.margin.right - ((ncolumns + 1) * Parameters.gap)) / ncolumns;
+    var clientHeight = (area.height - Parameters.margin.top - Parameters.margin.bottom - ((nclients + 1) * gap)) / nclients;
+    var columnWidth = (area.width - Parameters.margin.left - Parameters.margin.right - ((ncolumns + 1) * gap)) / ncolumns;
     if (diff.width !== 0)
     {
       if (diff.x === 0)
@@ -810,6 +820,7 @@ var Client =
   },
   moved: function(client, columns)
   {
+    var gap = Parameters.gap.show ? Parameters.gap.value : 0;
     var area = workspace.clientArea(0, client.screen, client.desktop);
     var i = 0; // column target index
     var remainder = client.geometry.x + 0.5 * client.geometry.width - Parameters.margin.left - area.x;
@@ -817,7 +828,7 @@ var Client =
     {
       if (columns[i].nminimized() === columns[i].clients.length)
         continue;
-      remainder -= columns[i].clients[0].geometry.width + Parameters.gap;
+      remainder -= columns[i].clients[0].geometry.width + gap;
     }
     if (i-- === 0)
       return -1;
@@ -828,7 +839,7 @@ var Client =
     {
       if (columns[i].clients[j].minimized)
         continue;
-      remainder -= columns[i].clients[j].geometry.height + Parameters.gap;
+      remainder -= columns[i].clients[j].geometry.height + gap;
     }
     if (j-- === 0)
       return -1;
@@ -1090,8 +1101,8 @@ GlobalShortcut('Move Previous Desktop/Screen', 'Meta+Home', function()
       if (client === -1)
         return -1;
       var screen = layout.activities[client.activityName].desktops[client.desktopIndex].screens[client.screenIndex];
-      screen.columns[client.columnIndex].changeDivider('both', direction * Parameters.dividerStepSize, client.clientIndex);
-      screen.changeDivider('both', direction * Parameters.dividerStepSize, client.columnIndex);
+      screen.columns[client.columnIndex].changeDivider('both', direction * Parameters.divider.step, client.clientIndex);
+      screen.changeDivider('both', direction * Parameters.divider.step, client.columnIndex);
 
       return screen.render(client.screenIndex, client.desktopIndex, client.activityName);
     };
@@ -1158,6 +1169,12 @@ GlobalShortcut('Tile/Float', 'Meta+T', function()
 GlobalShortcut('Toggle Tile', 'Meta+Shift+T', function()
 {
   Parameters.tile = !Parameters.tile;
+});
+
+GlobalShortcut('Toggle Gap', 'Meta+G', function()
+{
+  Parameters.gap.show = !Parameters.gap.show;
+  return layout.render();
 });
 
 GlobalShortcut('Toggle Border', 'Meta+B', function()

@@ -79,7 +79,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="kcfg_row"/>
+       <widget class="QLineEdit" name="kcfg_rows"/>
       </item>
      </layout>
     </item>
@@ -93,7 +93,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="kcfg_column"/>
+       <widget class="QLineEdit" name="kcfg_columns"/>
       </item>
      </layout>
     </item>
@@ -110,6 +110,13 @@
        <widget class="QCheckBox" name="kcfg_tile">
         <property name="text">
          <string>Tile</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="kcfg_gapShow">
+        <property name="text">
+         <string>gap</string>
         </property>
        </widget>
       </item>
@@ -170,7 +177,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QDoubleSpinBox" name="kcfg_dividerStepSize">
+       <widget class="QDoubleSpinBox" name="kcfg_dividerStep">
         <property name="maximum">
          <double>0.500000000000000</double>
         </property>
@@ -332,7 +339,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="kcfg_minSpaceName">
+       <widget class="QLineEdit" name="kcfg_minSpaceNames">
         <property name="text">
          <string/>
         </property>
@@ -350,7 +357,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="kcfg_minSpaceValue">
+       <widget class="QLineEdit" name="kcfg_minSpaceValues">
         <property name="text">
          <string/>
         </property>
@@ -418,7 +425,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="kcfg_ignoredName">
+       <widget class="QLineEdit" name="kcfg_ignoredNames">
         <property name="text">
          <string/>
         </property>
@@ -436,7 +443,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="kcfg_ignoredCaption">
+       <widget class="QLineEdit" name="kcfg_ignoredCaptions">
         <property name="text">
          <string/>
         </property>
