@@ -66,7 +66,7 @@ var Parameters =
   },
   divider: {
     bound: Number(readConfig('dividerBound', 0.4)),
-    step: Number(readConfig('dividerStep', 0.05)),
+    step: Number(readConfig('dividerStep', 0.05))
   },
   tile: Algorithm.toBool(readConfig('tile', true)),
   border: Algorithm.toBool(readConfig('border', false)),
@@ -136,16 +136,6 @@ function Column()
       this.dividers.splice(clientIndex - 1, 1);
     }
     return 0;
-  };
-
-  this.getClient = function(windowId)
-  {
-    for (var i = 0; i < this.clients.length; i++)
-    {
-      if (this.clients[i].windowId === windowId)
-        return this.clients[i];
-    }
-    return -1;
   };
 
   this.swapClient = function(direction, clientIndex)
@@ -358,18 +348,6 @@ function Screen() // eslint-disable-line no-redeclare
     return 0;
   };
 
-  this.getClient = function(windowId)
-  {
-    var client = -1;
-    for (var i = 0; i < this.columns.length; i++)
-    {
-      client = this.columns[i].getClient(windowId);
-      if (client !== -1)
-        break;
-    }
-    return client;
-  };
-
   this.swapColumn = function(direction, columnIndex)
   {
     if (columnIndex < 0 || columnIndex >= this.columns.length)
@@ -549,18 +527,6 @@ function Desktop()
     return 0;
   };
 
-  this.getClient = function(windowId)
-  {
-    var client = -1;
-    for (var i = 0; i < this.screens.length; i++)
-    {
-      client = this.screens[i].getClient(windowId);
-      if (client !== -1)
-        break;
-    }
-    return client;
-  };
-
   this.moveClient = function(targetIndex, clientIndex, columnIndex, screenIndex)
   {
     if (screenIndex < 0 || screenIndex >= this.screens.length || targetIndex < 0 || targetIndex === screenIndex)
@@ -628,18 +594,6 @@ function Activity()
     return 0;
   };
 
-  this.getClient = function(windowId)
-  {
-    var client = -1;
-    for (var i = 0; i < this.desktops.length; i++)
-    {
-      client = this.desktops[i].getClient(windowId);
-      if (client !== -1)
-        break;
-    }
-    return client;
-  };
-
   this.moveClient = function(targetIndex, clientIndex, columnIndex, screenIndex, desktopIndex)
   {
     if (desktopIndex < 0 || desktopIndex >= this.desktops.length || targetIndex < 0 || targetIndex === desktopIndex)
@@ -687,18 +641,6 @@ function Layout()
     if (this.activities[activityName].desktops.length === 0 || workspace.activities.indexOf(activityName) === -1)
       delete this.activities[activityName];
     return 0;
-  };
-
-  this.getClient = function(windowId)
-  {
-    var client = -1;
-    for (var activityName in this.activities)
-    {
-      client = this.activities[activityName].getClient(windowId);
-      if (client !== -1)
-        break;
-    }
-    return client;
   };
 
   this.moveClient = function(client, activityName)
@@ -762,12 +704,12 @@ var Client =
   },
   float: function(client)
   {
-    floatingClients[client.windowId] = true;
+    floatingClients[client.windowId] = client;
     client.keepAbove = true;
     if (tiledClients.hasOwnProperty(client.windowId))
     {
+      client = tiledClients[client.windowId];
       delete tiledClients[client.windowId];
-      client = layout.getClient(client.windowId);
       if (layout.removeClient(client.clientIndex, client.columnIndex, client.screenIndex, client.desktopIndex, client.activityName) === -1)
         return -1;
     }
@@ -777,7 +719,7 @@ var Client =
   {
     if (layout.addClient(Client.addSignals(Client.addMinSpace(client))) !== 0)
       return -1;
-    tiledClients[client.windowId] = true;
+    tiledClients[client.windowId] = client;
     client.keepAbove = false;
     if (floatingClients.hasOwnProperty(client.windowId))
       delete floatingClients[client.windowId];
@@ -858,7 +800,7 @@ var Client =
     if (!Client.valid(client) || Client.managed(client) || Client.ignored(client))
       return -1;
     if (!Parameters.tile || Client.tile(client) !== 0)
-      floatingClients[client.windowId] = true;
+      floatingClients[client.windowId] = client;
     return 0;
   }
 };
@@ -871,9 +813,9 @@ Client.addSignals = function(client)
 {
   client.clientFinishUserMovedResized.connect(function(client)
   {
-    client = layout.getClient(client.windowId);
-    if (client === -1)
+    if (!tiledClients.hasOwnProperty(client.windowId))
       return -1;
+    client = tiledClients[client.windowId];
 
     var screen = layout.activities[client.activityName].desktops[client.desktopIndex].screens[client.screenIndex];
     if (Client.resized(client, screen) === 0 || Client.moved(client, screen.columns) === 0)
@@ -882,9 +824,9 @@ Client.addSignals = function(client)
   });
   client.clientStepUserMovedResized.connect(function(client)
   {
-    client = layout.getClient(client.windowId);
-    if (client === -1)
+    if (!tiledClients.hasOwnProperty(client.windowId))
       return -1;
+    client = tiledClients[client.windowId];
 
     var screen = layout.activities[client.activityName].desktops[client.desktopIndex].screens[client.screenIndex];
     if (Client.resized(client, screen) === 0)
@@ -944,9 +886,9 @@ Client.addSignals = function(client)
   })());
   client.activitiesChanged.connect(function(client)
   {
-    client = layout.getClient(client.windowId);
-    if (client === -1)
+    if (!tiledClients.hasOwnProperty(client.windowId))
       return -1;
+    client = tiledClients[client.windowId];
     if (client.activities.length !== 1)
       return Client.float(client);
     layout.moveClient(client, client.activities[0]);
@@ -964,8 +906,8 @@ workspace.clientRemoved.connect(function(client)
 {
   if (tiledClients.hasOwnProperty(client.windowId))
   {
+    client = tiledClients[client.windowId];
     delete tiledClients[client.windowId];
-    client = layout.getClient(client.windowId);
     if (layout.removeClient(client.clientIndex, client.columnIndex, client.screenIndex, client.desktopIndex, client.activityName) !== 0)
       return -1;
     return layout.render();
@@ -983,17 +925,17 @@ workspace.clientRemoved.connect(function(client)
 
 workspace.clientMinimized.connect(function(client)
 {
-  client = layout.getClient(client.windowId);
-  if (client === -1)
+  if (!tiledClients.hasOwnProperty(client.windowId))
     return -1;
+  client = tiledClients[client.windowId];
   return layout.activities[client.activityName].desktops[client.desktopIndex].screens[client.screenIndex].render(client.screenIndex, client.desktopIndex, client.activityName);
 });
 
 workspace.clientUnminimized.connect(function(client)
 {
-  client = layout.getClient(client.windowId);
-  if (client === -1)
+  if (!tiledClients.hasOwnProperty(client.windowId))
     return -1;
+  client = tiledClients[client.windowId];
   return layout.activities[client.activityName].desktops[client.desktopIndex].screens[client.screenIndex].render(client.screenIndex, client.desktopIndex, client.activityName);
 });
 
@@ -1007,26 +949,21 @@ function GlobalShortcut(name, shortcut, method)
 }
 
 [
-  {text: 'Up', shortcut: 'Up', method: 'vertical', direction: -1},
-  {text: 'Down', shortcut: 'Down', method: 'vertical', direction: 1},
-  {text: 'Left', shortcut: '', method: 'horizontal', direction: -1},
-  {text: 'Right', shortcut: '', method: 'horizontal', direction: 1}
+  {shortcut: 'Up', direction: -1},
+  {shortcut: 'Down', direction: 1}
 ].forEach(function(entry)
 {
-  GlobalShortcut('Swap ' + entry.text, 'Meta+Ctrl+' + entry.shortcut, (function()
+  GlobalShortcut('Swap ' + entry.shortcut, 'Meta+Ctrl+' + entry.shortcut, (function()
   {
-    var method = entry.method;
     var direction = entry.direction;
     return function()
     {
-      var client = layout.getClient(workspace.activeClient.windowId);
-      if (client === -1)
+      if (!tiledClients.hasOwnProperty(workspace.activeClient.windowId))
         return -1;
+      var client = tiledClients[workspace.activeClient.windowId];
       var screen = layout.activities[client.activityName].desktops[client.desktopIndex].screens[client.screenIndex];
 
-      if (method === 'vertical' && screen.columns[client.columnIndex].swapClient(direction, client.clientIndex) !== 0)
-        return -1;
-      if (method === 'horizontal' && screen.swapClient(direction, client.clientIndex, client.columnIndex) !== 0)
+      if (screen.columns[client.columnIndex].swapClient(direction, client.clientIndex) !== 0)
         return -1;
 
       return screen.render(client.screenIndex, client.desktopIndex, client.activityName);
@@ -1044,9 +981,9 @@ function GlobalShortcut(name, shortcut, method)
     var direction = entry.direction;
     return function()
     {
-      var client = layout.getClient(workspace.activeClient.windowId);
-      if (client === -1)
+      if (!tiledClients.hasOwnProperty(workspace.activeClient.windowId))
         return -1;
+      var client = tiledClients[workspace.activeClient.windowId];
       var screen = layout.activities[client.activityName].desktops[client.desktopIndex].screens[client.screenIndex];
       var grid = Parameters.grids[client.screenIndex];
       if (screen.moveClient(direction, grid.row, grid.column, client.clientIndex, client.columnIndex) !== 0 && screen.swapClient(direction, client.clientIndex, client.columnIndex) !== 0)
@@ -1097,9 +1034,9 @@ GlobalShortcut('Move Previous Desktop/Screen', 'Meta+Home', function()
     var direction = entry.direction;
     return function()
     {
-      var client = layout.getClient(workspace.activeClient.windowId);
-      if (client === -1)
+      if (!tiledClients.hasOwnProperty(workspace.activeClient.windowId))
         return -1;
+      var client = tiledClients[workspace.activeClient.windowId];
       var screen = layout.activities[client.activityName].desktops[client.desktopIndex].screens[client.screenIndex];
       screen.columns[client.columnIndex].changeDivider('both', direction * Parameters.divider.step, client.clientIndex);
       screen.changeDivider('both', direction * Parameters.divider.step, client.columnIndex);
@@ -1135,9 +1072,9 @@ GlobalShortcut('Minimize Others/Unminimize Desktop', 'Meta+M', function()
   }
   else
   {
-    var client = layout.getClient(workspace.activeClient.windowId);
-    if (client === -1)
+    if (!tiledClients.hasOwnProperty(workspace.activeClient.windowId))
       return -1;
+    var client = tiledClients[workspace.activeClient.windowId];
 
     for (i = 0; i < screen.columns.length; i++)
     {
