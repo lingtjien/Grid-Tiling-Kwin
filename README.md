@@ -56,21 +56,20 @@ Delete the linked or copied files that you created during installation. To remov
 
 ![](http://tiny.cc/move-desktop-screen)
 
-- swap clients within a virtual desktop
-  - drag client on top of target
-  - `Grid-Tiling: Swap *Left/Up/Down/Right*`
+- swap clients within a virtual desktop by dragging them on top with most overlap
 
-![](http://tiny.cc/swap-shortcut)
 ![](http://tiny.cc/swap-mouse)
 
 - move clients within a virtual desktop, first attempts to move the client if that fails it will fallback to switching.
+  - `Grid-Tiling: Swap *Up/Down*`
   - `Grid-Tiling: Move/Swap *Left/Right*`
 
+![](http://tiny.cc/swap-shortcut)
 ![](http://tiny.cc/move-shortcut)
 
-- dynamically resize clients up to a minimum as defined by `dividerBounds`
+- dynamically resize clients up to a minimum as defined by `dividerBound`
   - dragging client borders by mouse
-  - `Grid-Tiling: *Increase/Decrease* Size`
+  - `Grid-Tiling: *Increase/Decrease* Size` using a step size of `dividerStep`
 
 ![](http://tiny.cc/resize-mouse)
 ![](http://tiny.cc/resize-shortcut)
@@ -83,11 +82,16 @@ Delete the linked or copied files that you created during installation. To remov
 
 ![](http://tiny.cc/un-minimize_all-shortcut)
 
-- toggle between bordered clients `Grid-Tiling: Toggle Borders`
+- toggle gap `Grid-Tiling: Toggle Gap`
+
+![](http://tiny.cc/toggle-gap)
+
+- toggle between bordered clients `Grid-Tiling: Toggle Border`
 
 ![](http://tiny.cc/toggle-border)
 
 - dynamically float and tile clients `Grid-Tiling: Tile/Float`
+- toggle new clients start as tile or float `Grid-Tiling: Toggle Tile`
 
 ![](http://tiny.cc/float-tile)
 
@@ -95,11 +99,12 @@ Delete the linked or copied files that you created during installation. To remov
 
 ![](http://tiny.cc/close-desktop)
 
-- set margins as defined by `topMargin` `bottomMargin` `leftMargin` `rightMargin`
+- set margins as defined by `marginTop` `marginBottom` `marginLeft` `marginRight`
 - set the gap size as defined by `gap`
-- set default borders toggle `borders`
-- add clients to floating lists (clients, captions) defined by `floatingClients` and `floatingCaptions`, these clients start of as floating but can be tiled.
-- add clients to ignored lists (clients, captions) defined by `ignoredClients` and `ignoredCaptions`, these clients are completely ignored and can't be tiled.
+- set default gap show toggle `gapShow`
+- set default tile toggle `tile`
+- set default borders toggle `border`
+- add clients to ignored lists (clients, captions) defined by `ignoredNames` and `ignoredCaptions`, these clients are completely ignored and can't be tiled.
 
 *Note: ignored client names do not have to be an exact match, whereas ignored captions do.*
 
@@ -119,8 +124,10 @@ Delete the linked or copied files that you created during installation. To remov
 - set shortcut `Grid-Tiling: Increase Size` to `Meta+=`
 - set shortcut `Grid-Tiling: Decrease Size` to `Meta+-`
 
-- set shortcut `Grid-Tiling: Toggle Borders` to `Meta+B`
+- set shortcut `Grid-Tiling: Toggle Gap` to `Meta+G`
+- set shortcut `Grid-Tiling: Toggle Border` to `Meta+B`
 
+- set shortcut `Grid-Tiling: Toggle Tile` to `Meta+Shift+T`
 - set shortcut `Grid-Tiling: Tile/Float` to `Meta+T`
 
 - set shortcut `Grid-Tiling: Close Desktop` to `Meta+Q`

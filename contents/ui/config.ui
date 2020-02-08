@@ -70,11 +70,11 @@
      </layout>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="rowLayout">
+     <layout class="QHBoxLayout" name="rowsLayout">
       <item>
-       <widget class="QLabel" name="rowLabel">
+       <widget class="QLabel" name="rowsLabel">
         <property name="text">
-         <string>Row</string>
+         <string>Rows</string>
         </property>
        </widget>
       </item>
@@ -84,11 +84,11 @@
      </layout>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="columnLayout">
+     <layout class="QHBoxLayout" name="columnsLayout">
       <item>
-       <widget class="QLabel" name="columnLabel">
+       <widget class="QLabel" name="columnsLabel">
         <property name="text">
-         <string>Column</string>
+         <string>Columns</string>
         </property>
        </widget>
       </item>
@@ -116,7 +116,7 @@
       <item>
        <widget class="QCheckBox" name="kcfg_gapShow">
         <property name="text">
-         <string>gap</string>
+         <string>Gap</string>
         </property>
        </widget>
       </item>
@@ -141,7 +141,7 @@
       <item>
        <widget class="QLabel" name="gapLabel">
         <property name="text">
-         <string>Gap Size</string>
+         <string>Gap</string>
         </property>
        </widget>
       </item>
