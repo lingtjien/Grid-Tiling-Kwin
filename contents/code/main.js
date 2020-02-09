@@ -138,12 +138,12 @@ function Column()
     return 0;
   };
 
-  this.swapClient = function(direction, clientIndex)
+  this.swapClient = function(amount, clientIndex)
   {
     if (clientIndex < 0 || clientIndex >= this.clients.length)
       return -1;
     var client = this.clients[clientIndex];
-    var i = clientIndex + direction; // target to swap client with
+    var i = clientIndex + amount; // target to swap client with
     if (i < 0 || i >= this.clients.length)
       return -1;
     this.clients[clientIndex] = this.clients[i];
@@ -348,12 +348,12 @@ function Screen() // eslint-disable-line no-redeclare
     return 0;
   };
 
-  this.swapColumn = function(direction, columnIndex)
+  this.swapColumn = function(amount, columnIndex)
   {
     if (columnIndex < 0 || columnIndex >= this.columns.length)
       return -1;
     var column = this.columns[columnIndex];
-    var i = columnIndex + direction; // target to swap client with
+    var i = columnIndex + amount; // target to swap client with
     if (i < 0 || i >= this.columns.length)
       return -1;
     this.columns[columnIndex] = this.columns[i];
@@ -361,7 +361,7 @@ function Screen() // eslint-disable-line no-redeclare
     return 0;
   };
 
-  this.swapClient = function(direction, clientIndex, columnIndex)
+  this.swapClient = function(amount, clientIndex, columnIndex)
   {
     if (columnIndex < 0 || columnIndex >= this.columns.length)
       return -1;
@@ -370,21 +370,21 @@ function Screen() // eslint-disable-line no-redeclare
       return -1;
     var client = column.clients[clientIndex];
 
-    var i = columnIndex + direction; // target to swap client with
+    var i = columnIndex + amount; // target to swap client with
     if (i < 0 || i >= this.columns.length)
       return -1;
     while (this.columns[i].clients.length !== column.clients.length)
     {
-      i += direction;
+      i += amount;
       if (i < 0 || i >= this.columns.length)
-        return this.swapColumn(direction, columnIndex);
+        return this.swapColumn(amount, columnIndex);
     }
     column.clients[clientIndex] = this.columns[i].clients[clientIndex];
     this.columns[i].clients[clientIndex] = client;
     return 0;
   };
 
-  this.moveClient = function(direction, maxRows, maxColumns, clientIndex, columnIndex)
+  this.moveClient = function(amount, maxRows, maxColumns, clientIndex, columnIndex)
   {
     if (columnIndex < 0 || columnIndex >= this.columns.length)
       return -1;
@@ -393,9 +393,9 @@ function Screen() // eslint-disable-line no-redeclare
       return -1;
     var client = column.clients[clientIndex];
 
-    var i = columnIndex + direction; // target to move client to
+    var i = columnIndex + amount; // target to move client to
     while (i >= 0 && i < this.columns.length && (this.columns[i].minSpace() + client.minSpace > 1 / this.columns.length || this.columns[i].clients.length >= maxRows))
-      i += direction;
+      i += amount;
 
     if (i < 0 || i >= this.columns.length)
     {
@@ -949,13 +949,13 @@ function GlobalShortcut(name, shortcut, method)
 }
 
 [
-  {shortcut: 'Up', direction: -1},
-  {shortcut: 'Down', direction: 1}
+  {direction: 'Up', amount: -1},
+  {direction: 'Down', amount: 1}
 ].forEach(function(entry)
 {
-  GlobalShortcut('Swap ' + entry.shortcut, 'Meta+Ctrl+' + entry.shortcut, (function()
+  GlobalShortcut('Swap ' + entry.direction, 'Meta+Ctrl+' + entry.direction, (function()
   {
-    var direction = entry.direction;
+    var amount = entry.amount;
     return function()
     {
       if (!tiledClients.hasOwnProperty(workspace.activeClient.windowId))
@@ -963,7 +963,7 @@ function GlobalShortcut(name, shortcut, method)
       var client = tiledClients[workspace.activeClient.windowId];
       var screen = layout.activities[client.activityName].desktops[client.desktopIndex].screens[client.screenIndex];
 
-      if (screen.columns[client.columnIndex].swapClient(direction, client.clientIndex) !== 0)
+      if (screen.columns[client.columnIndex].swapClient(amount, client.clientIndex) !== 0)
         return -1;
 
       return screen.render(client.screenIndex, client.desktopIndex, client.activityName);
@@ -972,13 +972,13 @@ function GlobalShortcut(name, shortcut, method)
 });
 
 [
-  {text: 'Left', shortcut: 'Left', direction: -1},
-  {text: 'Right', shortcut: 'Right', direction: 1}
+  {direction: 'Left', amount: -1},
+  {direction: 'Right', amount: 1}
 ].forEach(function(entry)
 {
-  GlobalShortcut('Move/Swap ' + entry.text, 'Meta+Ctrl+' + entry.shortcut, (function()
+  GlobalShortcut('Move/Swap ' + entry.direction, 'Meta+Ctrl+' + entry.direction, (function()
   {
-    var direction = entry.direction;
+    var amount = entry.amount;
     return function()
     {
       if (!tiledClients.hasOwnProperty(workspace.activeClient.windowId))
@@ -986,7 +986,7 @@ function GlobalShortcut(name, shortcut, method)
       var client = tiledClients[workspace.activeClient.windowId];
       var screen = layout.activities[client.activityName].desktops[client.desktopIndex].screens[client.screenIndex];
       var grid = Parameters.grids[client.screenIndex];
-      if (screen.moveClient(direction, grid.row, grid.column, client.clientIndex, client.columnIndex) !== 0 && screen.swapClient(direction, client.clientIndex, client.columnIndex) !== 0)
+      if (screen.moveClient(amount, grid.row, grid.column, client.clientIndex, client.columnIndex) !== 0 && screen.swapClient(amount, client.clientIndex, client.columnIndex) !== 0)
         return -1;
 
       return screen.render(client.screenIndex, client.desktopIndex, client.activityName);
@@ -1025,21 +1025,21 @@ GlobalShortcut('Move Previous Desktop/Screen', 'Meta+Home', function()
 });
 
 [
-  {text: 'Increase', shortcut: '=', direction: 1},
-  {text: 'Decrease', shortcut: '-', direction: -1}
+  {text: 'Increase', shortcut: '=', amount: 1},
+  {text: 'Decrease', shortcut: '-', amount: -1}
 ].forEach(function(entry)
 {
   GlobalShortcut(entry.text + ' Size', 'Meta+' + entry.shortcut, (function()
   {
-    var direction = entry.direction;
+    var amount = entry.amount;
     return function()
     {
       if (!tiledClients.hasOwnProperty(workspace.activeClient.windowId))
         return -1;
       var client = tiledClients[workspace.activeClient.windowId];
       var screen = layout.activities[client.activityName].desktops[client.desktopIndex].screens[client.screenIndex];
-      screen.columns[client.columnIndex].changeDivider('both', direction * Parameters.divider.step, client.clientIndex);
-      screen.changeDivider('both', direction * Parameters.divider.step, client.columnIndex);
+      screen.columns[client.columnIndex].changeDivider('both', amount * Parameters.divider.step, client.clientIndex);
+      screen.changeDivider('both', amount * Parameters.divider.step, client.columnIndex);
 
       return screen.render(client.screenIndex, client.desktopIndex, client.activityName);
     };
