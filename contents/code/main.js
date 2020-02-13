@@ -225,7 +225,7 @@ function Column()
       // these properties are from kwin and will thus trigger additional signals, these properties must be set last to prevent the signals that are hooked into this script from triggering before the internal properties have been set
       client.noBorder = !Parameters.border;
       client.desktop = desktopIndex + 1; // KWin desktop index starting at 1
-      client.screen = screenIndex;
+      workspace.sendClientToScreen(client, screenIndex);
       client.geometry = geometry;
 
       y += height + gap;
@@ -996,14 +996,13 @@ GlobalShortcut('Move Next Desktop/Screen', 'Meta+End', function()
 {
   var client = workspace.activeClient;
   if (client.screen < workspace.numScreens - 1)
-    return client.screen++;
-  else
-    client.screen = 0;
+    return workspace.sendClientToScreen(client, client.screen + 1);
 
+  workspace.sendClientToScreen(client, 0);
   if (client.desktop < workspace.desktops) // indexing of desktops starts at 1 by Kwin
     client.desktop++;
   else
-    client.desktop = 0;
+    client.desktop = 1;
   workspace.currentDesktop = client.desktop;
 });
 
@@ -1011,10 +1010,9 @@ GlobalShortcut('Move Previous Desktop/Screen', 'Meta+Home', function()
 {
   var client = workspace.activeClient;
   if (client.screen > 0)
-    return client.screen--;
-  else
-    client.screen = workspace.numScreens - 1;
+    return workspace.sendClientToScreen(client, client.screen - 1);
 
+  workspace.sendClientToScreen(client, workspace.numScreens - 1)
   if (client.desktop > 1) // indexing of desktops starts at 1 by Kwin
     client.desktop--;
   else
