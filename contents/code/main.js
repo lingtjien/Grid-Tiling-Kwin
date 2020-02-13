@@ -849,12 +849,11 @@ Client.addSignals = function(client)
         targetIndex += direction;
         if (targetIndex >= workspace.desktops)
           targetIndex = 0;
-        if (targetIndex < 0)
+        else if (targetIndex < 0)
           targetIndex = workspace.desktops - 1;
         if (targetIndex === start)
-          return -1;
+          break;
       }
-
       activity.render(c.activityName);
       workspace.currentDesktop = c.desktop; // switch to the new desktop
     };
@@ -875,12 +874,11 @@ Client.addSignals = function(client)
         targetIndex += direction;
         if (targetIndex >= workspace.numScreens)
           targetIndex = 0;
-        if (targetIndex < 0)
+        else if (targetIndex < 0)
           targetIndex = workspace.numScreens - 1;
         if (targetIndex === start)
-          return -1;
+          break;
       }
-
       desktop.render(c.desktopIndex, c.activityName);
     };
   })());
