@@ -895,10 +895,7 @@ Client.addSignals = function(client)
   return client;
 };
 
-workspace.clientActivated.connect(function(client) // clientAdded does not work for a lot of clients
-{
-  return Client.init(client);
-});
+workspace.clientActivated.connect(Client.init) // clientAdded does not work for a lot of clients
 
 workspace.clientRemoved.connect(function(client)
 {
