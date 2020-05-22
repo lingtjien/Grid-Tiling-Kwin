@@ -7,11 +7,11 @@
     <group name="">
       <entry name="rows" type="string">
         <label>the number of rows a grid uses, can be supplied differently per screen</label>
-        <default>2, 2</default>
+        <default>2, 2, 2, 2, 2, 2, 2, 2, 2, 2</default>
       </entry>
       <entry name="columns" type="string">
         <label>the number of columns a grid uses, can be supplied differently per screen</label>
-        <default>2, 3</default>
+        <default>2, 2, 2, 2, 2, 2, 2, 2, 2, 2</default>
       </entry>
       <entry name="gap" type="int">
         <label>gap size between clients in px</label>
@@ -63,7 +63,7 @@
       </entry>
       <entry name="ignoredNames" type="string">
         <label>ignored client names</label>
-        <default>wine, overwatch</default>
+        <default>wine, yakuake</default>
       </entry>
       <entry name="ignoredCaptions" type="string">
         <label>ignored client captions</label>

@@ -59,7 +59,7 @@ var Algorithm =
 var Parameters =
 {
   prefix: 'Grid-Tiling: ',
-  grids: Algorithm.createGrids(readConfig('rows', '2, 2').toString(), readConfig('columns', '2, 3').toString()),
+  grids: Algorithm.createGrids(readConfig('rows', '2, 2, 2, 2, 2, 2, 2, 2, 2, 2').toString(), readConfig('columns', '2, 2, 2, 2, 2, 2, 2, 2, 2, 2').toString()),
   gap: {
     value: Number(readConfig('gap', 16)),
     show: Algorithm.toBool(readConfig('gapShow', true))
@@ -79,7 +79,7 @@ var Parameters =
   },
   minSpaces: Algorithm.createMinSpaces(readConfig('minSpaceNames', 'texstudio, inkscape, krita, gimp, designer, creator, kdenlive, kdevelop, chromium, kate, spotify').toString(), readConfig('minSpaceValues', '1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2').toString()),
   ignored: {
-    names: Algorithm.trimSplitString('ksmserver, krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, '.concat(readConfig('ignoredNames', 'wine, overwatch').toString())),
+    names: Algorithm.trimSplitString('ksmserver, krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, '.concat(readConfig('ignoredNames', 'wine, yakuake').toString())),
     captions: Algorithm.trimSplitString(readConfig('ignoredCaptions', 'Trace Bitmap (Shift+Alt+B), Document Properties (Shift+Ctrl+D)').toString())
   }
 };
