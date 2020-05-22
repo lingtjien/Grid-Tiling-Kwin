@@ -672,7 +672,7 @@ var Client =
 {
   valid: function(client)
   {
-    return client && client.activities.length <= 1;
+    return client && client.activities.length <= 1 && client.desktop > 0;
   },
   managed: function(client)
   {
