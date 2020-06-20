@@ -705,6 +705,11 @@ var Client =
   float: function(client)
   {
     floatingClients[client.windowId] = client;
+    if (client.hasOwnProperty('initProps'))
+    {
+      client.noBorder = client.initProps.noBorder;
+      client.geometry = client.initProps.geometry;
+    }
     client.keepAbove = true;
     if (tiledClients.hasOwnProperty(client.windowId))
     {
@@ -719,8 +724,12 @@ var Client =
   {
     if (layout.addClient(Client.addSignals(Client.addMinSpace(client))) !== 0)
       return -1;
-    tiledClients[client.windowId] = client;
+    client.initProps = {
+      noBorder: client.noBorder,
+      geometry: client.geometry
+    };
     client.keepAbove = false;
+    tiledClients[client.windowId] = client;
     if (floatingClients.hasOwnProperty(client.windowId))
       delete floatingClients[client.windowId];
     layout.render();
@@ -895,7 +904,7 @@ Client.addSignals = function(client)
   return client;
 };
 
-workspace.clientActivated.connect(Client.init) // clientAdded does not work for a lot of clients
+workspace.clientActivated.connect(Client.init); // clientAdded does not work for a lot of clients
 
 workspace.clientRemoved.connect(function(client)
 {
@@ -1009,7 +1018,7 @@ GlobalShortcut('Move Previous Desktop/Screen', 'Meta+Home', function()
   if (client.screen > 0)
     return workspace.sendClientToScreen(client, client.screen - 1);
 
-  workspace.sendClientToScreen(client, workspace.numScreens - 1)
+  workspace.sendClientToScreen(client, workspace.numScreens - 1);
   if (client.desktop > 1) // indexing of desktops starts at 1 by Kwin
     client.desktop--;
   else
