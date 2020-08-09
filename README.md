@@ -139,8 +139,9 @@ Delete the linked or copied files that you created during installation. To remov
 
 ## Useful To Know
 - This version of the script uses KWin API methods introduced in 5.18, so use the other branch if you use an older version of KWin.
-- If you have kwin shortcuts added by the script that you no longer need or use (because they got renamed to something else for example), then you can delete the old unused shortcuts by first selecting kwin in the global shortcuts menu and then pressing the `remove the selected component` button (hover mouse over the button to see the text). This action does require you to not have the KWin script active.
-- When you adjust the settings in the menu, you need to turn the script off, apply it, turn it back on and apply it again to register the new values (or re-log/reboot).
+- After installing a KWin script you can activate it in the system settings, here you'll also find the configuration button.
+- When you adjust the settings in the menu, this script needs to be restarted before the settings are applied. You can do this by turning the script off, apply, turn it back on and apply again or a complete KWin restart (re-log/reboot).
+- If you have KWin shortcuts added by the script that you no longer need or use (because they got renamed to something else for example), then you can delete the old unused shortcuts by first selecting KWin in the global shortcuts menu and then pressing the `remove the selected component` button (hover mouse over the button to see the text). This action does require you to not have the KWin script active.
 - Some applications do not render correctly on startup sometimes, just use the global refresh shortcut.
 - Moving clients between desktops using the action menu can sometimes result in wrong placement, just use the global refresh shortcut.
 - Spotify can sometimes not be defined as full or half client, because both the client name and class of spotify are blank at startup.
