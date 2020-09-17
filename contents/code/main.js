@@ -828,7 +828,7 @@ Client.addSignals = function(client)
 
     var screen = layout.activities[client.activityName].desktops[client.desktopIndex].screens[client.screenIndex];
     if (Client.resized(client, screen) === 0 || Client.moved(client, screen.columns) === 0)
-      return screen.render(client.screenIndex, client.desktopIndex, client.activityName);
+      screen.render(client.screenIndex, client.desktopIndex, client.activityName);
     return 0;
   });
   client.clientStepUserMovedResized.connect(function(client)
