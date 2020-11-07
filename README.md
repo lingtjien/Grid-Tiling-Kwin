@@ -110,6 +110,10 @@ Delete the linked or copied files that you created during installation. To remov
 
 ## Recommended Setup
 - set window focus policy to `focus follows mouse - mouse precedence`
+- disable `Allow KDE apps to remember the positions of their own windows`
+  1. window management
+  2. window behavior
+  3. advanced
 
 - set shortcuts `Switch One Desktop *Left/Up/Down/Right*` to `Meta+*Left/Up/Down/Right*`
 - set shortcuts `Grid-Tiling: Swap *Up/Down*` to `Meta+Ctrl+*Up/Down*`
