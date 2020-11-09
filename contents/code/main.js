@@ -70,6 +70,7 @@ var Parameters =
   },
   tile: Algorithm.toBool(readConfig('tile', true)),
   border: Algorithm.toBool(readConfig('border', false)),
+  floatAbove: Algorithm.toBool(readConfig('floatAbove', true)),
   margin:
   {
     top: Number(readConfig('marginTop', 0)),
@@ -710,7 +711,8 @@ var Client =
       client.noBorder = client.initProps.noBorder;
       client.geometry = client.initProps.geometry;
     }
-    client.keepAbove = true;
+    if (Parameters.floatAbove)
+      client.keepAbove = true;
     if (tiledClients.hasOwnProperty(client.windowId))
     {
       client = tiledClients[client.windowId];
@@ -728,7 +730,8 @@ var Client =
       noBorder: client.noBorder,
       geometry: client.geometry
     };
-    client.keepAbove = false;
+    if (Parameters.floatAbove)
+      client.keepAbove = false;
     tiledClients[client.windowId] = client;
     if (floatingClients.hasOwnProperty(client.windowId))
       delete floatingClients[client.windowId];
