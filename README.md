@@ -10,7 +10,7 @@
 kpackagetool5 --type KWin/Script -i *path*
 mkdir -p ~/.local/share/kservices5
 cd ~/.local/share/kservices5
-ln -s *path*/metadata.desktop kwin-script-grid-tiling.desktop 
+ln -s *path*/metadata.desktop kwin-script-grid-tiling.desktop
 ```
 
 ### Local Installation (Advanced)
@@ -22,7 +22,7 @@ ln -s *path*/contents contents
 ln -s *path*/metadata.desktop metadata.desktop
 mkdir -p ~/.local/share/kservices5
 cd ~/.local/share/kservices5
-ln -s *path*/metadata.desktop kwin-script-grid-tiling.desktop 
+ln -s *path*/metadata.desktop kwin-script-grid-tiling.desktop
 ```
 
 *Note: You can replace `ln -s` for `cp`, if you prefer to copy and not have it linked to your cloned repository (if you do this then you're pretty much manually doing what `kpackagetool5` does), using `ln` instead of `cp` will result in an automatic update when you pull the latest changes*
@@ -31,7 +31,7 @@ ln -s *path*/metadata.desktop kwin-script-grid-tiling.desktop
 
 *replace `~/.local/share` for `/usr/share` in Local Installation (Advanced) Method*
 
-## Uninstall  
+## Uninstall
 
 Delete the linked or copied files that you created during installation. To remove installed scripts by `kpackagetool5`, run the same command again but this time with `-r` instead of `-i` to remove (see manual of `kpackagetool5` for more info)
 
@@ -120,7 +120,7 @@ Delete the linked or copied files that you created during installation. To remov
 - set shortcuts `Grid-Tiling: Move/Swap *Left/Right*` to `Meta+Ctrl+*Left/Right*`
 - set shortcuts `Switch To Window *Left/Up/Down/Right*` to `Meta+Alt+*Left/Up/Down/Right*`
 - set shortcuts `Grid-Tiling: Move *Previous/Next* Desktop` to `Meta+*Home/End*`
-- set shortcuts `Window One Desktop *Down/Up*` to `Meta+*PgDn/PgUp*` 
+- set shortcuts `Window One Desktop *Down/Up*` to `Meta+*PgDn/PgUp*`
 
 - set shortcut `Grid-Tiling: Minimize Others/Unminimize Desktop` to `Meta+M`
 - set shortcut `Minimize Window` to `Meta+N`
@@ -146,7 +146,7 @@ Delete the linked or copied files that you created during installation. To remov
 - After installing a KWin script you can activate it in the system settings, here you'll also find the configuration button.
 - When you adjust the settings in the menu, this script needs to be restarted before the settings are applied. You can do this by turning the script off, apply, turn it back on and apply again or a complete KWin restart (re-log/reboot).
 - If you have KWin shortcuts added by the script that you no longer need or use (because they got renamed to something else for example), then you can delete the old unused shortcuts by first selecting KWin in the global shortcuts menu and then pressing the `remove the selected component` button (hover mouse over the button to see the text). This action does require you to not have the KWin script active.
-- Some applications do not render correctly on startup sometimes, just use the global refresh shortcut.
+- Some applications do not always render correctly on startup, this is due to them overwriting the geometry with their own. They sometimes provide settings to disable setting their own geometry. If it still happens, than you can use the global refresh shortcut to let the script set all geometries again.
 - Moving clients between desktops using the action menu can sometimes result in wrong placement, just use the global refresh shortcut.
 - Spotify can sometimes not be defined as full or half client, because both the client name and class of spotify are blank at startup.
 - Dynamically resizing clients with the mouse can result in weird visual artifacts when dragged outside of the bounds, just use the global shortcut that refreshes the layout.
