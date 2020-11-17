@@ -13,7 +13,7 @@
         <label>the number of columns a grid uses, can be supplied differently per screen</label>
         <default>2, 2, 2, 2, 2, 2, 2, 2, 2, 2</default>
       </entry>
-      <entry name="gap" type="int">
+      <entry name="gapValue" type="int">
         <label>gap size between clients in px</label>
         <default>16</default>
       </entry>
@@ -41,19 +41,19 @@
         <label>default keep above state of floating clients</label>
         <default>true</default>
       </entry>
-      <entry name="marginTop" type="int">
+      <entry name="marginT" type="int">
         <label>amount of space at the top in px</label>
         <default>0</default>
       </entry>
-      <entry name="marginBottom" type="int">
+      <entry name="marginB" type="int">
         <label>amount of space at the bottom in px</label>
         <default>0</default>
       </entry>
-      <entry name="marginLeft" type="int">
+      <entry name="marginL" type="int">
         <label>amount of space at the left in px</label>
         <default>0</default>
       </entry>
-      <entry name="marginRight" type="int">
+      <entry name="marginR" type="int">
         <label>amount of space at the right in px</label>
         <default>0</default>
       </entry>
@@ -65,9 +65,13 @@
         <label>minimum spaces of the clients which define a mimimum space</label>
         <default>1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2</default>
       </entry>
+      <entry name="ignoredTypes" type="string">
+        <label>ignored client types</label>
+        <default>specialWindow, dialog</default>
+      </entry>
       <entry name="ignoredNames" type="string">
         <label>ignored client names</label>
-        <default>wine, yakuake</default>
+        <default>ksmserver, krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, wine, yakuake</default>
       </entry>
       <entry name="ignoredCaptions" type="string">
         <label>ignored client captions</label>

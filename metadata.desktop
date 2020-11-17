@@ -4,8 +4,8 @@ Comment=Automatically tile new windows with gaps in any grid size
 Icon=preferences-system-windows-script-test
 Type=Service
 
-X-Plasma-API=javascript
-X-Plasma-MainScript=code/main.js
+X-Plasma-API=declarativescript
+X-Plasma-MainScript=code/Main.qml
 
 X-KDE-PluginInfo-Author=LinG
 X-KDE-PluginInfo-Name=grid-tiling

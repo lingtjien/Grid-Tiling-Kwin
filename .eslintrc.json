@@ -2,12 +2,16 @@
   "globals":
   {
     "workspace": false,
-    "readConfig": false,
-    "registerShortcut": false
+    "KWin": false,
+    "Qt": false,
+    "config": false,
+    "layout": false,
+    "manager": false,
+    "shortcut": false
   },
   "env":
   {
-    "browser": true
+    "es6": true
   },
   "extends": "eslint:recommended",
   "rules":
@@ -20,7 +24,7 @@
     "brace-style":
     [
       "error",
-      "allman",
+      "1tbs",
       {"allowSingleLine": true}
     ],
     "linebreak-style":

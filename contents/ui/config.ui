@@ -146,14 +146,14 @@
     <item>
      <layout class="QHBoxLayout" name="parameterLayout">
       <item>
-       <widget class="QLabel" name="gapLabel">
+       <widget class="QLabel" name="gapValueLabel">
         <property name="text">
          <string>Gap</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QSpinBox" name="kcfg_gap">
+       <widget class="QSpinBox" name="kcfg_gapValue">
         <property name="minimum">
          <number>0</number>
         </property>
@@ -245,44 +245,44 @@
     <item>
      <layout class="QHBoxLayout" name="marginLayout">
       <item>
-       <widget class="QLabel" name="marginLeftLabel">
+       <widget class="QLabel" name="marginLLabel">
         <property name="text">
          <string>Left</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QSpinBox" name="kcfg_marginLeft"/>
+       <widget class="QSpinBox" name="kcfg_marginL"/>
       </item>
       <item>
-       <widget class="QLabel" name="marginBottomLabel">
+       <widget class="QLabel" name="marginBLabel">
         <property name="text">
          <string>Bottom</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QSpinBox" name="kcfg_marginBottom"/>
+       <widget class="QSpinBox" name="kcfg_marginB"/>
       </item>
       <item>
-       <widget class="QLabel" name="marginTopLabel">
+       <widget class="QLabel" name="marginTLabel">
         <property name="text">
          <string>Top</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QSpinBox" name="kcfg_marginTop"/>
+       <widget class="QSpinBox" name="kcfg_marginT"/>
       </item>
       <item>
-       <widget class="QLabel" name="marginRightLabel">
+       <widget class="QLabel" name="marginRLabel">
         <property name="text">
          <string>Right</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QSpinBox" name="kcfg_marginRight"/>
+       <widget class="QSpinBox" name="kcfg_marginR"/>
       </item>
      </layout>
     </item>
