@@ -21,7 +21,7 @@ const create = () => ({ // eslint-disable-line no-unused-vars
         if (!this.addScreen())
           return;
       }
-      const c = this.screens[i].addClient(client, config.grids[i][0], config.grids[i][1]);
+      const c = this.screens[i].addClient(client, i);
       if (c)
         return c;
       if (++i >= workspace.numScreens)

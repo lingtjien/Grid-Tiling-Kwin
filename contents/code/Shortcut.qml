@@ -59,6 +59,18 @@ Item {
           screen.render(client.screenIndex, client.desktopIndex, client.activityId);
       });
     }
+
+    for (const [text, shortcut, amount] of [
+      ['Move/Swap Left', 'Meta+Ctrl+Left', -1],
+      ['Move/Swap Right', 'Meta+Ctrl+Right', 1]
+    ]) {
+      register(text, shortcut, () => {
+        let client = workspace.activeClient;
+        const screen = manager.getScreen(client);
+        if (screen && (screen.moveClient(client.screenIndex, client.clientIndex, client.lineIndex, amount) || screen.swapLine(client.lineIndex, amount)))
+          screen.render(client.screenIndex, client.desktopIndex, client.activityId);
+      });
+    }
   }
 
   function init() {

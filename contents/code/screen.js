@@ -38,11 +38,12 @@ const create = () => ({ // eslint-disable-line no-unused-vars
   smallest() {
     return this.lines.reduce((c, l) => c ? (l.minSpace() < c.minSpace() ? l : c) : l, undefined);
   },
-  addClient(client, maxRows, maxCols) {
+  addClient(client, screenIndex) {
+    const max = config.grids[screenIndex];
     let line = this.smallest();
-    if (line && line.minSpace() + client.minSpace <= 1 / this.lines.length && line.clients.length < maxRows && (this.lines.length >= maxCols || this.lines.length > line.clients.length)) {
+    if (line && line.minSpace() + client.minSpace <= 1 / this.lines.length && line.clients.length < max[0] && (this.lines.length >= max[1] || this.lines.length > line.clients.length)) {
       return line.addClient(client);
-    } else if (client.minSpace <= 1 / (this.lines.length + 1) && this.lines.length < maxCols) {
+    } else if (client.minSpace <= 1 / (this.lines.length + 1) && this.lines.length < max[0]) {
       line = this.addLine();
       if (line)
         return line.addClient(client);
@@ -55,17 +56,6 @@ const create = () => ({ // eslint-disable-line no-unused-vars
       return true;
     }
   },
-  //   swapLine(amount, lineIndex) {
-  //     if (lineIndex < 0 || lineIndex >= this.lines.length)
-  //       return -1;
-  //     var line = this.lines[lineIndex];
-  //     var i = lineIndex + amount; // target to swap client with
-  //     if (i < 0 || i >= this.lines.length)
-  //       return -1;
-  //     this.lines[lineIndex] = this.lines[i];
-  //     this.lines[i] = line;
-  //     return 0;
-  //   },
   //   swapClient(amount, clientIndex, lineIndex) {
   //     if (lineIndex < 0 || lineIndex >= this.lines.length)
   //       return -1;
@@ -86,35 +76,38 @@ const create = () => ({ // eslint-disable-line no-unused-vars
   //     this.lines[i].clients[clientIndex] = client;
   //     return 0;
   //   },
-  //   moveClient(amount, maxRows, maxLines, clientIndex, lineIndex) {
-  //     if (lineIndex < 0 || lineIndex >= this.lines.length)
-  //       return -1;
-  //     var line = this.lines[lineIndex];
-  //     if (clientIndex < 0 || clientIndex >= line.clients.length)
-  //       return -1;
-  //     var client = line.clients[clientIndex];
-  //
-  //     var i = lineIndex + amount; // target to move client to
-  //     while (i >= 0 && i < this.lines.length && (this.lines[i].minSpace() + client.minSpace > 1 / this.lines.length || this.lines[i].clients.length >= maxRows))
-  //       i += amount;
-  //
-  //     if (i < 0 || i >= this.lines.length) {
-  //       var c = Line.create();
-  //       c.addClient(client);
-  //       if (i < 0) {
-  //         if (this.addLine(c, maxLines, 0) === -1)
-  //           return -1;
-  //         return this.removeClient(clientIndex, lineIndex + 1);
-  //       } else {
-  //         if (this.addLine(c, maxLines) === -1)
-  //           return -1;
-  //         return this.removeClient(clientIndex, lineIndex);
-  //       }
-  //     } else {
-  //       this.lines[i].addClient(client);
-  //       return this.removeClient(clientIndex, lineIndex);
-  //     }
-  //   },
+  swapLine(lineIndex, amount) {
+    const i = lineIndex + amount;
+    if (i < 0 || i >= this.lines.length)
+      return;
+    const line = this.lines[lineIndex];
+    this.lines[lineIndex] = this.lines[i];
+    this.lines[i] = line;
+    return line;
+  },
+  moveClient(screenIndex, clientIndex, lineIndex, amount) {
+    const max = config.grids[screenIndex];
+    const line = this.lines[lineIndex];
+    const client = line.clients[clientIndex];
+
+    let i = lineIndex + amount;
+    while (i >= 0 && i < this.lines.length && (this.lines[i].minSpace() + client.minSpace > 1 / this.lines.length || this.lines[i].clients.length >= max[0]))
+      i += amount;
+
+    if (i >= 0 && i < this.lines.length) {
+      this.lines[i].addClient(client);
+      this.removeClient(clientIndex, lineIndex);
+      return client;
+    } else if (this.lines.length < max[1]) {
+      const front = amount < 0;
+      const l = this.addLine(front ? 0 : undefined);
+      if (l) {
+        l.addClient(client);
+        this.removeClient(clientIndex, lineIndex + front);
+        return client;
+      }
+    }
+  },
   changeDivider(change, lineIndex) {
     // divider between lineIndex and next
     if (lineIndex < this.lines.length - 1)
