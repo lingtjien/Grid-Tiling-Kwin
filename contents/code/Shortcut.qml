@@ -47,9 +47,24 @@ Item {
     }
   }
 
+  function moveSwap() {
+    for (const [text, shortcut, amount] of [
+      ['Swap Up', 'Meta+Ctrl+Up', -1],
+      ['Swap Down', 'Meta+Ctrl+Down', 1]
+    ]) {
+      register(text, shortcut, () => {
+        let client = workspace.activeClient;
+        const screen = manager.getScreen(client);
+        if (screen && screen.lines[client.lineIndex].swapClient(client.clientIndex, amount))
+          screen.render(client.screenIndex, client.desktopIndex, client.activityId);
+      });
+    }
+  }
+
   function init() {
     togglers();
     dividers();
+    moveSwap();
 
     register('Close Desktop', 'Meta+Q', () => {
       for (const client of Object.values(workspace.clientList())) {

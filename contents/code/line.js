@@ -23,17 +23,15 @@ const create = () => ({ // eslint-disable-line no-unused-vars
     }
     return true;
   },
-  //   swapClient(amount, clientIndex) {
-  //     if (clientIndex < 0 || clientIndex >= this.clients.length)
-  //       return -1;
-  //     var client = this.clients[clientIndex];
-  //     var i = clientIndex + amount; // target to swap client with
-  //     if (i < 0 || i >= this.clients.length)
-  //       return -1;
-  //     this.clients[clientIndex] = this.clients[i];
-  //     this.clients[i] = client;
-  //     return 0;
-  //   },
+  swapClient(clientIndex, amount) {
+    const i = clientIndex + amount;
+    if (i < 0 || i >= this.clients.length)
+      return;
+    const client = this.clients[clientIndex];
+    this.clients[clientIndex] = this.clients[i];
+    this.clients[i] = client;
+    return client;
+  },
   changeDivider(change, clientIndex) {
     // divider between clientIndex and next
     if (clientIndex < this.clients.length - 1)
