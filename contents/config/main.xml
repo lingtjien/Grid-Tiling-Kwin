@@ -65,10 +65,6 @@
         <label>minimum spaces of the clients which define a mimimum space</label>
         <default>1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2</default>
       </entry>
-      <entry name="ignoredTypes" type="string">
-        <label>ignored client types</label>
-        <default>specialWindow, dialog</default>
-      </entry>
       <entry name="ignoredNames" type="string">
         <label>ignored client names</label>
         <default>ksmserver, krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, wine, yakuake</default>

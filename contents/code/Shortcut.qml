@@ -51,25 +51,16 @@ Item {
     togglers();
     dividers();
 
-    register('Refresh', 'Meta+R', () => {
-      //manager.init();
-      //layout.render();
-      print('---------')
-      print('DEBUGGING');
-      for (let a in layout.activities) {
-        print('---activity---');
-        for (let d of layout.activities[a].desktops) {
-          print('---desktop---');
-          for (let s of d.screens) {
-            print('---screen---');
-            for (let l of s.lines) {
-              print('---line---');
-              for (let c of l.clients)
-                print(c.name);
-            }
-          }
-        }
+    register('Close Desktop', 'Meta+Q', () => {
+      for (const client of Object.values(workspace.clientList())) {
+        if (client && client.screen === workspace.activeScreen && client.desktop === workspace.currentDesktop && (client.activities.length === 0 || client.activities.includes(workspace.currentActivity)))
+          client.closeWindow();
       }
+    });
+
+    register('Refresh', 'Meta+R', () => {
+      manager.init();
+      layout.render();
     });
   }
 }

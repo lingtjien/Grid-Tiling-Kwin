@@ -42,11 +42,8 @@ Item {
   )).map(i => 1 / Number(i)))
 
   property var ignored: Item {
-    property var types: splitTrim(KWin.readConfig(
-      'ignoredTypes', 'specialWindow, dialog'
-    ))
     property var names: splitTrim(KWin.readConfig(
-      'ignoredNames', 'ksmserver, krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, wine, yakuake'
+      'ignoredNames', 'ksmserver, krunner, latte-dock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, wine, yakuake'
     ))
     property var captions: splitTrim(KWin.readConfig(
       'ignoredCaptions', 'Trace Bitmap (Shift+Alt+B), Document Properties (Shift+Ctrl+D)'

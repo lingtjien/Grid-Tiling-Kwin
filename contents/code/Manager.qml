@@ -13,7 +13,7 @@ Item {
   }
 
   function ignored(client) {
-    return config.ignored.types.some(t => client[t]) ||
+    return !client.normalWindow ||
     config.ignored.captions.some(c => c === client.caption) ||
     config.ignored.names.some(n => client.name.includes(n));
   }
