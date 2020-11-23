@@ -4,10 +4,6 @@ Item {
   property var floating: Object()
   property var tiled: Object()
 
-  function valid(client) {
-    return client && client.activities.length <= 1 && !client.isOnAllDesktops;
-  }
-
   function managed(client) {
     return floating.hasOwnProperty(client.windowId) || tiled.hasOwnProperty(client.windowId);
   }
@@ -58,7 +54,7 @@ Item {
   }
 
   function toggle(client) {
-    if (valid(client)) {
+    if (client) {
       if (floating.hasOwnProperty(client.windowId))
         return tile(client);
       else if (tiled.hasOwnProperty(client.windowId))
@@ -67,7 +63,7 @@ Item {
   }
 
   function getScreen(client) {
-    if (valid(client) && tiled.hasOwnProperty(client.windowId)) {
+    if (client && tiled.hasOwnProperty(client.windowId)) {
       client = tiled[client.windowId];
       return layout.activities[client.activityId].desktops[client.desktopIndex].screens[client.screenIndex];
     }
@@ -162,70 +158,70 @@ Item {
     //});
 
     connectSave(client, 'desktopChanged', () => {
-      if (client.desktop === client.desktopIndex + 1)
-        return;
       const activity = layout.activities[client.activityId];
-      const start = client.desktopIndex;
-      let i = client.desktop - 1;
-      const direction = i > start ? 1 : -1;
-      while (!activity.moveClient(client.clientIndex, client.lineIndex, client.screenIndex, client.desktopIndex, i))
-      {
-        i = Math.min(Math.max(0, i + direction), workspace.desktops - 1);
-        if (i === start)
-          break;
+      if (client.onAllDesktops) {
+        unTile(client);
+      } else {
+        const start = client.desktopIndex;
+        let i = client.desktop - 1;
+        const direction = Math.sign(start - i);
+        if (direction) {
+          while (!activity.moveClient(client.clientIndex, client.lineIndex, client.screenIndex, client.desktopIndex, i))
+          {
+            i = Math.min(Math.max(0, i + direction), workspace.desktops - 1);
+            if (i === start)
+              break;
+          }
+        }
       }
       activity.render(client.activityId);
     });
 
-    //client.screenChanged.connect(() => {
-      //if (c.screen === c.screenIndex || !tiled.hasOwnProperty(c.windowId))
-        //return -1;
-      //var desktop = layout.activities[c.activityId].desktops[c.desktopIndex];
-      //var targetIndex = c.screen;
-      //var start = c.screenIndex;
-      //var direction = targetIndex > c.desktopIndex ? 1 : -1;
-      //while (desktop.moveClient(targetIndex, c.clientIndex, c.lineIndex, c.screenIndex) !== 0)
-      //{
-        //targetIndex += direction;
-        //if (targetIndex >= workspace.numScreens)
-          //targetIndex = 0;
-        //else if (targetIndex < 0)
-          //targetIndex = workspace.numScreens - 1;
-        //if (targetIndex === start)
-          //break;
-      //}
-      //desktop.render(c.desktopIndex, c.activityId);
-    //});
+    connectSave(client, 'screenChanged', () => {
+      const desktop = layout.activities[client.activityId].desktops[client.desktopIndex];
+      const start = c.screenIndex;
+      let i = client.screen;
+      const direction = Math.sign(start - i);
+      if (direction) {
+        while (!desktop.moveClient(client.clientIndex, client.lineIndex, client.screenIndex, i))
+        {
+          i = Math.min(Math.max(0, i + direction), workspace.numScreens - 1);
+          if (i === start)
+            break;
+        }
+      }
+      desktop.render(client.desktopIndex, client.activityId);
+    });
 
-//     client.activitiesChanged.connect(function(client)
-//     {
-//       if (!tiled.hasOwnProperty(client.windowId))
-//         return -1;
-//       client = tiled[client.windowId];
-//       if (client.activities.length !== 1)
-//         return Client.float(client);
-//       layout.moveClient(client, client.activities[0]);
-//       return layout.render();
-//     });
+    //connectSave(client, 'activitiesChanged', () => {
+      //const activities = client.activities;
+      //if (activities.length !== 1 || !layout.moveClient(client, activities[0]))
+        //unTile(client);
+      //layout.render();
+    //});
     return client;
   }
 
   function removeSignals(client) {
     disconnectRemove(client, 'desktopChanged');
+    disconnectRemove(client, 'screenChanged');
+    //disconnectRemove(client, 'activitiesChanged');
     return client;
   }
 
   function add(client) {
-    if (!valid(client) || managed(client) || ignored(addProps(client)))
-      return
-    if (!config.tile || !tile(client))
-      floating[client.windowId] = client;
-    return client;
+    if (client && !managed(client) && !ignored(addProps(client))) {
+      if (client.onAllDesktops)
+        client.desktop = 1;
+      if (!config.tile || !tile(client))
+        floating[client.windowId] = client;
+      return client;
+    }
   }
 
   function remove(client) {
-    if (!valid(client))
-      return;
+    if (!client)
+      return false;
     if (tiled.hasOwnProperty(client.windowId)) {
       client = tiled[client.windowId];
       if (layout.removeClient(client.clientIndex, client.lineIndex, client.screenIndex, client.desktopIndex, client.activityId))

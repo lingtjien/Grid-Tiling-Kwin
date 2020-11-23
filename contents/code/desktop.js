@@ -32,20 +32,18 @@ const create = () => ({ // eslint-disable-line no-unused-vars
     // do not remove the screen to prevent moving of clients when screens are closed
     return this.screens[screenIndex].removeClient(clientIndex, lineIndex);
   },
-  //   moveClient(targetIndex, clientIndex, lineIndex, screenIndex) {
-  //     if (screenIndex < 0 || screenIndex >= this.screens.length || targetIndex < 0 || targetIndex === screenIndex)
-  //       return -1;
-  //
-  //     var client = this.screens[screenIndex].columns[lineIndex].clients[clientIndex];
-  //     while (targetIndex >= this.screens.length) {
-  //       if (this.addScreen(Screen.create()) === -1)
-  //         return -1;
-  //     }
-  //
-  //     if (this.screens[targetIndex].addClient(client) === -1)
-  //       return -1;
-  //     return this.screens[screenIndex].removeClient(clientIndex, lineIndex);
-  //   },
+  moveClient(clientIndex, lineIndex, screenIndex, i) {
+    // screenIndex = old, i = target screenIndex
+    if (i < 0 || i === screenIndex)
+      return;
+    const client = this.screens[screenIndex].lines[lineIndex].clients[clientIndex];
+    while (i >= this.screens.length) {
+      if (!this.addScreen())
+        return;
+    }
+    if (this.screens[i].addClient(client) && this.screens[screenIndex].removeClient(clientIndex, lineIndex))
+      return client;
+  },
   render(desktopIndex, activityId) {
     for (const [i, screen] of this.screens.entries())
       screen.render(i, desktopIndex, activityId);

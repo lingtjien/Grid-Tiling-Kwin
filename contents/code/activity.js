@@ -36,13 +36,11 @@ const create = () => ({ // eslint-disable-line no-unused-vars
     // desktopIndex = old, i = target desktopIndex
     if (i < 0 || i === desktopIndex)
       return;
-
     const client = this.desktops[desktopIndex].screens[screenIndex].lines[lineIndex].clients[clientIndex];
     while (i >= this.desktops.length) {
       if (!this.addDesktop())
         return;
     }
-
     if (this.desktops[i].addClient(client) && this.desktops[desktopIndex].removeClient(clientIndex, lineIndex, screenIndex))
       return client;
   },
