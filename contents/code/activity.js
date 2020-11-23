@@ -32,20 +32,20 @@ const create = () => ({ // eslint-disable-line no-unused-vars
     // do not remove the desktop to prevent moving of clients when desktops are closed
     return this.desktops[desktopIndex].removeClient(clientIndex, lineIndex, screenIndex);
   },
-  //   moveClient(targetIndex, clientIndex, lineIndex, screenIndex, desktopIndex) {
-  //     if (desktopIndex < 0 || desktopIndex >= this.desktops.length || targetIndex < 0 || targetIndex === desktopIndex)
-  //       return -1;
-  //
-  //     var client = this.desktops[desktopIndex].screens[screenIndex].columns[lineIndex].clients[clientIndex];
-  //     while (targetIndex >= this.desktops.length) {
-  //       if (this.addDesktop() === -1)
-  //         return -1;
-  //     }
-  //
-  //     if (this.desktops[targetIndex].addClient(client) === -1)
-  //       return -1;
-  //     return this.desktops[desktopIndex].removeClient(clientIndex, lineIndex, screenIndex);
-  //   },
+  moveClient(clientIndex, lineIndex, screenIndex, desktopIndex, i) {
+    // desktopIndex = old, i = target desktopIndex
+    if (i < 0 || i === desktopIndex)
+      return;
+
+    const client = this.desktops[desktopIndex].screens[screenIndex].lines[lineIndex].clients[clientIndex];
+    while (i >= this.desktops.length) {
+      if (!this.addDesktop())
+        return;
+    }
+
+    if (this.desktops[i].addClient(client) && this.desktops[desktopIndex].removeClient(clientIndex, lineIndex, screenIndex))
+      return client;
+  },
   render(activityId) {
     for (const [i, desktop] of this.desktops.entries())
       desktop.render(i, activityId);

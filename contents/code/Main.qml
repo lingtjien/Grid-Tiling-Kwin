@@ -17,30 +17,37 @@ Item {
     id: shortcut
   }
 
-  function clientActivated(client) { // clientAdded does not work for a lot of clients
-    if (manager.add(client)) {
-      layout.render();
-      workspace.currentDesktop = client.desktop;
-    }
+  readonly property string saveName: 'Callback'
+  function connectSave(object, prop, callback) {
+    object[prop + saveName] = callback;
+    object[prop].connect(callback);
   }
-
-  function clientRemoved(client) {
-    if (manager.remove(client))
-      layout.render();
+  function disconnectRemove(object, prop) {
+    object[prop].disconnect(object[prop + saveName]);
+    delete object[prop + saveName];
   }
 
   Component.onCompleted: {
     manager.init();
     layout.render();
 
-    workspace.clientActivated.connect(clientActivated);
-    workspace.clientRemoved.connect(clientRemoved);
+    connectSave(workspace, 'clientActivated', client => {
+      if (manager.add(client)) {
+        layout.render();
+        workspace.currentDesktop = client.desktop;
+      }
+    });
+
+    connectSave(workspace, 'clientRemoved', client => {
+      if (manager.remove(client))
+        layout.render();
+    });
 
     shortcut.init();
   }
 
   Component.onDestruction: {
-    workspace.clientActivated.disconnect(clientActivated);
-    workspace.clientRemoved.disconnect(clientRemoved);
+    disconnectRemove(workspace, 'clientActivated');
+    disconnectRemove(workspace, 'clientRemoved');
   }
 }

@@ -36,7 +36,7 @@ Item {
 
   function tile(client) {
     if (!tiled.hasOwnProperty(client.windowId) && layout.addClient(client)) {
-      tiled[client.windowId] = client;
+      tiled[client.windowId] = addSignals(client);
       if (floating.hasOwnProperty(client.windowId))
         delete floating[client.windowId];
       return client;
@@ -52,8 +52,8 @@ Item {
       client.keepAbove = true;
 
     client = tiled[client.windowId];
-    if (layout.removeClient(client.clientIndex, client.lineIndex, client.screenIndex, client.desktopIndex, client.activityId))
-      delete tiled[client.windowId];
+    if (layout.removeClient(client.clientIndex, client.lineIndex, client.screenIndex, client.desktopIndex, client.activityId)) {}
+      delete tiled[removeSignals(client).windowId];
     return floating[client.windowId] = client;
   }
 
@@ -137,8 +137,7 @@ Item {
     //return 0;
   //}
 
-  //function addSignals(client)
-  //{
+  function addSignals(client) {
     //client.clientFinishUserMovedResized.connect(function(client)
     //{
       //if (!tiled.hasOwnProperty(client.windowId))
@@ -161,67 +160,60 @@ Item {
         //screen.render(client.screenIndex, client.desktopIndex, client.activityId);
       //return 0;
     //});
-    //client.desktopChanged.connect((function()
-    //{
-      //var c = client;
-      //return function()
-      //{
-        //if (c.desktop === c.desktopIndex + 1 || !tiled.hasOwnProperty(c.windowId))
-          //return -1;
-        //var activity = layout.activities[c.activityId];
-        //var targetIndex = c.desktop - 1;
-        //var start = c.desktopIndex;
-        //var direction = targetIndex > c.desktopIndex ? 1 : -1;
-        //while (activity.moveClient(targetIndex, c.clientIndex, c.lineIndex, c.screenIndex, c.desktopIndex) !== 0)
-        //{
-          //targetIndex += direction;
-          //if (targetIndex >= workspace.desktops)
-            //targetIndex = 0;
-          //else if (targetIndex < 0)
-            //targetIndex = workspace.desktops - 1;
-          //if (targetIndex === start)
-            //break;
-        //}
-        //activity.render(c.activityId);
-        //workspace.currentDesktop = c.desktop; // switch to the new desktop
-      //};
-    //})());
-    //client.screenChanged.connect((function()
-    //{
-      //var c = client;
-      //return function()
-      //{
-        //if (c.screen === c.screenIndex || !tiled.hasOwnProperty(c.windowId))
-          //return -1;
-        //var desktop = layout.activities[c.activityId].desktops[c.desktopIndex];
-        //var targetIndex = c.screen;
-        //var start = c.screenIndex;
-        //var direction = targetIndex > c.desktopIndex ? 1 : -1;
-        //while (desktop.moveClient(targetIndex, c.clientIndex, c.lineIndex, c.screenIndex) !== 0)
-        //{
-          //targetIndex += direction;
-          //if (targetIndex >= workspace.numScreens)
-            //targetIndex = 0;
-          //else if (targetIndex < 0)
-            //targetIndex = workspace.numScreens - 1;
-          //if (targetIndex === start)
-            //break;
-        //}
-        //desktop.render(c.desktopIndex, c.activityId);
-      //};
-    //})());
-    //client.activitiesChanged.connect(function(client)
-    //{
-      //if (!tiled.hasOwnProperty(client.windowId))
+
+    connectSave(client, 'desktopChanged', () => {
+      if (client.desktop === client.desktopIndex + 1)
+        return;
+      const activity = layout.activities[client.activityId];
+      const start = client.desktopIndex;
+      let i = client.desktop - 1;
+      const direction = i > start ? 1 : -1;
+      while (!activity.moveClient(client.clientIndex, client.lineIndex, client.screenIndex, client.desktopIndex, i))
+      {
+        i = Math.min(Math.max(0, i + direction), workspace.desktops - 1);
+        if (i === start)
+          break;
+      }
+      activity.render(client.activityId);
+    });
+
+    //client.screenChanged.connect(() => {
+      //if (c.screen === c.screenIndex || !tiled.hasOwnProperty(c.windowId))
         //return -1;
-      //client = tiled[client.windowId];
-      //if (client.activities.length !== 1)
-        //return Client.float(client);
-      //layout.moveClient(client, client.activities[0]);
-      //return layout.render();
+      //var desktop = layout.activities[c.activityId].desktops[c.desktopIndex];
+      //var targetIndex = c.screen;
+      //var start = c.screenIndex;
+      //var direction = targetIndex > c.desktopIndex ? 1 : -1;
+      //while (desktop.moveClient(targetIndex, c.clientIndex, c.lineIndex, c.screenIndex) !== 0)
+      //{
+        //targetIndex += direction;
+        //if (targetIndex >= workspace.numScreens)
+          //targetIndex = 0;
+        //else if (targetIndex < 0)
+          //targetIndex = workspace.numScreens - 1;
+        //if (targetIndex === start)
+          //break;
+      //}
+      //desktop.render(c.desktopIndex, c.activityId);
     //});
-    //return client;
-  //};
+
+//     client.activitiesChanged.connect(function(client)
+//     {
+//       if (!tiled.hasOwnProperty(client.windowId))
+//         return -1;
+//       client = tiled[client.windowId];
+//       if (client.activities.length !== 1)
+//         return Client.float(client);
+//       layout.moveClient(client, client.activities[0]);
+//       return layout.render();
+//     });
+    return client;
+  }
+
+  function removeSignals(client) {
+    disconnectRemove(client, 'desktopChanged');
+    return client;
+  }
 
   function add(client) {
     if (!valid(client) || managed(client) || ignored(addProps(client)))
@@ -237,7 +229,7 @@ Item {
     if (tiled.hasOwnProperty(client.windowId)) {
       client = tiled[client.windowId];
       if (layout.removeClient(client.clientIndex, client.lineIndex, client.screenIndex, client.desktopIndex, client.activityId))
-        delete tiled[client.windowId];
+        delete tiled[removeSignals(client).windowId];
     } else if (floating.hasOwnProperty(client.windowId)) {
         delete floating[client.windowId];
     }
@@ -247,5 +239,10 @@ Item {
   function init() {
     for (const client of Object.values(workspace.clientList()))
       add(client);
+  }
+
+  Component.onDestruction: {
+    for (const client of Object.values(tiled))
+      removeSignals(client);
   }
 }
