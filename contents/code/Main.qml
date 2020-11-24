@@ -31,6 +31,11 @@ Item {
     manager.init();
     layout.render();
 
+    connectSave(workspace, 'clientRemoved', client => {
+      if (manager.remove(client))
+        layout.render();
+    });
+
     connectSave(workspace, 'clientActivated', client => {
       if (manager.add(client)) {
         layout.render();
@@ -38,15 +43,20 @@ Item {
       }
     });
 
-    connectSave(workspace, 'clientRemoved', client => {
-      if (manager.remove(client))
-        layout.render();
-    });
+    for (const method of ['clientMinimized', 'clientUnminimized']) {
+      connectSave(workspace, method, client => {
+        const screen = manager.getScreen(client);
+        if (screen)
+          screen.render(client.screenIndex, client.desktopIndex, client.activityId);
+      });
+    }
 
     shortcut.init();
   }
 
   Component.onDestruction: {
+    for (let method of ['clientMinimized', 'clientUnminimized'])
+      disconnectRemove(workspace, method);
     disconnectRemove(workspace, 'clientActivated');
     disconnectRemove(workspace, 'clientRemoved');
   }
