@@ -4,6 +4,9 @@ const create = () => ({ // eslint-disable-line no-unused-vars
   nminimized() {
     return this.clients.reduce((i, c) => i + c.minimized, 0);
   },
+  minimized() {
+    return this.nminimized() === this.clients.length;
+  },
   minSpace() {
     return this.clients.reduce((sum, c) => sum + c.minSpace, 0);
   },
@@ -25,27 +28,29 @@ const create = () => ({ // eslint-disable-line no-unused-vars
   },
   swapClient(clientIndex, amount) {
     const i = clientIndex + amount;
-    if (i < 0 || i >= this.clients.length)
-      return;
-    const client = this.clients[clientIndex];
-    this.clients[clientIndex] = this.clients[i];
-    this.clients[i] = client;
-    return client;
+    if (i >= 0 && i < this.clients.length) {
+      const client = this.clients[clientIndex];
+      this.clients[clientIndex] = this.clients[i];
+      this.clients[i] = client;
+      return client;
+    }
   },
-  changeDivider(change, clientIndex) {
-    // divider between clientIndex and next
+  changeDividerAfter(clientIndex, amount) {
     if (clientIndex < this.clients.length - 1)
-      this.dividers[clientIndex] = Math.min(Math.max(-config.divider.bound, this.dividers[clientIndex] + change), config.divider.bound);
-
-    // divider between previous and clientIndex
-    if (clientIndex > 0)
-      this.dividers[clientIndex - 1] = Math.min(Math.max(-config.divider.bound, this.dividers[clientIndex - 1] - change), config.divider.bound);
+      this.dividers[clientIndex] = Math.min(Math.max(-config.divider.bound, this.dividers[clientIndex] + amount), config.divider.bound);
   },
-  render(x, w, areaY, areaHeight, gap, lineIndex, screenIndex, desktopIndex, activityId) {
-    const nminimized = this.nminimized();
-    const height = (areaHeight - config.margin.t - config.margin.b - ((this.clients.length - nminimized + 1) * gap)) / (this.clients.length - nminimized);
+  changeDividerBefore(clientIndex, amount) {
+    if (clientIndex > 0)
+      this.dividers[clientIndex - 1] = Math.min(Math.max(-config.divider.bound, this.dividers[clientIndex - 1] - amount), config.divider.bound);
+  },
+  changeDivider(clientIndex, amount) {
+    this.changeDividerAfter(clientIndex, amount);
+    this.changeDividerBefore(clientIndex, amount);
+  },
+  render(x, w, areaY, areaHeight, lineIndex, screenIndex, desktopIndex, activityId) {
+    const height = config.height(areaHeight, this.clients.length - this.nminimized());
 
-    let y = areaY + config.margin.t + gap;
+    let y = config.y(areaY);
     let current = 0; let previous = 0;
     for (let [i, client] of this.clients.entries()) {
       if (client.minimized)
@@ -71,7 +76,7 @@ const create = () => ({ // eslint-disable-line no-unused-vars
       workspace.sendClientToScreen(client, screenIndex);
       client.geometry = geometry;
 
-      y += h + gap;
+      y += h + config.gap;
       previous = current;
     }
     return 0;

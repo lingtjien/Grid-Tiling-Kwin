@@ -12,10 +12,9 @@ Item {
     return space < current ? space : current;
   }, 1)
 
-  property var gap: Item {
-    property int value: KWin.readConfig('gapValue', 16)
-    property bool show: KWin.readConfig('gapShow', true)
-  }
+  property int gapValue: KWin.readConfig('gapValue', 16)
+  property bool gapShow: KWin.readConfig('gapShow', true)
+  property int gap: gapShow ? gapValue : 0
 
   property var divider: Item {
     property double bound: KWin.readConfig('dividerBound', 0.4)
@@ -60,5 +59,21 @@ Item {
       data.push([lhs[i], rhs[i]]);
     }
     return data;
+  }
+
+  function x(start) {
+    return start + margin.l + gap;
+  }
+
+  function y(start) {
+    return start + margin.t + gap;
+  }
+
+  function width(total, n) {
+    return (total - margin.l - margin.r - ((n + 1) * gap)) / n;
+  }
+
+  function height(total, n) {
+    return (total - margin.t - margin.b - ((n + 1) * gap)) / n;
   }
 }

@@ -18,7 +18,7 @@ Item {
     });
 
     register('Toggle Gap', 'Meta+G', () => {
-      config.gap.show = !config.gap.show;
+      config.gapShow = !config.gapShow;
       layout.render();
     });
 
@@ -39,8 +39,8 @@ Item {
         let client = workspace.activeClient;
         const screen = manager.getScreen(client);
         if (screen) {
-          screen.lines[client.lineIndex].changeDivider(amount, client.clientIndex);
-          screen.changeDivider(amount, client.lineIndex);
+          screen.lines[client.lineIndex].changeDivider(client.clientIndex, amount);
+          screen.changeDivider(client.lineIndex, amount);
           screen.render(client.screenIndex, client.desktopIndex, client.activityId);
         }
       });
