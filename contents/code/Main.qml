@@ -18,13 +18,13 @@ Item {
   }
 
   readonly property string saveName: 'Callback'
-  function connectSave(object, prop, callback) {
-    object[prop + saveName] = callback;
-    object[prop].connect(callback);
+  function connectSave(obj, prop, callback) {
+    obj[prop + saveName] = callback;
+    obj[prop].connect(callback);
   }
-  function disconnectRemove(object, prop) {
-    object[prop].disconnect(object[prop + saveName]);
-    delete object[prop + saveName];
+  function disconnectRemove(obj, prop) {
+    obj[prop].disconnect(obj[prop + saveName]);
+    delete obj[prop + saveName];
   }
 
   Component.onCompleted: {

@@ -127,13 +127,6 @@
         </property>
        </widget>
       </item>
-      <item>
-       <widget class="QCheckBox" name="kcfg_floatAbove">
-        <property name="text">
-         <string>Float Above</string>
-        </property>
-       </widget>
-      </item>
      </layout>
     </item>
     <item>

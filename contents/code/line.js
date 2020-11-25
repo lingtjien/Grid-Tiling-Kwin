@@ -2,7 +2,7 @@ const create = () => ({ // eslint-disable-line no-unused-vars
   clients: [],
   dividers: [],
   nminimized() {
-    return this.clients.reduce((i, c) => i + c.minimized, 0);
+    return this.clients.reduce((n, c) => n + c.minimized, 0);
   },
   minimized() {
     return this.nminimized() === this.clients.length;

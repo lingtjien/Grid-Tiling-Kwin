@@ -7,8 +7,11 @@ const create = () => ({ // eslint-disable-line no-unused-vars
   nclients() {
     return this.lines.reduce((n, l) => n + l.clients.length, 0);
   },
-  nminimized() {
-    return this.lines.reduce((i, l) => i + l.minimized(), 0);
+  nminimizedClients() {
+    return this.lines.reduce((n, l) => n + l.nminimized(), 0);
+  },
+  nminimized() { // not total number of minimized clients in screen
+    return this.lines.reduce((n, l) => n + l.minimized(), 0);
   },
   addLine(index) {
     if (this.lines.some(l => l.minSpace() > 1 / (this.lines.length + 1))) // check if adding a new line won't decrease the size of the clients inside any of the existing lines below their minSpace

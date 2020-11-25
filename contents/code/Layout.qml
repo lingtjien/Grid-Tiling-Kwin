@@ -31,5 +31,3 @@ Item {
       activity.render(activityId);
   }
 }
-
-

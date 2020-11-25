@@ -26,6 +26,17 @@ Item {
       config.border = !config.border;
       layout.render();
     });
+
+    register('Toggle Minimize Desktop', 'Meta+M', () => {
+      const screen = manager.getActiveScreen();
+      if (screen) {
+        const minimize = screen.nclients() - screen.nminimizedClients() > 1;
+        for (const line of screen.lines) {
+          for (const client of line.clients)
+            client.minimized = minimize;
+        }
+      }
+    });
   }
 
   function dividers() {
@@ -115,23 +126,6 @@ Item {
     register('Refresh', 'Meta+R', () => {
       manager.init();
       layout.render();
-
-      print('---------')
-      print('DEBUGGING');
-      for (let a in layout.activities) {
-        print('---activity---');
-        for (let d of layout.activities[a].desktops) {
-          print('---desktop---');
-          for (let s of d.screens) {
-            print('---screen---');
-            for (let l of s.lines) {
-              print('---line---');
-              for (let c of l.clients)
-                print(c.name);
-            }
-          }
-        }
-      }
     });
   }
 }

@@ -37,10 +37,6 @@
         <label>default state of borders</label>
         <default>false</default>
       </entry>
-      <entry name="floatAbove" type="bool">
-        <label>default keep above state of floating clients</label>
-        <default>true</default>
-      </entry>
       <entry name="marginT" type="int">
         <label>amount of space at the top in px</label>
         <default>0</default>

@@ -14,7 +14,7 @@ const create = () => ({ // eslint-disable-line no-unused-vars
     }
   },
   addClient(client) {
-    const start = client.desktop - 1;
+    const start = workspace.currentDesktop - 1;
     let i = start;
     do {
       while (i >= this.desktops.length) {
