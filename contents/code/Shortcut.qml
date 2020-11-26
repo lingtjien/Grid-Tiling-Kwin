@@ -82,16 +82,14 @@ Item {
           screen.render(client.screenIndex, client.desktopIndex, client.activityId);
       });
     }
-  }
 
-  function generic() { // works on all (even ignored) clients
     for (const [text, shortcut, amount] of [
       ['Move Next Desktop/Screen', 'Meta+End', 1],
       ['Move Previous Desktop/Screen', 'Meta+Home', -1]
     ]) {
       register(text, shortcut, () => {
         const client = workspace.activeClient;
-        if (!client || !client.normalWindow)
+        if (!client || manager.ignored(client))
           return;
         const last = workspace.numScreens - 1;
         let i = client.screen + amount;
@@ -108,6 +106,12 @@ Item {
         workspace.activeScreen = client.screen;
       })
     }
+  }
+
+  function init() {
+    togglers();
+    dividers();
+    moveSwap();
 
     register('Close Desktop', 'Meta+Q', () => {
       for (const client of Object.values(workspace.clientList())) {
@@ -115,13 +119,6 @@ Item {
           client.closeWindow();
       }
     });
-  }
-
-  function init() {
-    togglers();
-    dividers();
-    moveSwap();
-    generic();
 
     register('Refresh', 'Meta+R', () => {
       manager.init();

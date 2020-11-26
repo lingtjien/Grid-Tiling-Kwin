@@ -41,7 +41,7 @@ const create = () => ({ // eslint-disable-line no-unused-vars
       if (!this.addScreen())
         return;
     }
-    if (this.screens[i].addClient(client) && this.screens[screenIndex].removeClient(clientIndex, lineIndex))
+    if (this.screens[i].addClient(client, screenIndex) && this.screens[screenIndex].removeClient(clientIndex, lineIndex))
       return client;
   },
   render(desktopIndex, activityId) {

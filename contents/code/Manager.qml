@@ -5,7 +5,7 @@ Item {
   property var tiled: Object()
 
   function ignored(client) {
-    return !client.normalWindow ||
+    return client.transient ||
     config.ignored.captions.some(c => c === client.caption) ||
     config.ignored.names.some(n => client.name.includes(n));
   }
@@ -138,7 +138,7 @@ Item {
 
     connectSave(client, 'screenChanged', () => {
       const desktop = layout.activities[client.activityId].desktops[client.desktopIndex];
-      const start = c.screenIndex;
+      const start = client.screenIndex;
       let i = client.screen;
       const direction = Math.sign(i - start);
       if (direction) {
