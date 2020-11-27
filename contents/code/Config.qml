@@ -43,7 +43,7 @@ Item {
       'ignoredNames', 'ksmserver, krunner, latte-dock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, wine, yakuake'
     ))
     property var captions: splitTrim(KWin.readConfig(
-      'ignoredCaptions', 'Trace Bitmap (Shift+Alt+B), Document Properties (Shift+Ctrl+D)'
+      'ignoredCaptions', ''
     ))
   }
 

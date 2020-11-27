@@ -67,7 +67,7 @@
       </entry>
       <entry name="ignoredCaptions" type="string">
         <label>ignored client captions</label>
-        <default>Trace Bitmap (Shift+Alt+B), Document Properties (Shift+Ctrl+D)</default>
+        <default></default>
       </entry>
     </group>
 </kcfg>
