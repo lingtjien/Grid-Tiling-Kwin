@@ -3,71 +3,71 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0
       http://www.kde.org/standards/kcfg/1.0/kcfg.xsd" >
-    <kcfgfile name=""/>
-    <group name="">
-      <entry name="rows" type="string">
-        <label>the number of rows a grid uses, can be supplied differently per screen</label>
-        <default>2, 2, 2, 2, 2, 2, 2, 2, 2, 2</default>
-      </entry>
-      <entry name="columns" type="string">
-        <label>the number of columns a grid uses, can be supplied differently per screen</label>
-        <default>2, 2, 2, 2, 2, 2, 2, 2, 2, 2</default>
-      </entry>
-      <entry name="gapValue" type="int">
-        <label>gap size between clients in px</label>
-        <default>16</default>
-      </entry>
-      <entry name="gapShow" type="bool">
-        <label>default state of show gaps between clients</label>
-        <default>true</default>
-      </entry>
-      <entry name="dividerBound" type="double">
-        <label>divider from this value to 1-value</label>
-        <default>0.4</default>
-      </entry>
-      <entry name="dividerStep" type="double">
-        <label>increment and decrement size of the divider</label>
-        <default>0.05</default>
-      </entry>
-      <entry name="tile" type="bool">
-        <label>default state of tiling</label>
-        <default>true</default>
-      </entry>
-      <entry name="border" type="bool">
-        <label>default state of borders</label>
-        <default>false</default>
-      </entry>
-      <entry name="marginT" type="int">
-        <label>amount of space at the top in px</label>
-        <default>0</default>
-      </entry>
-      <entry name="marginB" type="int">
-        <label>amount of space at the bottom in px</label>
-        <default>0</default>
-      </entry>
-      <entry name="marginL" type="int">
-        <label>amount of space at the left in px</label>
-        <default>0</default>
-      </entry>
-      <entry name="marginR" type="int">
-        <label>amount of space at the right in px</label>
-        <default>0</default>
-      </entry>
-      <entry name="minSpaceNames" type="string">
-        <label>names of the clients which define a minimum space</label>
-        <default>texstudio, inkscape, krita, gimp, designer, creator, kdenlive, kdevelop, chromium, kate, spotify</default>
-      </entry>
-      <entry name="minSpaceValues" type="string">
-        <label>minimum spaces of the clients which define a mimimum space</label>
-        <default>1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2</default>
-      </entry>
-      <entry name="ignoredNames" type="string">
-        <label>ignored client names</label>
-        <default>kwin_wayland, ksmserver, krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, wine, yakuake</default>
-      </entry>
-      <entry name="ignoredCaptions" type="string">
-        <label>ignored client captions</label>
-        <default></default>
-      </entry>
-    </group>
+  <kcfgfile name=""/>
+  <group name="">
+    <entry name="rows" type="string">
+      <label>the number of rows a grid uses, can be supplied differently per screen</label>
+      <default>2, 2, 2, 2, 2, 2, 2, 2, 2, 2</default>
+    </entry>
+    <entry name="columns" type="string">
+      <label>the number of columns a grid uses, can be supplied differently per screen</label>
+      <default>2, 2, 2, 2, 2, 2, 2, 2, 2, 2</default>
+    </entry>
+    <entry name="gapValue" type="int">
+      <label>gap size between clients in px</label>
+      <default>16</default>
+    </entry>
+    <entry name="gapShow" type="bool">
+      <label>default state of show gaps between clients</label>
+      <default>true</default>
+    </entry>
+    <entry name="dividerBound" type="double">
+      <label>divider from this value to 1-value</label>
+      <default>0.4</default>
+    </entry>
+    <entry name="dividerStep" type="double">
+      <label>increment and decrement size of the divider</label>
+      <default>0.05</default>
+    </entry>
+    <entry name="tile" type="bool">
+      <label>default state of tiling</label>
+      <default>true</default>
+    </entry>
+    <entry name="border" type="bool">
+      <label>default state of borders</label>
+      <default>false</default>
+    </entry>
+    <entry name="marginT" type="int">
+      <label>amount of space at the top in px</label>
+      <default>0</default>
+    </entry>
+    <entry name="marginB" type="int">
+      <label>amount of space at the bottom in px</label>
+      <default>0</default>
+    </entry>
+    <entry name="marginL" type="int">
+      <label>amount of space at the left in px</label>
+      <default>0</default>
+    </entry>
+    <entry name="marginR" type="int">
+      <label>amount of space at the right in px</label>
+      <default>0</default>
+    </entry>
+    <entry name="minSpaceNames" type="string">
+      <label>names of the clients which define a minimum space</label>
+      <default>texstudio, inkscape, krita, gimp, designer, creator, kdenlive, kdevelop, chromium, kate, spotify</default>
+    </entry>
+    <entry name="minSpaceValues" type="string">
+      <label>minimum spaces of the clients which define a mimimum space</label>
+      <default>1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2</default>
+    </entry>
+    <entry name="ignoredNames" type="string">
+      <label>ignored client names</label>
+      <default>kwin_wayland|ksmserver|krunner|latte-dock|[Pp]lasma|plugin-container|wine|yakuake</default>
+    </entry>
+    <entry name="ignoredCaptions" type="string">
+      <label>ignored client captions</label>
+      <default></default>
+    </entry>
+  </group>
 </kcfg>

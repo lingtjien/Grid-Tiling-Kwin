@@ -39,12 +39,12 @@ Item {
   )).map(i => 1 / Number(i)))
 
   property var ignored: Item {
-    property var names: splitTrim(KWin.readConfig(
-      'ignoredNames', 'kwin_wayland, ksmserver, krunner, latte-dock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, wine, yakuake'
+    property var names: RegExp(KWin.readConfig(
+      'ignoredNames', 'kwin_wayland|ksmserver|krunner|latte-dock|[Pp]lasma|plugin-container|wine|yakuake'
     ))
-    property var captions: splitTrim(KWin.readConfig(
+    property var captions: RegExp(`^${KWin.readConfig(
       'ignoredCaptions', ''
-    ))
+    )}$`)
   }
 
   function splitTrim(data) {

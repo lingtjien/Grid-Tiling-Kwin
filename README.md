@@ -62,9 +62,9 @@ Delete the linked or copied files that you created during installation. To remov
 - toggle new clients start as tile or float `Grid-Tiling: Toggle Tile`
 - close all clients on the current virtual desktop `Grid-Tiling: Close Desktop`
 - set margins, gap size, default gap state, default tile state, default border state
-- add clients to ignored lists (clients, captions) defined by `ignoredNames` and `ignoredCaptions`, these clients are completely ignored and can't be tiled.
+- add ignored clients to `ignoredNames` and `ignoredCaptions` regex, these clients are completely ignored and can't be tiled.
 
-*Note: ignored client names do not have to be an exact match, whereas ignored captions do.*
+*Note: ignored client names do not have to match the whole string, whereas ignored captions do.*
 
 ## Recommended Setup
 - set window focus policy to `focus follows mouse - mouse precedence`
