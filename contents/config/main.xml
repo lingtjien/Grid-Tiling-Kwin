@@ -63,7 +63,7 @@
       </entry>
       <entry name="ignoredNames" type="string">
         <label>ignored client names</label>
-        <default>ksmserver, krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, wine, yakuake</default>
+        <default>kwin_wayland, ksmserver, krunner, lattedock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, wine, yakuake</default>
       </entry>
       <entry name="ignoredCaptions" type="string">
         <label>ignored client captions</label>

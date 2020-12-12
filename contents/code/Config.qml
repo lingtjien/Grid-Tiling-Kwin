@@ -40,7 +40,7 @@ Item {
 
   property var ignored: Item {
     property var names: splitTrim(KWin.readConfig(
-      'ignoredNames', 'ksmserver, krunner, latte-dock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, wine, yakuake'
+      'ignoredNames', 'kwin_wayland, ksmserver, krunner, latte-dock, Plasma, plasma, plasma-desktop, plasmashell, plugin-container, wine, yakuake'
     ))
     property var captions: splitTrim(KWin.readConfig(
       'ignoredCaptions', ''
