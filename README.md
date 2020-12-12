@@ -1,4 +1,6 @@
-# Kwin Script That Automatically Tiles Windows
+# Kwin Grid-Tiling Script
+
+[![](https://i.imgur.com/TzdWQVM.png)](https://youtu.be/N1Bg-H9Lpzs)
 
 ## Install
 
@@ -37,84 +39,35 @@ Delete the linked or copied files that you created during installation. To remov
 
 ## Functionality
 - automatically tile clients, up to any grid size of clients per desktop
-  - new clients are first attempted to be added the desktop and screen the client was started on, to the column with the most amount of space left
+  - new clients are first attempted to be added the current desktop and screen, to the column with the most amount of space left
   - the size of the grid (row & column) is supplied in the UI per screen and separated by a comma (first element in row & column are for your first screen and so forth...)
   - you **must** supply a grid for every screens that you have connected (and plan to connect)
-
-![](http://tiny.cc/tiling-2x2)
-![](http://tiny.cc/tiling-2x3)
-
 - restriction of minimum space a client can occupy on a virtual desktop, as in the amount of clients this client can share a virtual desktop with
   - a list of comma seperated numbers, larger or equal to `1`
   - defaults to the maximum which is the number of rows multiplied by columns (of the largest grid)
   - a size of `1` is the largest which means that it can only ever exist alone on a virtual desktop, size of `2` means that it can exist with one other client together on a virtual desktop and so forth...
-
-![](http://tiny.cc/minsize-1)
-![](http://tiny.cc/minsize-2)
-
 - move clients between virtual desktops (supports the default KWin shortcuts). `Grid-Tiling: Move *Next/Previous* Desktop/Screen` moves the client to the next desktop or screen that has space, prioritizes screen over desktop.
-
-![](http://tiny.cc/move-desktop-screen)
-
 - swap clients within a virtual desktop by dragging them on top with most overlap
-
-![](http://tiny.cc/swap-mouse)
-
 - move clients within a virtual desktop, first attempts to move the client if that fails it will fallback to switching.
   - `Grid-Tiling: Swap *Up/Down*`
   - `Grid-Tiling: Move/Swap *Left/Right*`
-
-![](http://tiny.cc/swap-shortcut)
-![](http://tiny.cc/move-shortcut)
-
 - dynamically resize clients up to a minimum as defined by `dividerBound`
   - dragging client borders by mouse
   - `Grid-Tiling: *Increase/Decrease* Size` using a step size of `dividerStep`
-
-![](http://tiny.cc/resize-mouse)
-![](http://tiny.cc/resize-shortcut)
-
 - minimization of clients (suppports the default KWin shortcuts)
-
-![](http://tiny.cc/minimize-shortcut)
-
-- minimizes all other clients or unminimizes all clients on the current desktop `Grid-Tiling: Minimize Others/Unminimize Desktop`
-
-![](http://tiny.cc/un-minimize_all-shortcut)
-
+- minimizes all other clients or unminimizes all clients on the current desktop `Grid-Tiling: Toggle Minimize Desktop`
 - toggle gap `Grid-Tiling: Toggle Gap`
-
-![](http://tiny.cc/toggle-gap)
-
 - toggle between bordered clients `Grid-Tiling: Toggle Border`
-
-![](http://tiny.cc/toggle-border)
-
 - dynamically float and tile clients `Grid-Tiling: Tile/Float`
 - toggle new clients start as tile or float `Grid-Tiling: Toggle Tile`
-
-![](http://tiny.cc/float-tile)
-
 - close all clients on the current virtual desktop `Grid-Tiling: Close Desktop`
-
-![](http://tiny.cc/close-desktop)
-
-- set margins as defined by `marginTop` `marginBottom` `marginLeft` `marginRight`
-- set the gap size as defined by `gap`
-- set default gap show toggle `gapShow`
-- set default tile toggle `tile`
-- set default borders toggle `border`
+- set margins, gap size, default gap state, default tile state, default border state
 - add clients to ignored lists (clients, captions) defined by `ignoredNames` and `ignoredCaptions`, these clients are completely ignored and can't be tiled.
 
 *Note: ignored client names do not have to be an exact match, whereas ignored captions do.*
 
 ## Recommended Setup
 - set window focus policy to `focus follows mouse - mouse precedence`
-- disable `Allow KDE apps to remember the positions of their own windows`
-  1. window management
-  2. window behavior
-  3. advanced
-
 - set shortcuts `Switch One Desktop *Left/Up/Down/Right*` to `Meta+*Left/Up/Down/Right*`
 - set shortcuts `Grid-Tiling: Swap *Up/Down*` to `Meta+Ctrl+*Up/Down*`
 - set shortcuts `Grid-Tiling: Move/Swap *Left/Right*` to `Meta+Ctrl+*Left/Right*`
@@ -122,11 +75,13 @@ Delete the linked or copied files that you created during installation. To remov
 - set shortcuts `Grid-Tiling: Move *Previous/Next* Desktop` to `Meta+*Home/End*`
 - set shortcuts `Window One Desktop *Down/Up*` to `Meta+*PgDn/PgUp*`
 
-- set shortcut `Grid-Tiling: Minimize Others/Unminimize Desktop` to `Meta+M`
+- set shortcut `Grid-Tiling: Toggle Minimize Desktop` to `Meta+M`
 - set shortcut `Minimize Window` to `Meta+N`
 
-- set shortcut `Grid-Tiling: Increase Size` to `Meta+=`
-- set shortcut `Grid-Tiling: Decrease Size` to `Meta+-`
+- set shortcut `Grid-Tiling: Increase Step` to `Meta+=`
+- set shortcut `Grid-Tiling: Decrease Step` to `Meta+-`
+- set shortcut `Grid-Tiling: Increase Max` to `Meta++`
+- set shortcut `Grid-Tiling: Decrease Max` to `Meta+_`
 
 - set shortcut `Grid-Tiling: Toggle Gap` to `Meta+G`
 - set shortcut `Grid-Tiling: Toggle Border` to `Meta+B`
@@ -181,3 +136,9 @@ These are settings that you can adjust in KWin which are unrelated to this scrip
 6. Add
 7. **check** `Hide window title bar`
 8. `Regular expression to match` = `.*`
+
+### Disable geometry memory
+1. window management
+2. window behavior
+3. advanced
+4. **uncheck** `Allow KDE apps to remember the positions of their own windows`
