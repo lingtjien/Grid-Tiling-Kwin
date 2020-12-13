@@ -46,7 +46,7 @@ const create = () => ({ // eslint-disable-line no-unused-vars
     let line = this.smallest();
     if (line && line.minSpace() + client.minSpace <= 1 / this.lines.length && line.clients.length < max[0] && (this.lines.length >= max[1] || this.lines.length > line.clients.length)) {
       return line.addClient(client);
-    } else if (client.minSpace <= 1 / (this.lines.length + 1) && this.lines.length < max[0]) {
+    } else if (client.minSpace <= 1 / (this.lines.length + 1) && this.lines.length < max[1]) {
       line = this.addLine();
       if (line)
         return line.addClient(client);
