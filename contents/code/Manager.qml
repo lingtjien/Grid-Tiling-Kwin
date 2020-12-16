@@ -51,8 +51,9 @@ Item {
         return tile(client);
       else if (tiled.hasOwnProperty(client.windowId))
         return unTile(client);
+      else
+        return add(client);
     }
-    return add(client);
   }
 
   function resized(client, screen) {
