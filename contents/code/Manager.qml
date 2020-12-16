@@ -166,9 +166,9 @@ Item {
       !floating.hasOwnProperty(client.windowId) &&
       !tiled.hasOwnProperty(client.windowId) &&
       !ignored(addProps(client))) {
-      if (!config.tile || !tile(client))
-        floating[client.windowId] = client;
-      return client;
+      if (config.tile && tile(client))
+        return client;
+      floating[client.windowId] = client;
     }
   }
 
@@ -176,12 +176,13 @@ Item {
     if (client) {
       if (tiled.hasOwnProperty(client.windowId)) {
         client = tiled[client.windowId];
-        if (layout.removeClient(client.clientIndex, client.lineIndex, client.screenIndex, client.desktopIndex, client.activityId))
+        if (layout.removeClient(client.clientIndex, client.lineIndex, client.screenIndex, client.desktopIndex, client.activityId)) {
           delete tiled[removeSignals(client).windowId];
+          return true;
+        }
       } else if (floating.hasOwnProperty(client.windowId)) {
-          delete floating[client.windowId];
+        delete floating[client.windowId];
       }
-      return true;
     }
   }
 
