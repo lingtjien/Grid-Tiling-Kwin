@@ -1,459 +1,329 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>KWin::GridTilingConfigForm</class>
- <widget class="QWidget" name="KWin::GridTilingConfigForm">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>480</width>
-    <height>510</height>
-   </rect>
-  </property>
-  <property name="minimumSize">
-   <size>
-    <width>480</width>
-    <height>510</height>
-   </size>
-  </property>
-  <property name="windowTitle">
-   <string>Grid Tiling</string>
-  </property>
-  <widget class="QWidget" name="verticalLayoutWidget_3">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>0</y>
-     <width>460</width>
-     <height>503</height>
-    </rect>
-   </property>
-   <layout class="QVBoxLayout" name="main">
-    <item>
-     <layout class="QHBoxLayout" name="gridHeaderLayout">
-      <item>
-       <spacer name="gridHeaderLeftSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QLabel" name="gridHeaderLabel">
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Grid Size</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="gridHeaderRightSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="rowsLayout">
-      <item>
-       <widget class="QLabel" name="rowsLabel">
-        <property name="text">
-         <string>Rows</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLineEdit" name="kcfg_rows"/>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="columnsLayout">
-      <item>
-       <widget class="QLabel" name="columnsLabel">
-        <property name="text">
-         <string>Columns</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLineEdit" name="kcfg_columns"/>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <widget class="Line" name="lineDivider0">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="toggleLayout">
-      <item>
-       <widget class="QCheckBox" name="kcfg_tile">
-        <property name="text">
-         <string>Tile</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="kcfg_gapShow">
-        <property name="text">
-         <string>Gap</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="kcfg_border">
-        <property name="text">
-         <string>Border</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <widget class="Line" name="lineDivider1">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="parameterLayout">
-      <item>
-       <widget class="QLabel" name="gapValueLabel">
-        <property name="text">
-         <string>Gap</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QSpinBox" name="kcfg_gapValue">
-        <property name="minimum">
-         <number>0</number>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="dividerBoundLabel">
-        <property name="text">
-         <string>Bound</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QDoubleSpinBox" name="kcfg_dividerBound">
-        <property name="maximum">
-         <double>0.500000000000000</double>
-        </property>
-        <property name="singleStep">
-         <double>0.050000000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="dividerStepSizeLabel">
-        <property name="text">
-         <string>Step Size</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QDoubleSpinBox" name="kcfg_dividerStep">
-        <property name="maximum">
-         <double>0.500000000000000</double>
-        </property>
-        <property name="singleStep">
-         <double>0.010000000000000</double>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <widget class="Line" name="lineDivider2">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="marginHeaderLayout">
-      <item>
-       <spacer name="marginHeaderLeftSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QLabel" name="marginHeaderLabel">
-        <property name="layoutDirection">
-         <enum>Qt::LeftToRight</enum>
-        </property>
-        <property name="text">
-         <string>Margin</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="marginHeaderRightSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="marginLayout">
-      <item>
-       <widget class="QLabel" name="marginLLabel">
-        <property name="text">
-         <string>Left</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QSpinBox" name="kcfg_marginL"/>
-      </item>
-      <item>
-       <widget class="QLabel" name="marginBLabel">
-        <property name="text">
-         <string>Bottom</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QSpinBox" name="kcfg_marginB"/>
-      </item>
-      <item>
-       <widget class="QLabel" name="marginTLabel">
-        <property name="text">
-         <string>Top</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QSpinBox" name="kcfg_marginT"/>
-      </item>
-      <item>
-       <widget class="QLabel" name="marginRLabel">
-        <property name="text">
-         <string>Right</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QSpinBox" name="kcfg_marginR"/>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <widget class="Line" name="lineDivider3">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="minSpaceHeaderLayout">
-      <item>
-       <spacer name="minSpaceHeaderLeftSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QLabel" name="minSpaceHeaderLabel">
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Client Min Space</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="minSpaceHeaderRightSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="minSpaceNameLayout">
-      <item>
-       <widget class="QLabel" name="minSpaceNameLabel">
-        <property name="text">
-         <string>Name</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLineEdit" name="kcfg_minSpaceNames">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="minSpaceValueLayout">
-      <item>
-       <widget class="QLabel" name="minSpaceValueLabel">
-        <property name="text">
-         <string>Space</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLineEdit" name="kcfg_minSpaceValues">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <widget class="Line" name="lineDivider4">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="ignoredHeaderLayout">
-      <item>
-       <spacer name="ignoredHeaderLeftSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QLabel" name="ignoredHeaderLabel">
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Client Ignored</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="ignoredHeaderRightSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="ignoredNameLayout">
-      <item>
-       <widget class="QLabel" name="ignoredNameLabel">
-        <property name="text">
-         <string>Name</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLineEdit" name="kcfg_ignoredNames">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="ignoredCaptionLayout">
-      <item>
-       <widget class="QLabel" name="ignoredCaptionLabel">
-        <property name="text">
-         <string>Caption</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLineEdit" name="kcfg_ignoredCaptions">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-   </layout>
+  <class>KWin::GridTilingConfigForm</class>
+  <widget class="QWidget" name="KWin::GridTilingConfigForm">
+    <property name="minimumSize">
+      <size>
+        <width>410</width>
+        <height>210</height>
+      </size>
+    </property>
+    <property name="windowTitle">
+      <string>Grid Tiling</string>
+    </property>
+    <widget class="QTabWidget" name="mainTabs">
+      <widget class="QWidget" name="gridTab">
+        <attribute name="title">
+          <string>Grid</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="gridLayout">
+          <item>
+            <layout class="QHBoxLayout" name="rowsLayout">
+              <item>
+                <widget class="QLabel" name="rowsLabel">
+                  <property name="text">
+                    <string>Rows</string>
+                  </property>
+                </widget>
+              </item>
+              <item>
+                <widget class="QLineEdit" name="kcfg_rows"/>
+              </item>
+            </layout>
+          </item>
+          <item>
+            <layout class="QHBoxLayout" name="columnsLayout">
+              <item>
+                <widget class="QLabel" name="columnsLabel">
+                  <property name="text">
+                    <string>Columns</string>
+                  </property>
+                </widget>
+              </item>
+              <item>
+                <widget class="QLineEdit" name="kcfg_columns"/>
+              </item>
+            </layout>
+          </item>
+        </layout>
+      </widget>
+      <widget class="QWidget" name="minSpaceTab">
+        <attribute name="title">
+          <string>Min Space</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="minSpaceLayout">
+          <item>
+            <layout class="QHBoxLayout" name="minSpaceNameLayout">
+              <item>
+                <widget class="QLabel" name="minSpaceNameLabel">
+                  <property name="text">
+                    <string>Name</string>
+                  </property>
+                </widget>
+              </item>
+              <item>
+                <widget class="QLineEdit" name="kcfg_minSpaceNames">
+                  <property name="text">
+                    <string/>
+                  </property>
+                </widget>
+              </item>
+            </layout>
+          </item>
+          <item>
+            <layout class="QHBoxLayout" name="minSpaceValueLayout">
+              <item>
+                <widget class="QLabel" name="minSpaceValueLabel">
+                  <property name="text">
+                    <string>Space</string>
+                  </property>
+                </widget>
+              </item>
+              <item>
+                <widget class="QLineEdit" name="kcfg_minSpaceValues">
+                  <property name="text">
+                    <string/>
+                  </property>
+                </widget>
+              </item>
+            </layout>
+          </item>
+        </layout>
+      </widget>
+      <widget class="QWidget" name="ignoredTab">
+        <attribute name="title">
+          <string>Ignored</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="ignoredTabLayout">
+          <item>
+            <layout class="QHBoxLayout" name="ignoredNameLayout">
+              <item>
+                <widget class="QLabel" name="ignoredNameLabel">
+                  <property name="text">
+                    <string>Name</string>
+                  </property>
+                </widget>
+              </item>
+              <item>
+                <widget class="QLineEdit" name="kcfg_ignoredNames">
+                  <property name="text">
+                    <string/>
+                  </property>
+                </widget>
+              </item>
+            </layout>
+          </item>
+          <item>
+            <layout class="QHBoxLayout" name="ignoredCaptionLayout">
+              <item>
+                <widget class="QLabel" name="ignoredCaptionLabel">
+                  <property name="text">
+                    <string>Caption</string>
+                  </property>
+                </widget>
+              </item>
+              <item>
+                <widget class="QLineEdit" name="kcfg_ignoredCaptions">
+                  <property name="text">
+                    <string/>
+                  </property>
+                </widget>
+              </item>
+            </layout>
+          </item>
+        </layout>
+      </widget>
+      <widget class="QWidget" name="otherTab">
+        <attribute name="title">
+          <string>Other</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="settingLayout">
+          <item>
+            <layout class="QHBoxLayout" name="toggleLayout">
+              <property name="spacing">
+                <number>6</number>
+              </property>
+              <item>
+                <widget class="QCheckBox" name="kcfg_tile">
+                  <property name="text">
+                    <string>Tile</string>
+                  </property>
+                </widget>
+              </item>
+              <item>
+                <widget class="QCheckBox" name="kcfg_gapShow">
+                  <property name="text">
+                    <string>Gap</string>
+                  </property>
+                </widget>
+              </item>
+              <item>
+                <widget class="QCheckBox" name="kcfg_border">
+                  <property name="text">
+                    <string>Border</string>
+                  </property>
+                </widget>
+              </item>
+            </layout>
+          </item>
+          <item>
+            <widget class="Line" name="settingLine0">
+              <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+              </property>
+            </widget>
+          </item>
+          <item>
+            <layout class="QHBoxLayout" name="parameterLayout">
+              <item>
+                <widget class="QLabel" name="gapValueLabel">
+                  <property name="text">
+                    <string>Gap</string>
+                  </property>
+                </widget>
+              </item>
+              <item>
+                <widget class="QSpinBox" name="kcfg_gapValue">
+                  <property name="minimum">
+                    <number>0</number>
+                  </property>
+                </widget>
+              </item>
+              <item>
+                <widget class="QLabel" name="dividerBoundLabel">
+                  <property name="text">
+                    <string>Bound</string>
+                  </property>
+                </widget>
+              </item>
+              <item>
+                <widget class="QDoubleSpinBox" name="kcfg_dividerBound">
+                  <property name="maximum">
+                    <double>0.500000000000000</double>
+                  </property>
+                  <property name="singleStep">
+                    <double>0.050000000000000</double>
+                  </property>
+                </widget>
+              </item>
+              <item>
+                <widget class="QLabel" name="dividerStepSizeLabel">
+                  <property name="text">
+                    <string>Step Size</string>
+                  </property>
+                </widget>
+              </item>
+              <item>
+                <widget class="QDoubleSpinBox" name="kcfg_dividerStep">
+                  <property name="maximum">
+                    <double>0.500000000000000</double>
+                  </property>
+                  <property name="singleStep">
+                    <double>0.010000000000000</double>
+                  </property>
+                </widget>
+              </item>
+            </layout>
+          </item>
+          <item>
+            <widget class="Line" name="settingLine1">
+              <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+              </property>
+            </widget>
+          </item>
+          <item>
+            <layout class="QVBoxLayout" name="marginLayout">
+              <item>
+                <layout class="QHBoxLayout" name="marginHeaderLayout">
+                  <item>
+                    <spacer name="marginHeaderLeftSpacer">
+                      <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                        <size>
+                          <width>40</width>
+                          <height>20</height>
+                        </size>
+                      </property>
+                    </spacer>
+                  </item>
+                  <item>
+                    <widget class="QLabel" name="marginHeaderLabel">
+                      <property name="layoutDirection">
+                        <enum>Qt::LeftToRight</enum>
+                      </property>
+                      <property name="text">
+                        <string>Margin</string>
+                      </property>
+                    </widget>
+                  </item>
+                  <item>
+                    <spacer name="marginHeaderRightSpacer">
+                      <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                        <size>
+                          <width>40</width>
+                          <height>20</height>
+                        </size>
+                      </property>
+                    </spacer>
+                  </item>
+                </layout>
+              </item>
+              <item>
+                <layout class="QHBoxLayout" name="marginKCFGLayout">
+                  <item>
+                    <widget class="QLabel" name="marginLLabel">
+                      <property name="text">
+                        <string>Left</string>
+                      </property>
+                    </widget>
+                  </item>
+                  <item>
+                    <widget class="QSpinBox" name="kcfg_marginL"/>
+                  </item>
+                  <item>
+                    <widget class="QLabel" name="marginBLabel">
+                      <property name="text">
+                        <string>Bottom</string>
+                      </property>
+                    </widget>
+                  </item>
+                  <item>
+                    <widget class="QSpinBox" name="kcfg_marginB"/>
+                  </item>
+                  <item>
+                    <widget class="QLabel" name="marginTLabel">
+                      <property name="text">
+                        <string>Top</string>
+                      </property>
+                    </widget>
+                  </item>
+                  <item>
+                    <widget class="QSpinBox" name="kcfg_marginT"/>
+                  </item>
+                  <item>
+                    <widget class="QLabel" name="marginRLabel">
+                      <property name="text">
+                        <string>Right</string>
+                      </property>
+                    </widget>
+                  </item>
+                  <item>
+                    <widget class="QSpinBox" name="kcfg_marginR"/>
+                  </item>
+                </layout>
+              </item>
+            </layout>
+          </item>
+        </layout>
+      </widget>
+    </widget>
   </widget>
- </widget>
- <resources/>
- <connections/>
+  <resources/>
+  <connections/>
 </ui>
