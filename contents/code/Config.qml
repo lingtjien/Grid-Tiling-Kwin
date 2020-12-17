@@ -32,18 +32,18 @@ Item {
     property int r: KWin.readConfig('marginR', 0)
   }
 
-  property var minSpaces: combine(splitTrim(KWin.readConfig(
-    'minSpaceNames', 'texstudio, inkscape, krita, gimp, designer, creator, kdenlive, kdevelop, chromium, kate, spotify'
-  )), splitTrim(KWin.readConfig(
-    'minSpaceValues', '1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2'
-  )).map(i => 1 / Number(i)))
+  property var minSpace: readMinSpace([
+    [1, 'texstudio|inkscape|krita|gimp|designer|creator|kdenlive'],
+    [2, 'kdevelop|chromium|kate|spotify'],
+    [3, ''], [4, ''], [5, ''], [6, ''], [7, ''], [8, ''], [9, ''], [10, '']
+  ])
 
   property var ignored: Item {
-    property var names: RegExp(KWin.readConfig(
-      'ignoredNames', 'kwin_wayland|ksmserver|krunner|latte-dock|[Pp]lasma|plugin-container|wine|yakuake'
+    property var name: RegExp(KWin.readConfig(
+      'ignoredName', 'kwin_wayland|ksmserver|krunner|latte-dock|[Pp]lasma|plugin-container|wine|yakuake'
     ))
-    property var captions: RegExp(`^${KWin.readConfig(
-      'ignoredCaptions', ''
+    property var caption: RegExp(`^${KWin.readConfig(
+      'ignoredCaption', ''
     )}$`)
   }
 
@@ -55,6 +55,17 @@ Item {
     let data = [];
     for (let i = 0; i < lhs.length && i < rhs.length; i++) {
       data.push([lhs[i], rhs[i]]);
+    }
+    return data;
+  }
+
+  function readMinSpace(defaults) {
+    let data = [];
+    for (let [i, d] of defaults) {
+      const name = KWin.readConfig(`minSpaceName${i}`, d);
+      i = KWin.readConfig(`minSpace${i}`, i);
+      if (i && name)
+        data.push([1 / i, RegExp(name)]);
     }
     return data;
   }

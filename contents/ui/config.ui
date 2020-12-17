@@ -5,141 +5,20 @@
     <property name="minimumSize">
       <size>
         <width>410</width>
-        <height>210</height>
+        <height>460</height>
       </size>
     </property>
     <property name="windowTitle">
       <string>Grid Tiling</string>
     </property>
-    <widget class="QTabWidget" name="mainTabs">
-      <widget class="QWidget" name="gridTab">
+    <widget class="QTabWidget" name="main">
+      <widget class="QWidget" name="tabMain">
         <attribute name="title">
-          <string>Grid</string>
+          <string>Main</string>
         </attribute>
-        <layout class="QVBoxLayout" name="gridLayout">
+        <layout class="QVBoxLayout" name="layoutMain">
           <item>
-            <layout class="QHBoxLayout" name="rowsLayout">
-              <item>
-                <widget class="QLabel" name="rowsLabel">
-                  <property name="text">
-                    <string>Rows</string>
-                  </property>
-                </widget>
-              </item>
-              <item>
-                <widget class="QLineEdit" name="kcfg_rows"/>
-              </item>
-            </layout>
-          </item>
-          <item>
-            <layout class="QHBoxLayout" name="columnsLayout">
-              <item>
-                <widget class="QLabel" name="columnsLabel">
-                  <property name="text">
-                    <string>Columns</string>
-                  </property>
-                </widget>
-              </item>
-              <item>
-                <widget class="QLineEdit" name="kcfg_columns"/>
-              </item>
-            </layout>
-          </item>
-        </layout>
-      </widget>
-      <widget class="QWidget" name="minSpaceTab">
-        <attribute name="title">
-          <string>Min Space</string>
-        </attribute>
-        <layout class="QVBoxLayout" name="minSpaceLayout">
-          <item>
-            <layout class="QHBoxLayout" name="minSpaceNameLayout">
-              <item>
-                <widget class="QLabel" name="minSpaceNameLabel">
-                  <property name="text">
-                    <string>Name</string>
-                  </property>
-                </widget>
-              </item>
-              <item>
-                <widget class="QLineEdit" name="kcfg_minSpaceNames">
-                  <property name="text">
-                    <string/>
-                  </property>
-                </widget>
-              </item>
-            </layout>
-          </item>
-          <item>
-            <layout class="QHBoxLayout" name="minSpaceValueLayout">
-              <item>
-                <widget class="QLabel" name="minSpaceValueLabel">
-                  <property name="text">
-                    <string>Space</string>
-                  </property>
-                </widget>
-              </item>
-              <item>
-                <widget class="QLineEdit" name="kcfg_minSpaceValues">
-                  <property name="text">
-                    <string/>
-                  </property>
-                </widget>
-              </item>
-            </layout>
-          </item>
-        </layout>
-      </widget>
-      <widget class="QWidget" name="ignoredTab">
-        <attribute name="title">
-          <string>Ignored</string>
-        </attribute>
-        <layout class="QVBoxLayout" name="ignoredTabLayout">
-          <item>
-            <layout class="QHBoxLayout" name="ignoredNameLayout">
-              <item>
-                <widget class="QLabel" name="ignoredNameLabel">
-                  <property name="text">
-                    <string>Name</string>
-                  </property>
-                </widget>
-              </item>
-              <item>
-                <widget class="QLineEdit" name="kcfg_ignoredNames">
-                  <property name="text">
-                    <string/>
-                  </property>
-                </widget>
-              </item>
-            </layout>
-          </item>
-          <item>
-            <layout class="QHBoxLayout" name="ignoredCaptionLayout">
-              <item>
-                <widget class="QLabel" name="ignoredCaptionLabel">
-                  <property name="text">
-                    <string>Caption</string>
-                  </property>
-                </widget>
-              </item>
-              <item>
-                <widget class="QLineEdit" name="kcfg_ignoredCaptions">
-                  <property name="text">
-                    <string/>
-                  </property>
-                </widget>
-              </item>
-            </layout>
-          </item>
-        </layout>
-      </widget>
-      <widget class="QWidget" name="otherTab">
-        <attribute name="title">
-          <string>Other</string>
-        </attribute>
-        <layout class="QVBoxLayout" name="settingLayout">
-          <item>
-            <layout class="QHBoxLayout" name="toggleLayout">
+            <layout class="QHBoxLayout" name="layoutMainGroup0">
               <property name="spacing">
                 <number>6</number>
               </property>
@@ -167,30 +46,26 @@
             </layout>
           </item>
           <item>
-            <widget class="Line" name="settingLine0">
+            <widget class="Line" name="lineMain0">
               <property name="orientation">
                 <enum>Qt::Horizontal</enum>
               </property>
             </widget>
           </item>
           <item>
-            <layout class="QHBoxLayout" name="parameterLayout">
+            <layout class="QHBoxLayout" name="layoutMainGroup1">
               <item>
-                <widget class="QLabel" name="gapValueLabel">
+                <widget class="QLabel" name="labelGap">
                   <property name="text">
                     <string>Gap</string>
                   </property>
                 </widget>
               </item>
               <item>
-                <widget class="QSpinBox" name="kcfg_gapValue">
-                  <property name="minimum">
-                    <number>0</number>
-                  </property>
-                </widget>
+                <widget class="QSpinBox" name="kcfg_gapValue"/>
               </item>
               <item>
-                <widget class="QLabel" name="dividerBoundLabel">
+                <widget class="QLabel" name="labelDividerBound">
                   <property name="text">
                     <string>Bound</string>
                   </property>
@@ -207,7 +82,7 @@
                 </widget>
               </item>
               <item>
-                <widget class="QLabel" name="dividerStepSizeLabel">
+                <widget class="QLabel" name="labelDividerStepSize">
                   <property name="text">
                     <string>Step Size</string>
                   </property>
@@ -226,99 +101,277 @@
             </layout>
           </item>
           <item>
-            <widget class="Line" name="settingLine1">
+            <widget class="Line" name="lineMain1">
               <property name="orientation">
                 <enum>Qt::Horizontal</enum>
               </property>
             </widget>
           </item>
           <item>
-            <layout class="QVBoxLayout" name="marginLayout">
+            <layout class="QHBoxLayout" name="layoutMainGroup2">
               <item>
-                <layout class="QHBoxLayout" name="marginHeaderLayout">
-                  <item>
-                    <spacer name="marginHeaderLeftSpacer">
-                      <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                      </property>
-                      <property name="sizeHint" stdset="0">
-                        <size>
-                          <width>40</width>
-                          <height>20</height>
-                        </size>
-                      </property>
-                    </spacer>
-                  </item>
-                  <item>
-                    <widget class="QLabel" name="marginHeaderLabel">
-                      <property name="layoutDirection">
-                        <enum>Qt::LeftToRight</enum>
-                      </property>
-                      <property name="text">
-                        <string>Margin</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item>
-                    <spacer name="marginHeaderRightSpacer">
-                      <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                      </property>
-                      <property name="sizeHint" stdset="0">
-                        <size>
-                          <width>40</width>
-                          <height>20</height>
-                        </size>
-                      </property>
-                    </spacer>
-                  </item>
-                </layout>
+                <spacer name="marginHeaderSpacerLeft">
+                  <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                  </property>
+                </spacer>
               </item>
               <item>
-                <layout class="QHBoxLayout" name="marginKCFGLayout">
-                  <item>
-                    <widget class="QLabel" name="marginLLabel">
-                      <property name="text">
-                        <string>Left</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item>
-                    <widget class="QSpinBox" name="kcfg_marginL"/>
-                  </item>
-                  <item>
-                    <widget class="QLabel" name="marginBLabel">
-                      <property name="text">
-                        <string>Bottom</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item>
-                    <widget class="QSpinBox" name="kcfg_marginB"/>
-                  </item>
-                  <item>
-                    <widget class="QLabel" name="marginTLabel">
-                      <property name="text">
-                        <string>Top</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item>
-                    <widget class="QSpinBox" name="kcfg_marginT"/>
-                  </item>
-                  <item>
-                    <widget class="QLabel" name="marginRLabel">
-                      <property name="text">
-                        <string>Right</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item>
-                    <widget class="QSpinBox" name="kcfg_marginR"/>
-                  </item>
-                </layout>
+                <widget class="QLabel" name="marginHeaderTitle">
+                  <property name="layoutDirection">
+                    <enum>Qt::LeftToRight</enum>
+                  </property>
+                  <property name="text">
+                    <string>Margin</string>
+                  </property>
+                </widget>
+              </item>
+              <item>
+                <spacer name="marginHeaderSpacerRight">
+                  <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                  </property>
+                </spacer>
               </item>
             </layout>
+          </item>
+          <item>
+            <layout class="QHBoxLayout" name="layoutMainGroup3">
+              <item>
+                <widget class="QLabel" name="labelMarginLeft">
+                  <property name="text">
+                    <string>Left</string>
+                  </property>
+                </widget>
+              </item>
+              <item>
+                <widget class="QSpinBox" name="kcfg_marginL"/>
+              </item>
+              <item>
+                <widget class="QLabel" name="labelMarginBottom">
+                  <property name="text">
+                    <string>Bottom</string>
+                  </property>
+                </widget>
+              </item>
+              <item>
+                <widget class="QSpinBox" name="kcfg_marginB"/>
+              </item>
+              <item>
+                <widget class="QLabel" name="labelMarginTop">
+                  <property name="text">
+                    <string>Top</string>
+                  </property>
+                </widget>
+              </item>
+              <item>
+                <widget class="QSpinBox" name="kcfg_marginT"/>
+              </item>
+              <item>
+                <widget class="QLabel" name="labelMarginRight">
+                  <property name="text">
+                    <string>Right</string>
+                  </property>
+                </widget>
+              </item>
+              <item>
+                <widget class="QSpinBox" name="kcfg_marginR"/>
+              </item>
+            </layout>
+          </item>
+          <item>
+            <widget class="Line" name="lineMain2">
+              <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+              </property>
+            </widget>
+          </item>
+          <item>
+            <layout class="QHBoxLayout" name="layoutMainGroup4">
+              <item>
+                <spacer name="ignoredHeaderSpacerleft">
+                  <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                  </property>
+                </spacer>
+              </item>
+              <item>
+                <widget class="QLabel" name="ignoredHeaderTitle">
+                  <property name="layoutDirection">
+                    <enum>Qt::LeftToRight</enum>
+                  </property>
+                  <property name="text">
+                    <string>Ignored</string>
+                  </property>
+                </widget>
+              </item>
+              <item>
+                <spacer name="ignoredHeaderSpacerRight">
+                  <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                  </property>
+                </spacer>
+              </item>
+            </layout>
+          </item>
+          <item>
+            <layout class="QHBoxLayout" name="layoutIgnoredName">
+              <item>
+                <widget class="QLabel" name="labelIgnoredName">
+                  <property name="text">
+                    <string>Name</string>
+                  </property>
+                </widget>
+              </item>
+              <item>
+                <widget class="QLineEdit" name="kcfg_ignoredName">
+                  <property name="text">
+                    <string/>
+                  </property>
+                </widget>
+              </item>
+            </layout>
+          </item>
+          <item>
+            <layout class="QHBoxLayout" name="layoutIgnoredCaption">
+              <item>
+                <widget class="QLabel" name="labelIgnoredCaption">
+                  <property name="text">
+                    <string>Caption</string>
+                  </property>
+                </widget>
+              </item>
+              <item>
+                <widget class="QLineEdit" name="kcfg_ignoredCaption">
+                  <property name="text">
+                    <string/>
+                  </property>
+                </widget>
+              </item>
+            </layout>
+          </item>
+          <item>
+            <spacer name="spacerMain">
+              <property name="orientation">
+                <enum>Qt::Vertical</enum>
+              </property>
+            </spacer>
+          </item>
+        </layout>
+      </widget>
+      <widget class="QWidget" name="tabGrid">
+        <attribute name="title">
+          <string>Grid</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="layoutGrid">
+          <item>
+            <layout class="QHBoxLayout" name="layoutRows">
+              <item>
+                <widget class="QLabel" name="labelRows">
+                  <property name="text">
+                    <string>Rows</string>
+                  </property>
+                </widget>
+              </item>
+              <item>
+                <widget class="QLineEdit" name="kcfg_rows"/>
+              </item>
+            </layout>
+          </item>
+          <item>
+            <layout class="QHBoxLayout" name="layoutColumns">
+              <item>
+                <widget class="QLabel" name="labelColumns">
+                  <property name="text">
+                    <string>Columns</string>
+                  </property>
+                </widget>
+              </item>
+              <item>
+                <widget class="QLineEdit" name="kcfg_columns"/>
+              </item>
+            </layout>
+          </item>
+        </layout>
+      </widget>
+      <widget class="QWidget" name="tabMinSpace">
+        <attribute name="title">
+          <string>Min Space</string>
+        </attribute>
+        <layout class="QFormLayout" name="layoutMinSpace">
+          <item row="0" column="0">
+            <widget class="QLabel" name="labelMinSpaceValue">
+              <property name="text">
+                <string>Value</string>
+              </property>
+            </widget>
+          </item>
+          <item row="0" column="1">
+            <widget class="QLabel" name="labelMinSpaceName">
+              <property name="text">
+                <string>Name</string>
+              </property>
+            </widget>
+          </item>
+          <item row="1" column="0">
+            <widget class="QSpinBox" name="kcfg_minSpace1"/>
+          </item>
+          <item row="1" column="1">
+            <widget class="QLineEdit" name="kcfg_minSpaceName1"/>
+          </item>
+          <item row="2" column="0">
+            <widget class="QSpinBox" name="kcfg_minSpace2"/>
+          </item>
+          <item row="2" column="1">
+            <widget class="QLineEdit" name="kcfg_minSpaceName2"/>
+          </item>
+          <item row="3" column="0">
+            <widget class="QSpinBox" name="kcfg_minSpace3"/>
+          </item>
+          <item row="3" column="1">
+            <widget class="QLineEdit" name="kcfg_minSpaceName3"/>
+          </item>
+          <item row="4" column="0">
+            <widget class="QSpinBox" name="kcfg_minSpace4"/>
+          </item>
+          <item row="4" column="1">
+            <widget class="QLineEdit" name="kcfg_minSpaceName4"/>
+          </item>
+          <item row="5" column="0">
+            <widget class="QSpinBox" name="kcfg_minSpace5"/>
+          </item>
+          <item row="5" column="1">
+            <widget class="QLineEdit" name="kcfg_minSpaceName5"/>
+          </item>
+          <item row="6" column="0">
+            <widget class="QSpinBox" name="kcfg_minSpace6"/>
+          </item>
+          <item row="6" column="1">
+            <widget class="QLineEdit" name="kcfg_minSpaceName6"/>
+          </item>
+          <item row="7" column="0">
+            <widget class="QSpinBox" name="kcfg_minSpace7"/>
+          </item>
+          <item row="7" column="1">
+            <widget class="QLineEdit" name="kcfg_minSpaceName7"/>
+          </item>
+          <item row="8" column="0">
+            <widget class="QSpinBox" name="kcfg_minSpace8"/>
+          </item>
+          <item row="8" column="1">
+            <widget class="QLineEdit" name="kcfg_minSpaceName8"/>
+          </item>
+          <item row="9" column="0">
+            <widget class="QSpinBox" name="kcfg_minSpace9"/>
+          </item>
+          <item row="9" column="1">
+            <widget class="QLineEdit" name="kcfg_minSpaceName9"/>
+          </item>
+          <item row="10" column="0">
+            <widget class="QSpinBox" name="kcfg_minSpace10"/>
+          </item>
+          <item row="10" column="1">
+            <widget class="QLineEdit" name="kcfg_minSpaceName10"/>
           </item>
         </layout>
       </widget>

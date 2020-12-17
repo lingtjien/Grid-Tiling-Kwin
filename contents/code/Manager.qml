@@ -5,7 +5,7 @@ Item {
   property var tiled: Object()
 
   function ignored(client) {
-    return client.transient || config.ignored.captions.test(client.caption) || config.ignored.names.test(client.name);
+    return client.transient || config.ignored.caption.test(client.caption) || config.ignored.name.test(client.name);
   }
 
   function addProps(client) {
@@ -15,8 +15,8 @@ Item {
       geometry: client.geometry
     };
     client.minSpace = config.smallestSpace;
-    for (const [name, minSpace] of config.minSpaces) {
-      if (client.name.includes(name)) {
+    for (const [minSpace, name] of config.minSpace) {
+      if (name.test(client.name)) {
         client.minSpace = minSpace;
         break;
       }
