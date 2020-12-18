@@ -1,16 +1,9 @@
 import QtQuick 2.0
 
 Item {
-  property var grids: combine(splitTrim(KWin.readConfig(
-    'rows', '2, 2, 2, 2, 2, 2, 2, 2, 2, 2'
-  )), splitTrim(KWin.readConfig(
-    'columns', '2, 2, 2, 2, 2, 2, 2, 2, 2, 2'
-  )))
+  property var grid: readGrid(10, '2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2')
 
-  property var smallestSpace: grids.reduce((current, [row, col]) => {
-    const space = 1 / (row * col);
-    return space < current ? space : current;
-  }, 1)
+  property var smallestSpace: grid.reduce((min, data) => data.reduce((m, [row, col]) => Math.min(m, 1 / (row * col)), min), 1)
 
   property int gapValue: KWin.readConfig('gapValue', 16)
   property bool gapShow: KWin.readConfig('gapShow', true)
@@ -47,14 +40,20 @@ Item {
     )}$`)
   }
 
-  function splitTrim(data) {
-    return data.split(',').map(i => i.trim()).filter(i => i);
+  function splitTrimNumber(data) {
+    return data.split(',').map(i => Number(i.trim())).filter(i => i);
   }
 
-  function combine(lhs, rhs) {
+  function readGrid(screens, defaults) {
     let data = [];
-    for (let i = 0; i < lhs.length && i < rhs.length; i++) {
-      data.push([lhs[i], rhs[i]]);
+    for (let i = 0; i < screens; i++) {
+      let rows = splitTrimNumber(KWin.readConfig(`rowsScreen${i}`, defaults));
+      let columns = splitTrimNumber(KWin.readConfig(`columnsScreen${i}`, defaults));
+      let d = [];
+      for (let j = 0; j < rows.length && j < columns.length; j++) {
+        d.push([rows[j], columns[j]]);
+      }
+      data.push(d);
     }
     return data;
   }

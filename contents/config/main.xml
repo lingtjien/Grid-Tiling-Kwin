@@ -51,13 +51,65 @@
       <default/>
     </entry>
 
-    <entry name="rows" type="string">
-      <label>the number of rows a grid uses, can be supplied differently per screen</label>
-      <default>2, 2, 2, 2, 2, 2, 2, 2, 2, 2</default>
+    <entry name="rowsScreen0" type="string">
+      <default>2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2</default>
     </entry>
-    <entry name="columns" type="string">
-      <label>the number of columns a grid uses, can be supplied differently per screen</label>
-      <default>2, 2, 2, 2, 2, 2, 2, 2, 2, 2</default>
+    <entry name="columnsScreen0" type="string">
+      <default>2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2</default>
+    </entry>
+    <entry name="rowsScreen1" type="string">
+      <default>2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2</default>
+    </entry>
+    <entry name="columnsScreen1" type="string">
+      <default>2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2</default>
+    </entry>
+    <entry name="rowsScreen2" type="string">
+      <default>2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2</default>
+    </entry>
+    <entry name="columnsScreen2" type="string">
+      <default>2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2</default>
+    </entry>
+    <entry name="rowsScreen3" type="string">
+      <default>2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2</default>
+    </entry>
+    <entry name="columnsScreen3" type="string">
+      <default>2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2</default>
+    </entry>
+    <entry name="rowsScreen4" type="string">
+      <default>2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2</default>
+    </entry>
+    <entry name="columnsScreen4" type="string">
+      <default>2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2</default>
+    </entry>
+    <entry name="rowsScreen5" type="string">
+      <default>2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2</default>
+    </entry>
+    <entry name="columnsScreen5" type="string">
+      <default>2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2</default>
+    </entry>
+    <entry name="rowsScreen6" type="string">
+      <default>2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2</default>
+    </entry>
+    <entry name="columnsScreen6" type="string">
+      <default>2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2</default>
+    </entry>
+    <entry name="rowsScreen7" type="string">
+      <default>2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2</default>
+    </entry>
+    <entry name="columnsScreen7" type="string">
+      <default>2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2</default>
+    </entry>
+    <entry name="rowsScreen8" type="string">
+      <default>2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2</default>
+    </entry>
+    <entry name="columnsScreen8" type="string">
+      <default>2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2</default>
+    </entry>
+    <entry name="rowsScreen9" type="string">
+      <default>2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2</default>
+    </entry>
+    <entry name="columnsScreen9" type="string">
+      <default>2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2</default>
     </entry>
 
     <entry name="minSpace1" type="int">

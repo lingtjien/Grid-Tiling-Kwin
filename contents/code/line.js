@@ -26,7 +26,7 @@ const create = () => ({ // eslint-disable-line no-unused-vars
     }
     return true;
   },
-  swapClient(clientIndex, amount) {
+  swapClient(amount, clientIndex) {
     const i = clientIndex + amount;
     if (i >= 0 && i < this.clients.length) {
       const client = this.clients[clientIndex];
@@ -35,17 +35,17 @@ const create = () => ({ // eslint-disable-line no-unused-vars
       return client;
     }
   },
-  changeDividerAfter(clientIndex, amount) {
+  changeDividerAfter(amount, clientIndex) {
     if (clientIndex < this.clients.length - 1)
       this.dividers[clientIndex] = Math.min(Math.max(-config.divider.bound, this.dividers[clientIndex] + amount), config.divider.bound);
   },
-  changeDividerBefore(clientIndex, amount) {
+  changeDividerBefore(amount, clientIndex) {
     if (clientIndex > 0)
       this.dividers[clientIndex - 1] = Math.min(Math.max(-config.divider.bound, this.dividers[clientIndex - 1] - amount), config.divider.bound);
   },
-  changeDivider(clientIndex, amount) {
-    this.changeDividerAfter(clientIndex, amount);
-    this.changeDividerBefore(clientIndex, amount);
+  changeDivider(amount, clientIndex) {
+    this.changeDividerAfter(amount, clientIndex);
+    this.changeDividerBefore(amount, clientIndex);
   },
   render(x, w, areaY, areaHeight, lineIndex, screenIndex, desktopIndex, activityId) {
     const height = config.height(areaHeight, this.clients.length - this.nminimized());

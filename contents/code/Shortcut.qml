@@ -50,8 +50,8 @@ Item {
         let client = workspace.activeClient;
         const screen = manager.getScreen(client);
         if (screen) {
-          screen.lines[client.lineIndex].changeDivider(client.clientIndex, amount);
-          screen.changeDivider(client.lineIndex, amount);
+          screen.lines[client.lineIndex].changeDivider(amount, client.clientIndex);
+          screen.changeDivider(amount, client.lineIndex);
           screen.render(client.screenIndex, client.desktopIndex, client.activityId);
         }
       });
@@ -66,7 +66,7 @@ Item {
       register(text, shortcut, () => {
         let client = workspace.activeClient;
         const screen = manager.getScreen(client);
-        if (screen && screen.lines[client.lineIndex].swapClient(client.clientIndex, amount))
+        if (screen && screen.lines[client.lineIndex].swapClient(amount, client.clientIndex))
           screen.render(client.screenIndex, client.desktopIndex, client.activityId);
       });
     }
@@ -78,7 +78,7 @@ Item {
       register(text, shortcut, () => {
         let client = workspace.activeClient;
         const screen = manager.getScreen(client);
-        if (screen && (screen.moveClient(client.screenIndex, client.clientIndex, client.lineIndex, amount) || screen.swapLine(client.lineIndex, amount)))
+        if (screen && (screen.moveClient(amount, client.clientIndex, client.lineIndex, client.screenIndex, client.desktopIndex) || screen.swapLine(amount, client.lineIndex)))
           screen.render(client.screenIndex, client.desktopIndex, client.activityId);
       });
     }

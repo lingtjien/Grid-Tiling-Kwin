@@ -41,8 +41,8 @@ const create = () => ({ // eslint-disable-line no-unused-vars
   smallest() {
     return this.lines.reduce((c, l) => c ? (l.minSpace() < c.minSpace() ? l : c) : l, undefined);
   },
-  addClient(client, screenIndex) {
-    const max = config.grids[screenIndex];
+  addClient(client, screenIndex, desktopIndex) {
+    const max = config.grid[screenIndex][desktopIndex];
     let line = this.smallest();
     if (line && line.minSpace() + client.minSpace <= 1 / this.lines.length && line.clients.length < max[0] && (this.lines.length >= max[1] || this.lines.length > line.clients.length)) {
       return line.addClient(client);
@@ -59,7 +59,7 @@ const create = () => ({ // eslint-disable-line no-unused-vars
       return true;
     }
   },
-  swapLine(lineIndex, amount) {
+  swapLine(amount, lineIndex) {
     const i = lineIndex + amount;
     if (i >= 0 && i < this.lines.length) {
       const line = this.lines[lineIndex];
@@ -68,8 +68,8 @@ const create = () => ({ // eslint-disable-line no-unused-vars
       return line;
     }
   },
-  moveClient(screenIndex, clientIndex, lineIndex, amount) {
-    const max = config.grids[screenIndex];
+  moveClient(amount, clientIndex, lineIndex, screenIndex, desktopIndex) {
+    const max = config.grid[screenIndex][desktopIndex];
     const line = this.lines[lineIndex];
     const client = line.clients[clientIndex];
 
@@ -91,17 +91,17 @@ const create = () => ({ // eslint-disable-line no-unused-vars
       }
     }
   },
-  changeDividerAfter(lineIndex, amount) {
+  changeDividerAfter(amount, lineIndex) {
     if (lineIndex < this.lines.length - 1)
       this.dividers[lineIndex] = Math.min(Math.max(-config.divider.bound, this.dividers[lineIndex] + amount), config.divider.bound);
   },
-  changeDividerBefore(lineIndex, amount) {
+  changeDividerBefore(amount, lineIndex) {
     if (lineIndex > 0)
       this.dividers[lineIndex - 1] = Math.min(Math.max(-config.divider.bound, this.dividers[lineIndex - 1] - amount), config.divider.bound);
   },
-  changeDivider(lineIndex, amount) {
-    this.changeDividerAfter(lineIndex, amount);
-    this.changeDividerBefore(lineIndex, amount);
+  changeDivider(amount, lineIndex) {
+    this.changeDividerAfter(amount, lineIndex);
+    this.changeDividerBefore(amount, lineIndex);
   },
   render(screenIndex, desktopIndex, activityId) {
     const area = workspace.clientArea(0, screenIndex, desktopIndex + 1);

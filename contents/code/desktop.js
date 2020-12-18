@@ -13,7 +13,7 @@ const create = () => ({ // eslint-disable-line no-unused-vars
       return s;
     }
   },
-  addClient(client) {
+  addClient(client, desktopIndex) {
     const start = workspace.activeScreen;
     let i = start;
     do {
@@ -21,7 +21,7 @@ const create = () => ({ // eslint-disable-line no-unused-vars
         if (!this.addScreen())
           return;
       }
-      const c = this.screens[i].addClient(client, i);
+      const c = this.screens[i].addClient(client, i, desktopIndex);
       if (c)
         return c;
       if (++i >= workspace.numScreens)
@@ -32,7 +32,7 @@ const create = () => ({ // eslint-disable-line no-unused-vars
     // do not remove the screen to prevent moving of clients when screens are closed
     return this.screens[screenIndex].removeClient(clientIndex, lineIndex);
   },
-  moveClient(clientIndex, lineIndex, screenIndex, i) {
+  moveClient(i, clientIndex, lineIndex, screenIndex, desktopIndex) {
     // screenIndex = old, i = target screenIndex
     if (i < 0 || i === screenIndex)
       return;
@@ -41,7 +41,7 @@ const create = () => ({ // eslint-disable-line no-unused-vars
       if (!this.addScreen())
         return;
     }
-    if (this.screens[i].addClient(client, screenIndex) && this.screens[screenIndex].removeClient(clientIndex, lineIndex))
+    if (this.screens[i].addClient(client, screenIndex, desktopIndex) && this.screens[screenIndex].removeClient(clientIndex, lineIndex))
       return client;
   },
   render(desktopIndex, activityId) {

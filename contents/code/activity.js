@@ -21,7 +21,7 @@ const create = () => ({ // eslint-disable-line no-unused-vars
         if (!this.addDesktop())
           return;
       }
-      const c = this.desktops[i].addClient(client);
+      const c = this.desktops[i].addClient(client, i);
       if (c)
         return c;
       if (++i >= workspace.desktops)
@@ -32,7 +32,7 @@ const create = () => ({ // eslint-disable-line no-unused-vars
     // do not remove the desktop to prevent moving of clients when desktops are closed
     return this.desktops[desktopIndex].removeClient(clientIndex, lineIndex, screenIndex);
   },
-  moveClient(clientIndex, lineIndex, screenIndex, desktopIndex, i) {
+  moveClient(i, clientIndex, lineIndex, screenIndex, desktopIndex) {
     // desktopIndex = old, i = target desktopIndex
     if (i < 0 || i === desktopIndex)
       return;
@@ -41,7 +41,7 @@ const create = () => ({ // eslint-disable-line no-unused-vars
       if (!this.addDesktop())
         return;
     }
-    if (this.desktops[i].addClient(client) && this.desktops[desktopIndex].removeClient(clientIndex, lineIndex, screenIndex))
+    if (this.desktops[i].addClient(client, i) && this.desktops[desktopIndex].removeClient(clientIndex, lineIndex, screenIndex))
       return client;
   },
   render(activityId) {

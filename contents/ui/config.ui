@@ -5,13 +5,21 @@
     <property name="minimumSize">
       <size>
         <width>410</width>
-        <height>460</height>
+        <height>320</height>
       </size>
     </property>
     <property name="windowTitle">
       <string>Grid Tiling</string>
     </property>
     <widget class="QTabWidget" name="main">
+      <property name="geometry">
+        <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>410</width>
+          <height>320</height>
+        </rect>
+      </property>
       <widget class="QWidget" name="tabMain">
         <attribute name="title">
           <string>Main</string>
@@ -265,32 +273,92 @@
         </attribute>
         <layout class="QVBoxLayout" name="layoutGrid">
           <item>
-            <layout class="QHBoxLayout" name="layoutRows">
-              <item>
-                <widget class="QLabel" name="labelRows">
-                  <property name="text">
-                    <string>Rows</string>
-                  </property>
-                </widget>
-              </item>
-              <item>
-                <widget class="QLineEdit" name="kcfg_rows"/>
-              </item>
-            </layout>
-          </item>
-          <item>
-            <layout class="QHBoxLayout" name="layoutColumns">
-              <item>
-                <widget class="QLabel" name="labelColumns">
-                  <property name="text">
-                    <string>Columns</string>
-                  </property>
-                </widget>
-              </item>
-              <item>
-                <widget class="QLineEdit" name="kcfg_columns"/>
-              </item>
-            </layout>
+            <widget class="QScrollArea" name="scrollGrid">
+              <property name="frameShadow">
+                <enum>QFrame::Plain</enum>
+              </property>
+              <property name="widgetResizable">
+                <bool>true</bool>
+              </property>
+              <widget class="QWidget" name="scrollAreaGrid">
+                <layout class="QGridLayout" name="gridGrid">
+                  <item row="0" column="0">
+                    <widget class="QLabel" name="labelRows">
+                      <property name="text">
+                        <string>Rows</string>
+                      </property>
+                    </widget>
+                  </item>
+                  <item row="0" column="1">
+                    <widget class="QLabel" name="labelColumns">
+                      <property name="text">
+                        <string>Columns</string>
+                      </property>
+                    </widget>
+                  </item>
+                  <item row="1" column="0">
+                    <widget class="QLineEdit" name="kcfg_rowsScreen0"/>
+                  </item>
+                  <item row="2" column="0">
+                    <widget class="QLineEdit" name="kcfg_rowsScreen1"/>
+                  </item>
+                  <item row="3" column="0">
+                    <widget class="QLineEdit" name="kcfg_rowsScreen2"/>
+                  </item>
+                  <item row="4" column="0">
+                    <widget class="QLineEdit" name="kcfg_rowsScreen3"/>
+                  </item>
+                  <item row="5" column="0">
+                    <widget class="QLineEdit" name="kcfg_rowsScreen4"/>
+                  </item>
+                  <item row="6" column="0">
+                    <widget class="QLineEdit" name="kcfg_rowsScreen5"/>
+                  </item>
+                  <item row="7" column="0">
+                    <widget class="QLineEdit" name="kcfg_rowsScreen6"/>
+                  </item>
+                  <item row="8" column="0">
+                    <widget class="QLineEdit" name="kcfg_rowsScreen7"/>
+                  </item>
+                  <item row="9" column="0">
+                    <widget class="QLineEdit" name="kcfg_rowsScreen8"/>
+                  </item>
+                  <item row="10" column="0">
+                    <widget class="QLineEdit" name="kcfg_rowsScreen9"/>
+                  </item>
+                  <item row="1" column="1">
+                    <widget class="QLineEdit" name="kcfg_columnsScreen0"/>
+                  </item>
+                  <item row="2" column="1">
+                    <widget class="QLineEdit" name="kcfg_columnsScreen1"/>
+                  </item>
+                  <item row="3" column="1">
+                    <widget class="QLineEdit" name="kcfg_columnsScreen2"/>
+                  </item>
+                  <item row="4" column="1">
+                    <widget class="QLineEdit" name="kcfg_columnsScreen3"/>
+                  </item>
+                  <item row="5" column="1">
+                    <widget class="QLineEdit" name="kcfg_columnsScreen4"/>
+                  </item>
+                  <item row="6" column="1">
+                    <widget class="QLineEdit" name="kcfg_columnsScreen5"/>
+                  </item>
+                  <item row="7" column="1">
+                    <widget class="QLineEdit" name="kcfg_columnsScreen6"/>
+                  </item>
+                  <item row="8" column="1">
+                    <widget class="QLineEdit" name="kcfg_columnsScreen7"/>
+                  </item>
+                  <item row="9" column="1">
+                    <widget class="QLineEdit" name="kcfg_columnsScreen8"/>
+                  </item>
+                  <item row="10" column="1">
+                    <widget class="QLineEdit" name="kcfg_columnsScreen9"/>
+                  </item>
+                </layout>
+              </widget>
+            </widget>
           </item>
         </layout>
       </widget>
@@ -298,80 +366,94 @@
         <attribute name="title">
           <string>Min Space</string>
         </attribute>
-        <layout class="QFormLayout" name="layoutMinSpace">
-          <item row="0" column="0">
-            <widget class="QLabel" name="labelMinSpaceValue">
-              <property name="text">
-                <string>Value</string>
+        <layout class="QVBoxLayout" name="layoutMinSpace">
+          <item>
+            <widget class="QScrollArea" name="scrollMinSpace">
+              <property name="frameShadow">
+                <enum>QFrame::Plain</enum>
               </property>
-            </widget>
-          </item>
-          <item row="0" column="1">
-            <widget class="QLabel" name="labelMinSpaceName">
-              <property name="text">
-                <string>Name</string>
+              <property name="widgetResizable">
+                <bool>true</bool>
               </property>
+              <widget class="QWidget" name="scrollAreaMinSpace">
+                <layout class="QFormLayout" name="formMinSpace">
+                  <item row="0" column="0">
+                    <widget class="QLabel" name="labelMinSpace">
+                      <property name="text">
+                        <string>Value</string>
+                      </property>
+                    </widget>
+                  </item>
+                  <item row="0" column="1">
+                    <widget class="QLabel" name="labelMinSpaceName">
+                      <property name="text">
+                        <string>Name</string>
+                      </property>
+                    </widget>
+                  </item>
+                  <item row="1" column="0">
+                    <widget class="QSpinBox" name="kcfg_minSpace1"/>
+                  </item>
+                  <item row="1" column="1">
+                    <widget class="QLineEdit" name="kcfg_minSpaceName1"/>
+                  </item>
+                  <item row="2" column="0">
+                    <widget class="QSpinBox" name="kcfg_minSpace2"/>
+                  </item>
+                  <item row="2" column="1">
+                    <widget class="QLineEdit" name="kcfg_minSpaceName2"/>
+                  </item>
+                  <item row="3" column="0">
+                    <widget class="QSpinBox" name="kcfg_minSpace3"/>
+                  </item>
+                  <item row="3" column="1">
+                    <widget class="QLineEdit" name="kcfg_minSpaceName3"/>
+                  </item>
+                  <item row="4" column="0">
+                    <widget class="QSpinBox" name="kcfg_minSpace4"/>
+                  </item>
+                  <item row="4" column="1">
+                    <widget class="QLineEdit" name="kcfg_minSpaceName4"/>
+                  </item>
+                  <item row="5" column="0">
+                    <widget class="QSpinBox" name="kcfg_minSpace5"/>
+                  </item>
+                  <item row="5" column="1">
+                    <widget class="QLineEdit" name="kcfg_minSpaceName5"/>
+                  </item>
+                  <item row="6" column="0">
+                    <widget class="QSpinBox" name="kcfg_minSpace6"/>
+                  </item>
+                  <item row="6" column="1">
+                    <widget class="QLineEdit" name="kcfg_minSpaceName6"/>
+                  </item>
+                  <item row="7" column="0">
+                    <widget class="QSpinBox" name="kcfg_minSpace7"/>
+                  </item>
+                  <item row="7" column="1">
+                    <widget class="QLineEdit" name="kcfg_minSpaceName7"/>
+                  </item>
+                  <item row="8" column="0">
+                    <widget class="QSpinBox" name="kcfg_minSpace8"/>
+                  </item>
+                  <item row="8" column="1">
+                    <widget class="QLineEdit" name="kcfg_minSpaceName8"/>
+                  </item>
+                  <item row="9" column="0">
+                    <widget class="QSpinBox" name="kcfg_minSpace9"/>
+                  </item>
+                  <item row="9" column="1">
+                    <widget class="QLineEdit" name="kcfg_minSpaceName9"/>
+                  </item>
+                  <item row="10" column="0">
+                    <widget class="QSpinBox" name="kcfg_minSpace10"/>
+                  </item>
+                  <item row="10" column="1">
+                    <widget class="QLineEdit" name="kcfg_minSpaceName10"/>
+                  </item>
+                </layout>
+              </widget>
             </widget>
-          </item>
-          <item row="1" column="0">
-            <widget class="QSpinBox" name="kcfg_minSpace1"/>
-          </item>
-          <item row="1" column="1">
-            <widget class="QLineEdit" name="kcfg_minSpaceName1"/>
-          </item>
-          <item row="2" column="0">
-            <widget class="QSpinBox" name="kcfg_minSpace2"/>
-          </item>
-          <item row="2" column="1">
-            <widget class="QLineEdit" name="kcfg_minSpaceName2"/>
-          </item>
-          <item row="3" column="0">
-            <widget class="QSpinBox" name="kcfg_minSpace3"/>
-          </item>
-          <item row="3" column="1">
-            <widget class="QLineEdit" name="kcfg_minSpaceName3"/>
-          </item>
-          <item row="4" column="0">
-            <widget class="QSpinBox" name="kcfg_minSpace4"/>
-          </item>
-          <item row="4" column="1">
-            <widget class="QLineEdit" name="kcfg_minSpaceName4"/>
-          </item>
-          <item row="5" column="0">
-            <widget class="QSpinBox" name="kcfg_minSpace5"/>
-          </item>
-          <item row="5" column="1">
-            <widget class="QLineEdit" name="kcfg_minSpaceName5"/>
-          </item>
-          <item row="6" column="0">
-            <widget class="QSpinBox" name="kcfg_minSpace6"/>
-          </item>
-          <item row="6" column="1">
-            <widget class="QLineEdit" name="kcfg_minSpaceName6"/>
-          </item>
-          <item row="7" column="0">
-            <widget class="QSpinBox" name="kcfg_minSpace7"/>
-          </item>
-          <item row="7" column="1">
-            <widget class="QLineEdit" name="kcfg_minSpaceName7"/>
-          </item>
-          <item row="8" column="0">
-            <widget class="QSpinBox" name="kcfg_minSpace8"/>
-          </item>
-          <item row="8" column="1">
-            <widget class="QLineEdit" name="kcfg_minSpaceName8"/>
-          </item>
-          <item row="9" column="0">
-            <widget class="QSpinBox" name="kcfg_minSpace9"/>
-          </item>
-          <item row="9" column="1">
-            <widget class="QLineEdit" name="kcfg_minSpaceName9"/>
-          </item>
-          <item row="10" column="0">
-            <widget class="QSpinBox" name="kcfg_minSpace10"/>
-          </item>
-          <item row="10" column="1">
-            <widget class="QLineEdit" name="kcfg_minSpaceName10"/>
           </item>
         </layout>
       </widget>

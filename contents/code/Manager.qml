@@ -68,16 +68,16 @@ Item {
     const width = config.width(area.width, screen.lines.length - screen.nminimized());
     if (diff.width !== 0) {
       if (diff.x === 0)
-        screen.changeDividerAfter(client.lineIndex, diff.width / width);
+        screen.changeDividerAfter(diff.width / width, client.lineIndex);
       else
-        screen.changeDividerBefore(client.lineIndex, diff.width / width);
+        screen.changeDividerBefore(diff.width / width, client.lineIndex);
     }
 
     if (diff.height !== 0) {
       if (diff.y === 0)
-        screen.lines[client.lineIndex].changeDividerAfter(client.clientIndex, diff.height / height);
+        screen.lines[client.lineIndex].changeDividerAfter(diff.height / height, client.clientIndex);
       else
-        screen.lines[client.lineIndex].changeDividerBefore(client.clientIndex, diff.height / height);
+        screen.lines[client.lineIndex].changeDividerBefore(diff.height / height, client.clientIndex);
     }
   }
 
@@ -124,7 +124,7 @@ Item {
         let i = client.desktop - 1;
         const direction = Math.sign(i - start);
         if (direction) {
-          while (!activity.moveClient(client.clientIndex, client.lineIndex, client.screenIndex, client.desktopIndex, i))
+          while (!activity.moveClient(i, client.clientIndex, client.lineIndex, client.screenIndex, client.desktopIndex))
           {
             i = Math.min(Math.max(0, i + direction), workspace.desktops - 1);
             if (i === start)
@@ -141,7 +141,7 @@ Item {
       let i = client.screen;
       const direction = Math.sign(i - start);
       if (direction) {
-        while (!desktop.moveClient(client.clientIndex, client.lineIndex, client.screenIndex, i))
+        while (!desktop.moveClient(i, client.clientIndex, client.lineIndex, client.screenIndex, client.desktopIndex))
         {
           i = Math.min(Math.max(0, i + direction), workspace.numScreens - 1);
           if (i === start)
