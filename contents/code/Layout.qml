@@ -5,7 +5,7 @@ Item {
   property var activities: Object()
 
   function addClient(client, activityId) {
-    activityId = activityId ? activityId : client.activities[0];
+    activityId = activityId ? activityId : workspace.currentActivity;
     if (!activities.hasOwnProperty(activityId))
       activities[activityId] = Activity.create();
     return activities[activityId].addClient(client);
