@@ -40,14 +40,14 @@ Item {
   }
 
   function dividers() {
-    for (let [text, shortcut, amount] of [
+    for (const [text, shortcut, amount] of [
       ['Increase Step', 'Meta+=', config.divider.step],
       ['Decrease Step', 'Meta+-', -config.divider.step],
       ['Increase Max', 'Meta++', config.divider.bound],
       ['Decrease Max', 'Meta+_', -config.divider.bound]
     ]) {
       register(text, shortcut, () => {
-        let client = workspace.activeClient;
+        const client = workspace.activeClient;
         const screen = manager.getScreen(client);
         if (screen) {
           screen.lines[client.lineIndex].changeDivider(amount, client.clientIndex);
@@ -64,7 +64,7 @@ Item {
       ['Swap Down', 'Meta+Ctrl+Down', 1]
     ]) {
       register(text, shortcut, () => {
-        let client = workspace.activeClient;
+        const client = workspace.activeClient;
         const screen = manager.getScreen(client);
         if (screen && screen.lines[client.lineIndex].swapClient(amount, client.clientIndex))
           screen.render(client.screenIndex, client.desktopIndex, client.activityId);
@@ -76,7 +76,7 @@ Item {
       ['Move/Swap Right', 'Meta+Ctrl+Right', 1]
     ]) {
       register(text, shortcut, () => {
-        let client = workspace.activeClient;
+        const client = workspace.activeClient;
         const screen = manager.getScreen(client);
         if (screen && (screen.moveClient(amount, client.clientIndex, client.lineIndex, client.screenIndex, client.desktopIndex) || screen.swapLine(amount, client.lineIndex)))
           screen.render(client.screenIndex, client.desktopIndex, client.activityId);
@@ -92,7 +92,7 @@ Item {
         if (!client || manager.ignored(client))
           return;
         const last = workspace.numScreens - 1;
-        let i = client.screen + amount;
+        const i = client.screen + amount;
         if (i >= 0 && i < last) {
           workspace.sendClientToScreen(client, i);
         } else if (i < 0) {

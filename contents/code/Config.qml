@@ -47,8 +47,8 @@ Item {
   function readGrid(screens, defaults) {
     let data = [];
     for (let i = 0; i < screens; i++) {
-      let rows = splitTrimNumber(KWin.readConfig(`rowsScreen${i}`, defaults));
-      let columns = splitTrimNumber(KWin.readConfig(`columnsScreen${i}`, defaults));
+      const rows = splitTrimNumber(KWin.readConfig(`rowsScreen${i}`, defaults));
+      const columns = splitTrimNumber(KWin.readConfig(`columnsScreen${i}`, defaults));
       let d = [];
       for (let j = 0; j < rows.length && j < columns.length; j++) {
         d.push([rows[j], columns[j]]);
