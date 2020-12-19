@@ -116,7 +116,7 @@
       <default>1</default>
     </entry>
     <entry name="minSpaceName1" type="string">
-      <default>texstudio|inkscape|krita|gimp|designer|creator|kdenlive</default>
+      <default>inkscape|krita|gimp|designer|creator|kdenlive</default>
     </entry>
     <entry name="minSpace2" type="int">
       <default>2</default>

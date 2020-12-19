@@ -26,7 +26,7 @@ Item {
   }
 
   property var minSpace: readMinSpace([
-    [1, 'texstudio|inkscape|krita|gimp|designer|creator|kdenlive'],
+    [1, 'inkscape|krita|gimp|designer|creator|kdenlive'],
     [2, 'kdevelop|chromium|kate|spotify'],
     [3, ''], [4, ''], [5, ''], [6, ''], [7, ''], [8, ''], [9, ''], [10, '']
   ])
