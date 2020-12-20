@@ -63,7 +63,7 @@ Item {
   Component.onDestruction: {
     for (const method of ['clientMinimized', 'clientUnminimized'])
       disconnectRemove(workspace, method);
-    disconnectRemove(workspace, 'clientActivated');
+    disconnectRemove(workspace, 'clientAdded');
     disconnectRemove(workspace, 'clientRemoved');
   }
 }
