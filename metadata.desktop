@@ -9,7 +9,7 @@ X-Plasma-MainScript=code/Main.qml
 
 X-KDE-PluginInfo-Author=LinG
 X-KDE-PluginInfo-Name=grid-tiling
-X-KDE-PluginInfo-Version=0.0.1
+X-KDE-PluginInfo-Version=1.0.0
 
 X-KDE-PluginInfo-Depends=
 X-KDE-PluginInfo-License=GPL
