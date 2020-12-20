@@ -116,46 +116,52 @@ Item {
     });
 
     connectSave(client, 'desktopChanged', () => {
-      const activity = layout.activities[client.activityId];
-      if (client.onAllDesktops) {
-        unTile(client);
-      } else {
-        const start = client.desktopIndex;
-        let i = client.desktop - 1;
+      delay.set(config.delay, () => {
+        const activity = layout.activities[client.activityId];
+        if (client.onAllDesktops) {
+          unTile(client);
+        } else {
+          const start = client.desktopIndex;
+          let i = client.desktop - 1;
+          const direction = Math.sign(i - start);
+          if (direction) {
+            while (!activity.moveClient(i, client.clientIndex, client.lineIndex, client.screenIndex, client.desktopIndex))
+            {
+              i = Math.min(Math.max(0, i + direction), workspace.desktops - 1);
+              if (i === start)
+                break;
+            }
+          }
+        }
+        activity.render(client.activityId);
+      });
+    });
+
+    connectSave(client, 'screenChanged', () => {
+      delay.set(config.delay, () => {
+        const desktop = layout.activities[client.activityId].desktops[client.desktopIndex];
+        const start = client.screenIndex;
+        let i = client.screen;
         const direction = Math.sign(i - start);
         if (direction) {
-          while (!activity.moveClient(i, client.clientIndex, client.lineIndex, client.screenIndex, client.desktopIndex))
+          while (!desktop.moveClient(i, client.clientIndex, client.lineIndex, client.screenIndex, client.desktopIndex))
           {
-            i = Math.min(Math.max(0, i + direction), workspace.desktops - 1);
+            i = Math.min(Math.max(0, i + direction), workspace.numScreens - 1);
             if (i === start)
               break;
           }
         }
-      }
-      activity.render(client.activityId);
-    });
-
-    connectSave(client, 'screenChanged', () => {
-      const desktop = layout.activities[client.activityId].desktops[client.desktopIndex];
-      const start = client.screenIndex;
-      let i = client.screen;
-      const direction = Math.sign(i - start);
-      if (direction) {
-        while (!desktop.moveClient(i, client.clientIndex, client.lineIndex, client.screenIndex, client.desktopIndex))
-        {
-          i = Math.min(Math.max(0, i + direction), workspace.numScreens - 1);
-          if (i === start)
-            break;
-        }
-      }
-      desktop.render(client.desktopIndex, client.activityId);
+        desktop.render(client.desktopIndex, client.activityId);
+      });
     });
 
     connectSave(client, 'activitiesChanged', () => {
-      const activities = client.activities;
-      if (activities.length !== 1 && !layout.moveClient(client, activities[0]))
-        unTile(client);
-      layout.render();
+      delay.set(config.delay, () => {
+        const activities = client.activities;
+        if (activities.length !== 1 && !layout.moveClient(client, activities[0]))
+          unTile(client);
+        layout.render();
+      });
     });
 
     return client;
