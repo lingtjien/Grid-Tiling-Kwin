@@ -178,7 +178,7 @@ Item {
   // public
   function add(client) {
     if (client &&
-      client.activities.length === 1 &&
+      (workspace.activities.length <= 1 || client.activities.length === 1) &&
       !floating.hasOwnProperty(client.windowId) &&
       !tiled.hasOwnProperty(client.windowId) &&
       !ignored(addProps(client))) {
