@@ -18,6 +18,8 @@ Item {
 
   property bool border: KWin.readConfig('border', false)
 
+  property int delay: KWin.readConfig('delay', 0)
+
   property var margin: Item {
     property int t: KWin.readConfig('marginT', 0)
     property int b: KWin.readConfig('marginB', 0)

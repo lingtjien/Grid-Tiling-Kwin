@@ -4,6 +4,7 @@
     "workspace": false,
     "KWin": false,
     "Qt": false,
+    "delay": false,
     "config": false,
     "layout": false,
     "manager": false,

@@ -1,6 +1,10 @@
 import QtQuick 2.0
 
 Item {
+  Delay {
+    id: delay
+  }
+
   Config {
     id: config
   }
@@ -36,11 +40,13 @@ Item {
         layout.render();
     });
 
-    connectSave(workspace, 'clientActivated', client => {
-      if (manager.add(client)) {
-        layout.render();
-        workspace.currentDesktop = client.desktop;
-      }
+    connectSave(workspace, 'clientAdded', client => {
+      delay.set(config.delay, () => {
+        if (manager.add(client)) {
+          layout.render();
+          workspace.currentDesktop = client.desktop;
+        }
+      });
     });
 
     for (const method of ['clientMinimized', 'clientUnminimized']) {
