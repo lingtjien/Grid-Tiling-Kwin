@@ -45,11 +45,16 @@ const create = () => ({ // eslint-disable-line no-unused-vars
     const max = config.grid[screenIndex][desktopIndex];
     let line = this.smallest();
     if (line && line.minSpace() + client.minSpace <= 1 / this.lines.length && line.clients.length < max[0] && (this.lines.length >= max[1] || this.lines.length > line.clients.length)) {
-      return line.addClient(client);
+      if (line.addClient(client)) {
+        client.lineIndex = line.length - 1;
+        return client;
+      }
     } else if (client.minSpace <= 1 / (this.lines.length + 1) && this.lines.length < max[1]) {
       line = this.addLine();
-      if (line)
-        return line.addClient(client);
+      if (line && line.addClient(client)) {
+        client.lineIndex = line.length - 1;
+        return client;
+      }
     }
   },
   removeClient(clientIndex, lineIndex) {

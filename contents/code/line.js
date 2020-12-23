@@ -12,6 +12,7 @@ const create = () => ({ // eslint-disable-line no-unused-vars
   },
   addClient(client) { // the size is the total size of a virtual desktop this column can occupy
     this.clients.push(client);
+    client.clientIndex = this.clients.length - 1;
     if (this.clients.length !== 0)
       this.dividers.push(0); // do not add a new divider when the first client is added to the column
     return client;

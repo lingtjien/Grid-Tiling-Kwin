@@ -22,8 +22,10 @@ const create = () => ({ // eslint-disable-line no-unused-vars
           return;
       }
       const c = this.screens[i].addClient(client, i, desktopIndex);
-      if (c)
+      if (c) {
+        c.screenIndex = i;
         return c;
+      }
       if (++i >= workspace.numScreens)
         i = 0;
     } while (i !== start);

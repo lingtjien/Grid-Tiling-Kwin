@@ -8,7 +8,10 @@ Item {
     activityId = activityId ? activityId : (client.activities.length === 1 ? client.activities[0] : workspace.currentActivity);
     if (!activities.hasOwnProperty(activityId))
       activities[activityId] = Activity.create();
-    return activities[activityId].addClient(client);
+    if (activities[activityId].addClient(client)) {
+      client.activityId = activityId;
+      return client;
+    }
   }
 
   function removeClient(clientIndex, lineIndex, screenIndex, desktopIndex, activityId) {
