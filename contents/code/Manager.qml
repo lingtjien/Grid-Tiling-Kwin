@@ -116,8 +116,8 @@ Item {
     });
 
     connectSave(client, 'desktopChanged', () => {
+      const activity = layout.activities[client.activityId];
       delay.set(config.delay, () => {
-        const activity = layout.activities[client.activityId];
         if (client.onAllDesktops) {
           unTile(client);
         } else {
@@ -138,11 +138,11 @@ Item {
     });
 
     connectSave(client, 'screenChanged', () => {
+      const desktop = layout.activities[client.activityId].desktops[client.desktopIndex];
+      const start = client.screenIndex;
+      let i = client.screen;
+      const direction = Math.sign(i - start);
       delay.set(config.delay, () => {
-        const desktop = layout.activities[client.activityId].desktops[client.desktopIndex];
-        const start = client.screenIndex;
-        let i = client.screen;
-        const direction = Math.sign(i - start);
         if (direction) {
           while (!desktop.moveClient(i, client.clientIndex, client.lineIndex, client.screenIndex, client.desktopIndex))
           {
@@ -156,8 +156,8 @@ Item {
     });
 
     connectSave(client, 'activitiesChanged', () => {
+      const activities = client.activities;
       delay.set(config.delay, () => {
-        const activities = client.activities;
         if (activities.length !== 1 && !layout.moveClient(client, activities[0]))
           unTile(client);
         layout.render();
