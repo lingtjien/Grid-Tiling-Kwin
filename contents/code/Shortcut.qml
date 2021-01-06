@@ -102,8 +102,10 @@ Item {
           workspace.sendClientToScreen(client, 0);
           client.desktop = client.desktop < workspace.desktops ? client.desktop + 1 : 1;
         }
-        workspace.currentDesktop = client.desktop;
-        workspace.activeScreen = client.screen;
+
+        delay.set(config.delay, () => {
+          workspace.currentDesktop = client.desktop;
+        });
       })
     }
   }
