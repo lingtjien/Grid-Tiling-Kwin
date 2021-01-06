@@ -127,7 +127,11 @@ Item {
           if (direction) {
             while (!activity.moveClient(i, client.clientIndex, client.lineIndex, client.screenIndex, client.desktopIndex))
             {
-              i = Math.min(Math.max(0, i + direction), workspace.desktops - 1);
+              i += direction;
+              if (i >= workspace.desktops)
+                i = 0;
+              else if (i < 0)
+                i = workspace.desktops - 1;
               if (i === start)
                 break;
             }
@@ -146,7 +150,11 @@ Item {
         if (direction) {
           while (!desktop.moveClient(i, client.clientIndex, client.lineIndex, client.screenIndex, client.desktopIndex))
           {
-            i = Math.min(Math.max(0, i + direction), workspace.numScreens - 1);
+            i += direction;
+            if (i >= workspace.numScreens)
+              i = 0;
+            else if (i < 0)
+              i = workspace.numScreens - 1;
             if (i === start)
               break;
           }
