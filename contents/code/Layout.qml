@@ -2,7 +2,7 @@ import QtQuick 2.0
 import 'activity.js' as Activity
 
 Item {
-  property var activities: Object()
+  property var activities: ({})
 
   function addClient(client, activityId) {
     activityId = activityId ? activityId : (client.activities.length === 1 ? client.activities[0] : workspace.currentActivity);

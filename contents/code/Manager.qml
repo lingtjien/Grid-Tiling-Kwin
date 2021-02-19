@@ -1,8 +1,8 @@
 import QtQuick 2.0
 
 Item {
-  property var floating: Object()
-  property var tiled: Object()
+  property var floating: ({})
+  property var tiled: ({})
 
   function ignored(client) {
     return client.transient || config.ignored.caption.test(client.caption) || config.ignored.name.test(client.name);
@@ -25,10 +25,10 @@ Item {
   }
 
   function tile(client) {
-    if (!tiled.hasOwnProperty(client.windowId) && layout.addClient(client)) {
-      tiled[client.windowId] = addSignals(client);
-      if (floating.hasOwnProperty(client.windowId))
-        delete floating[client.windowId];
+    if (!tiled.hasOwnProperty(client.internalId) && layout.addClient(client)) {
+      tiled[client.internalId] = addSignals(client);
+      if (floating.hasOwnProperty(client.internalId))
+        delete floating[client.internalId];
       return client;
     }
   }
@@ -39,17 +39,17 @@ Item {
         client[prop] = value;
     }
 
-    client = tiled[client.windowId];
+    client = tiled[client.internalId];
     if (layout.removeClient(client.clientIndex, client.lineIndex, client.screenIndex, client.desktopIndex, client.activityId)) {}
-      delete tiled[removeSignals(client).windowId];
-    return floating[client.windowId] = client;
+      delete tiled[removeSignals(client).internalId];
+    return floating[client.internalId] = client;
   }
 
   function toggle(client) {
     if (client) {
-      if (floating.hasOwnProperty(client.windowId))
+      if (floating.hasOwnProperty(client.internalId))
         return tile(client);
-      else if (tiled.hasOwnProperty(client.windowId))
+      else if (tiled.hasOwnProperty(client.internalId))
         return unTile(client);
       else
         return add(client);
@@ -187,32 +187,32 @@ Item {
   function add(client) {
     if (client &&
       (workspace.activities.length <= 1 || client.activities.length === 1) &&
-      !floating.hasOwnProperty(client.windowId) &&
-      !tiled.hasOwnProperty(client.windowId) &&
+      !floating.hasOwnProperty(client.internalId) &&
+      !tiled.hasOwnProperty(client.internalId) &&
       !ignored(addProps(client))) {
       if (config.tile && tile(client))
         return client;
-      floating[client.windowId] = client;
+      floating[client.internalId] = client;
     }
   }
 
   function remove(client) {
     if (client) {
-      if (tiled.hasOwnProperty(client.windowId)) {
-        client = tiled[client.windowId];
+      if (tiled.hasOwnProperty(client.internalId)) {
+        client = tiled[client.internalId];
         if (layout.removeClient(client.clientIndex, client.lineIndex, client.screenIndex, client.desktopIndex, client.activityId)) {
-          delete tiled[removeSignals(client).windowId];
+          delete tiled[removeSignals(client).internalId];
           return true;
         }
-      } else if (floating.hasOwnProperty(client.windowId)) {
-        delete floating[client.windowId];
+      } else if (floating.hasOwnProperty(client.internalId)) {
+        delete floating[client.internalId];
       }
     }
   }
 
   function getActivity(client) {
-    if (client && tiled.hasOwnProperty(client.windowId)) {
-      client = tiled[client.windowId];
+    if (client && tiled.hasOwnProperty(client.internalId)) {
+      client = tiled[client.internalId];
       return layout.activities[client.activityId];
     }
   }
