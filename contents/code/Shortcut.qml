@@ -40,21 +40,20 @@ Item {
 
     register('Toggle Maximize/Tiling Desktop', 'Meta+Z', () => {
       const client = workspace.activeClient;
-      const cscreen = manager.getScreen(client);
-      const screen = manager.getActiveScreen();
-      if (cscreen) {
+      const screen = manager.getScreen(client);
+      if (screen) {
         // activeClient is managed by grid-tiling
         const minimize = screen.nclients() - screen.nminimizedClients() > 1;
         for (const line of screen.lines) {
           for (const cli of line.clients)
-            cli.minimized = minimize;
+            if (cli != client)
+              cli.minimized = minimize;
         }
-        client.minimized = false;
-        workspace.activeClient = client; // or it may lose focus on the origin activeClient
-      } else if (screen) {
+      } else {
         // activeClient is managed by system
-        const minimize = screen.nclients() - screen.nminimizedClients() >= 1;
-        for (const line of screen.lines) {
+        const aScreen = manager.getActiveScreen();
+        const minimize = aScreen.nclients() - aScreen.nminimizedClients() >= 1;
+        for (const line of aScreen.lines) {
           for (const cli of line.clients)
             cli.minimized = minimize;
         }
