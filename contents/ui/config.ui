@@ -51,6 +51,13 @@
                   </property>
                 </widget>
               </item>
+              <item>
+                <widget class="QCheckBox" name="kcfg_borderActive">
+                  <property name="text">
+                    <string>Active Border</string>
+                  </property>
+                </widget>
+              </item>
             </layout>
           </item>
           <item>

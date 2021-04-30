@@ -17,6 +17,7 @@ Item {
   property bool tile: KWin.readConfig('tile', true)
 
   property bool border: KWin.readConfig('border', false)
+  property bool borderActive: KWin.readConfig('borderActive', false)
 
   property int delay: KWin.readConfig('delay', 0)
 

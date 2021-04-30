@@ -14,6 +14,10 @@
       <label>default state of borders</label>
       <default>false</default>
     </entry>
+    <entry name="borderActive" type="bool">
+      <label>keep border around the active client</label>
+      <default>false</default>
+    </entry>
     <entry name="gapValue" type="int">
       <label>gap size between clients in px</label>
       <default>16</default>

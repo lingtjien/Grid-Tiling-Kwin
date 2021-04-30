@@ -72,7 +72,7 @@ const create = () => ({ // eslint-disable-line no-unused-vars
       client.activityId = activityId;
 
       // these properties are from kwin and will thus trigger additional signals, these properties must be set last to prevent the signals that are hooked into this script from triggering before the internal properties have been set
-      client.noBorder = !config.border;
+      client.noBorder = config.borderActive && client.active ? false : !config.border;
       client.desktop = desktopIndex + 1; // KWin desktop index starting at 1
       workspace.sendClientToScreen(client, screenIndex);
       client.geometry = geometry;

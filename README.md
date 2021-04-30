@@ -61,6 +61,7 @@ Delete the linked or copied files that you created during installation. To remov
 - toggle new clients start as tile or float `Grid-Tiling: Toggle Tile`
 - close all clients on the current virtual desktop `Grid-Tiling: Close Desktop`
 - set margins, gap size, default gap state, default tile state, default border state
+- set active clients to show border
 - ignore clients by `name` or `caption` regex, these clients are completely ignored and can't be tiled.
 
 *Note: ignored client names do not have to match the whole string, whereas ignored captions do.*
