@@ -97,7 +97,7 @@ Delete the linked or copied files that you created during installation. To remov
 *If you use multiple screens you could also consider using the default shortcuts of KWin `Window To *Previous/Next* *Screen*` to `Meta+*PgDn/PgUp*` to easily move clients between screens*
 
 ## Useful To Know
-- This version of the script uses KWin API methods introduced in 5.18, so use the other branch if you use an older version of KWin.
+- This version of the script uses the latest KWin API methods. If you're using an older version of KWin, choose the appropriate branch.
 - After installing a KWin script you can activate it in the system settings, here you'll also find the configuration button.
 - When you adjust the settings in the menu, this script needs to be restarted before the settings are applied. You can do this by turning the script off, apply, turn it back on and apply again or a complete KWin restart (re-log/reboot).
 - If you have KWin shortcuts added by the script that you no longer need or use (because they got renamed to something else for example), then you can delete the old unused shortcuts by first selecting KWin in the global shortcuts menu and then pressing the `remove the selected component` button (hover mouse over the button to see the text). This action does require you to not have the KWin script active.
