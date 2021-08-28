@@ -40,21 +40,29 @@ Item {
   }
 
   function dividers() {
-    for (const [text, shortcut, amount] of [
-      ['Increase Step', 'Meta+=', config.divider.step],
-      ['Decrease Step', 'Meta+-', -config.divider.step],
-      ['Increase Max', 'Meta++', config.divider.bound],
-      ['Decrease Max', 'Meta+_', -config.divider.bound]
+    for (const [suffix, horizontal, vertical] of [
+      ['Size', true, true],
+      ['Width', true, false],
+      ['Height', false, true]
     ]) {
-      register(text, shortcut, () => {
-        const client = workspace.activeClient;
-        const screen = manager.getScreen(client);
-        if (screen) {
-          screen.lines[client.lineIndex].changeDivider(amount, client.clientIndex);
-          screen.changeDivider(amount, client.lineIndex);
-          screen.render(client.screenIndex, client.desktopIndex, client.activityId);
-        }
-      });
+      for (const [prefix, shortcut, amount] of [
+        ['Increase', 'Meta+=', config.divider.step],
+        ['Decrease', 'Meta+-', -config.divider.step],
+        ['Maximize', 'Meta++', config.divider.bound],
+        ['Minimize', 'Meta+_', -config.divider.bound]
+      ]) {
+        register(prefix + ' ' + suffix, shortcut, () => {
+          const client = workspace.activeClient;
+          const screen = manager.getScreen(client);
+          if (screen) {
+            if (vertical)
+              screen.lines[client.lineIndex].changeDivider(amount, client.clientIndex);
+            if (horizontal)
+              screen.changeDivider(amount, client.lineIndex);
+            screen.render(client.screenIndex, client.desktopIndex, client.activityId);
+          }
+        });
+      }
     }
   }
 

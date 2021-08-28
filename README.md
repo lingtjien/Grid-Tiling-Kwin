@@ -52,7 +52,7 @@ Delete the linked or copied files that you created during installation. To remov
   - `Grid-Tiling: Move/Swap *Left/Right*`
 - dynamically resize clients up to a minimum as defined by `dividerBound`
   - dragging client borders by mouse
-  - `Grid-Tiling: *Increase/Decrease* Size` using a step size of `dividerStep`
+  - `Grid-Tiling: *Increase/Decrease/Maximize/Minimize* *Size/Width/Height*` using a step size of `dividerStep` or fully.
 - minimization of clients (suppports the default KWin shortcuts)
 - minimizes all other clients or unminimizes all clients on the current desktop `Grid-Tiling: Toggle Minimize Desktop`
 - toggle gap `Grid-Tiling: Toggle Gap`
@@ -78,10 +78,10 @@ Delete the linked or copied files that you created during installation. To remov
 - set shortcut `Grid-Tiling: Toggle Minimize Desktop` to `Meta+M`
 - set shortcut `Minimize Window` to `Meta+N`
 
-- set shortcut `Grid-Tiling: Increase Step` to `Meta+=`
-- set shortcut `Grid-Tiling: Decrease Step` to `Meta+-`
-- set shortcut `Grid-Tiling: Increase Max` to `Meta++`
-- set shortcut `Grid-Tiling: Decrease Max` to `Meta+_`
+- set shortcut `Grid-Tiling: Increase Size` to `Meta+=`
+- set shortcut `Grid-Tiling: Decrease Size` to `Meta+-`
+- set shortcut `Grid-Tiling: Maximize Size` to `Meta++`
+- set shortcut `Grid-Tiling: Minimize Size` to `Meta+_`
 
 - set shortcut `Grid-Tiling: Toggle Gap` to `Meta+G`
 - set shortcut `Grid-Tiling: Toggle Border` to `Meta+B`
