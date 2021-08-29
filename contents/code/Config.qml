@@ -19,7 +19,7 @@ Item {
   property bool border: KWin.readConfig('border', false)
   property bool borderActive: KWin.readConfig('borderActive', false)
 
-  property int delay: KWin.readConfig('delay', 0)
+  property int delay: KWin.readConfig('delay', 10)
 
   property var margin: Item {
     property int t: KWin.readConfig('marginT', 0)
@@ -30,7 +30,7 @@ Item {
 
   property var minSpace: readMinSpace([
     [1, 'inkscape|krita|gimp|designer|creator|kdenlive'],
-    [2, 'kdevelop|chromium|kate|spotify'],
+    [2, 'code|kdevelop|chromium|kate|spotify'],
     [3, ''], [4, ''], [5, ''], [6, ''], [7, ''], [8, ''], [9, ''], [10, '']
   ])
 
