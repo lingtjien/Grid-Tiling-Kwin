@@ -318,64 +318,204 @@
                     </widget>
                   </item>
                   <item row="1" column="0">
-                    <widget class="QLineEdit" name="kcfg_rowsScreen0"/>
+                    <widget class="QLineEdit" name="kcfg_rowsScreen0">
+                      <property name="toolTip">
+                        <string>Amount of rows per virtual desktop on screen 0</string>
+                      </property>
+                      <property name="toolTipDuration">
+                        <number>5000</number>
+                      </property>
+                    </widget>
                   </item>
                   <item row="2" column="0">
-                    <widget class="QLineEdit" name="kcfg_rowsScreen1"/>
+                    <widget class="QLineEdit" name="kcfg_rowsScreen1">
+                      <property name="toolTip">
+                        <string>Amount of rows per virtual desktop on screen 1</string>
+                      </property>
+                      <property name="toolTipDuration">
+                        <number>5000</number>
+                      </property>
+                    </widget>
                   </item>
                   <item row="3" column="0">
-                    <widget class="QLineEdit" name="kcfg_rowsScreen2"/>
+                    <widget class="QLineEdit" name="kcfg_rowsScreen2">
+                      <property name="toolTip">
+                        <string>Amount of rows per virtual desktop on screen 2</string>
+                      </property>
+                      <property name="toolTipDuration">
+                        <number>5000</number>
+                      </property>
+                    </widget>
                   </item>
                   <item row="4" column="0">
-                    <widget class="QLineEdit" name="kcfg_rowsScreen3"/>
+                    <widget class="QLineEdit" name="kcfg_rowsScreen3">
+                      <property name="toolTip">
+                        <string>Amount of rows per virtual desktop on screen 3</string>
+                      </property>
+                      <property name="toolTipDuration">
+                        <number>5000</number>
+                      </property>
+                    </widget>
                   </item>
                   <item row="5" column="0">
-                    <widget class="QLineEdit" name="kcfg_rowsScreen4"/>
+                    <widget class="QLineEdit" name="kcfg_rowsScreen4">
+                      <property name="toolTip">
+                        <string>Amount of rows per virtual desktop on screen 4</string>
+                      </property>
+                      <property name="toolTipDuration">
+                        <number>5000</number>
+                      </property>
+                    </widget>
                   </item>
                   <item row="6" column="0">
-                    <widget class="QLineEdit" name="kcfg_rowsScreen5"/>
+                    <widget class="QLineEdit" name="kcfg_rowsScreen5">
+                      <property name="toolTip">
+                        <string>Amount of rows per virtual desktop on screen 5</string>
+                      </property>
+                      <property name="toolTipDuration">
+                        <number>5000</number>
+                      </property>
+                    </widget>
                   </item>
                   <item row="7" column="0">
-                    <widget class="QLineEdit" name="kcfg_rowsScreen6"/>
+                    <widget class="QLineEdit" name="kcfg_rowsScreen6">
+                      <property name="toolTip">
+                        <string>Amount of rows per virtual desktop on screen 6</string>
+                      </property>
+                      <property name="toolTipDuration">
+                        <number>5000</number>
+                      </property>
+                    </widget>
                   </item>
                   <item row="8" column="0">
-                    <widget class="QLineEdit" name="kcfg_rowsScreen7"/>
+                    <widget class="QLineEdit" name="kcfg_rowsScreen7">
+                      <property name="toolTip">
+                        <string>Amount of rows per virtual desktop on screen 7</string>
+                      </property>
+                      <property name="toolTipDuration">
+                        <number>5000</number>
+                      </property>
+                    </widget>
                   </item>
                   <item row="9" column="0">
-                    <widget class="QLineEdit" name="kcfg_rowsScreen8"/>
+                    <widget class="QLineEdit" name="kcfg_rowsScreen8">
+                      <property name="toolTip">
+                        <string>Amount of rows per virtual desktop on screen 8</string>
+                      </property>
+                      <property name="toolTipDuration">
+                        <number>5000</number>
+                      </property>
+                    </widget>
                   </item>
                   <item row="10" column="0">
-                    <widget class="QLineEdit" name="kcfg_rowsScreen9"/>
+                    <widget class="QLineEdit" name="kcfg_rowsScreen9">
+                      <property name="toolTip">
+                        <string>Amount of rows per virtual desktop on screen 9</string>
+                      </property>
+                      <property name="toolTipDuration">
+                        <number>5000</number>
+                      </property>
+                    </widget>
                   </item>
                   <item row="1" column="1">
-                    <widget class="QLineEdit" name="kcfg_columnsScreen0"/>
+                    <widget class="QLineEdit" name="kcfg_columnsScreen0">
+                      <property name="toolTip">
+                        <string>Amount of columns per virtual desktop on screen 0</string>
+                      </property>
+                      <property name="toolTipDuration">
+                        <number>5000</number>
+                      </property>
+                    </widget>
                   </item>
                   <item row="2" column="1">
-                    <widget class="QLineEdit" name="kcfg_columnsScreen1"/>
+                    <widget class="QLineEdit" name="kcfg_columnsScreen1">
+                      <property name="toolTip">
+                        <string>Amount of columns per virtual desktop on screen 1</string>
+                      </property>
+                      <property name="toolTipDuration">
+                        <number>5000</number>
+                      </property>
+                    </widget>
                   </item>
                   <item row="3" column="1">
-                    <widget class="QLineEdit" name="kcfg_columnsScreen2"/>
+                    <widget class="QLineEdit" name="kcfg_columnsScreen2">
+                      <property name="toolTip">
+                        <string>Amount of columns per virtual desktop on screen 2</string>
+                      </property>
+                      <property name="toolTipDuration">
+                        <number>5000</number>
+                      </property>
+                    </widget>
                   </item>
                   <item row="4" column="1">
-                    <widget class="QLineEdit" name="kcfg_columnsScreen3"/>
+                    <widget class="QLineEdit" name="kcfg_columnsScreen3">
+                      <property name="toolTip">
+                        <string>Amount of columns per virtual desktop on screen 3</string>
+                      </property>
+                      <property name="toolTipDuration">
+                        <number>5000</number>
+                      </property>
+                    </widget>
                   </item>
                   <item row="5" column="1">
-                    <widget class="QLineEdit" name="kcfg_columnsScreen4"/>
+                    <widget class="QLineEdit" name="kcfg_columnsScreen4">
+                      <property name="toolTip">
+                        <string>Amount of columns per virtual desktop on screen 4</string>
+                      </property>
+                      <property name="toolTipDuration">
+                        <number>5000</number>
+                      </property>
+                    </widget>
                   </item>
                   <item row="6" column="1">
-                    <widget class="QLineEdit" name="kcfg_columnsScreen5"/>
+                    <widget class="QLineEdit" name="kcfg_columnsScreen5">
+                      <property name="toolTip">
+                        <string>Amount of columns per virtual desktop on screen 5</string>
+                      </property>
+                      <property name="toolTipDuration">
+                        <number>5000</number>
+                      </property>
+                    </widget>
                   </item>
                   <item row="7" column="1">
-                    <widget class="QLineEdit" name="kcfg_columnsScreen6"/>
+                    <widget class="QLineEdit" name="kcfg_columnsScreen6">
+                      <property name="toolTip">
+                        <string>Amount of columns per virtual desktop on screen 6</string>
+                      </property>
+                      <property name="toolTipDuration">
+                        <number>5000</number>
+                      </property>
+                    </widget>
                   </item>
                   <item row="8" column="1">
-                    <widget class="QLineEdit" name="kcfg_columnsScreen7"/>
+                    <widget class="QLineEdit" name="kcfg_columnsScreen7">
+                      <property name="toolTip">
+                        <string>Amount of columns per virtual desktop on screen 7</string>
+                      </property>
+                      <property name="toolTipDuration">
+                        <number>5000</number>
+                      </property>
+                    </widget>
                   </item>
                   <item row="9" column="1">
-                    <widget class="QLineEdit" name="kcfg_columnsScreen8"/>
+                    <widget class="QLineEdit" name="kcfg_columnsScreen8">
+                      <property name="toolTip">
+                        <string>Amount of columns per virtual desktop on screen 8</string>
+                      </property>
+                      <property name="toolTipDuration">
+                        <number>5000</number>
+                      </property>
+                    </widget>
                   </item>
                   <item row="10" column="1">
-                    <widget class="QLineEdit" name="kcfg_columnsScreen9"/>
+                    <widget class="QLineEdit" name="kcfg_columnsScreen9">
+                      <property name="toolTip">
+                        <string>Amount of columns per virtual desktop on screen 9</string>
+                      </property>
+                      <property name="toolTipDuration">
+                        <number>5000</number>
+                      </property>
+                    </widget>
                   </item>
                 </layout>
               </widget>
