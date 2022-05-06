@@ -34,6 +34,8 @@ Item {
     [3, ''], [4, ''], [5, ''], [6, ''], [7, ''], [8, ''], [9, ''], [10, '']
   ])
 
+  property var tiledType: splitTrim(KWin.readConfig('tiledType', 'normalWindow'));
+
   property var ignored: Item {
     property var name: RegExp(KWin.readConfig(
       'ignoredName', 'kwin_wayland|ksmserver|krunner|latte-dock|[Pp]lasma|plugin-container|wine|yakuake'
@@ -41,6 +43,10 @@ Item {
     property var caption: RegExp(`^${KWin.readConfig(
       'ignoredCaption', ''
     )}$`)
+  }
+
+  function splitTrim(data) {
+    return data.split(',').map(i => i.trim()).filter(i => i);
   }
 
   function splitTrimNumber(data) {

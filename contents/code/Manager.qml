@@ -5,7 +5,7 @@ Item {
   property var tiled: ({})
 
   function ignored(client) {
-    return !client.normalWindow || client.transient || config.ignored.caption.test(client.caption) || config.ignored.name.test(client.name);
+    return client.transient || config.tiledType.every(t => !client[t]) || config.ignored.caption.test(client.caption) || config.ignored.name.test(client.name);
   }
 
   function addProps(client) {

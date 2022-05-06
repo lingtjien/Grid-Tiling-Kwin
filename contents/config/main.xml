@@ -50,6 +50,10 @@
       <label>amount of space at the right in px</label>
       <default>0</default>
     </entry>
+    <entry name="tiledType" type="string">
+      <label>window types to tile</label>
+      <default>normalWindow</default>
+    </entry>
     <entry name="ignoredName" type="string">
       <label>ignored client name regex</label>
       <default>kwin_wayland|ksmserver|krunner|latte-dock|[Pp]lasma|plugin-container|wine|yakuake</default>

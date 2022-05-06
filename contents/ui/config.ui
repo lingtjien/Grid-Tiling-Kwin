@@ -216,6 +216,48 @@
             </widget>
           </item>
           <item>
+            <layout class="QHBoxLayout" name="layoutMainGroup5">
+              <item>
+                <spacer name="typeHeaderSpacerleft">
+                  <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                  </property>
+                </spacer>
+              </item>
+              <item>
+                <widget class="QLabel" name="typeHeaderTitle">
+                  <property name="layoutDirection">
+                    <enum>Qt::LeftToRight</enum>
+                  </property>
+                  <property name="text">
+                    <string>Tiled Types</string>
+                  </property>
+                </widget>
+              </item>
+              <item>
+                <spacer name="typeHeaderSpacerRight">
+                  <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                  </property>
+                </spacer>
+              </item>
+            </layout>
+          </item>
+          <item>
+            <widget class="QLineEdit" name="kcfg_tiledType">
+              <property name="text">
+                <string/>
+              </property>
+            </widget>
+          </item>
+          <item>
+            <widget class="Line" name="lineMain3">
+              <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+              </property>
+            </widget>
+          </item>
+          <item>
             <layout class="QHBoxLayout" name="layoutMainGroup4">
               <item>
                 <spacer name="ignoredHeaderSpacerleft">
