@@ -5,7 +5,7 @@ Item {
   property var tiled: ({})
 
   function ignored(client) {
-    return client.transient || config.tiledType.every(t => !client[t]) || config.ignored.caption.test(client.caption) || config.ignored.name.test(client.name);
+    return client.transient || config.tiledType.every(t => !client[t]) || (config.ignored.caption && config.ignored.caption.test(client.caption)) || (config.ignored.name && config.ignored.name.test(client.name));
   }
 
   function addProps(client) {
@@ -16,7 +16,7 @@ Item {
     };
     client.minSpace = config.smallestSpace;
     for (const [minSpace, name] of config.minSpace) {
-      if (name.test(client.name)) {
+      if (name && name.test(client.name)) {
         client.minSpace = minSpace;
         break;
       }

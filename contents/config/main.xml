@@ -56,7 +56,7 @@
     </entry>
     <entry name="ignoredName" type="string">
       <label>ignored client name regex</label>
-      <default>kwin_wayland|ksmserver|krunner|latte-dock|[Pp]lasma|plugin-container|wine|yakuake</default>
+      <default></default>
     </entry>
     <entry name="ignoredCaption" type="string">
       <label>ignored client caption regex</label>

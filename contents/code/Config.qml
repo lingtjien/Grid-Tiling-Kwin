@@ -37,12 +37,13 @@ Item {
   property var tiledType: splitTrim(KWin.readConfig('tiledType', 'normalWindow'));
 
   property var ignored: Item {
-    property var name: RegExp(KWin.readConfig(
-      'ignoredName', 'kwin_wayland|ksmserver|krunner|latte-dock|[Pp]lasma|plugin-container|wine|yakuake'
-    ))
-    property var caption: RegExp(`^${KWin.readConfig(
-      'ignoredCaption', ''
-    )}$`)
+    property var name: regex(KWin.readConfig('ignoredName', ''))
+    property var caption: regex(`^${KWin.readConfig('ignoredCaption', '')}$`)
+  }
+
+  function regex(data) { // empty regex will always match, so only return a regex when there is an input, otherwise everything will be ignored by an empty regex test
+    if (data)
+      return RegExp(data);
   }
 
   function splitTrim(data) {
@@ -73,7 +74,7 @@ Item {
       const name = KWin.readConfig(`minSpaceName${i}`, d);
       i = KWin.readConfig(`minSpace${i}`, i);
       if (i && name)
-        data.push([1 / i, RegExp(name)]);
+        data.push([1 / i, regex(name)]);
     }
     return data;
   }
