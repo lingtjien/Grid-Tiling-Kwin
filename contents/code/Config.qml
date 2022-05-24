@@ -6,7 +6,7 @@ Item {
   property var smallestSpace: grid.reduce((min, data) => data.reduce((m, [row, col]) => Math.min(m, 1 / (row * col)), min), 1)
 
   property int gapValue: KWin.readConfig('gapValue', 16)
-  property bool gapShow: KWin.readConfig('gapShow', true)
+  property bool gapShow: KWin.readConfig('gapShow', true) // for bool types readConfig requires the default value to match the one defined in the xml (bug in KWin)
   property int gap: gapShow ? gapValue : 0
 
   property var divider: Item {
@@ -28,13 +28,13 @@ Item {
     property int r: KWin.readConfig('marginR', 0)
   }
 
+  property var type: readType()
+
   property var minSpace: readMinSpace([
     [1, 'inkscape|krita|gimp|designer|creator|kdenlive'],
     [2, 'code|kdevelop|chromium|kate|spotify'],
     [3, ''], [4, ''], [5, ''], [6, ''], [7, ''], [8, ''], [9, ''], [10, '']
   ])
-
-  property var tiledType: splitTrim(KWin.readConfig('tiledType', 'normalWindow'));
 
   property var ignored: Item {
     property var name: regex(KWin.readConfig('ignoredName', ''))
@@ -46,12 +46,19 @@ Item {
       return RegExp(data);
   }
 
-  function splitTrim(data) {
-    return data.split(',').map(i => i.trim()).filter(i => i);
-  }
-
   function splitTrimNumber(data) {
     return data.split(',').map(i => Number(i.trim())).filter(i => i);
+  }
+
+  function readType() {
+    let types = [];
+    for (const i of [{default: true, types: ['normalWindow']}, {default: false, types: ['dialog', 'utility', 'menu', 'popupMenu', 'dropdownMenu', 'notification', 'criticalNotification', 'comboBox', 'tooltip']}]) {
+      for (const type of i.types) {
+        if (KWin.readConfig(`type${type[0].toUpperCase() + type.slice(1)}`, i.default))
+          types.push(type);
+      }
+    }
+    return types;
   }
 
   function readGrid(screens, defaults) {
