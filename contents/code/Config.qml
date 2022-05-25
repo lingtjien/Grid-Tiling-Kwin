@@ -51,14 +51,14 @@ Item {
   }
 
   function readType() {
-    let types = [];
-    for (const i of [{default: true, types: ['normalWindow']}, {default: false, types: ['dialog', 'utility', 'menu', 'popupMenu', 'dropdownMenu', 'notification', 'criticalNotification', 'comboBox', 'tooltip']}]) {
-      for (const type of i.types) {
-        if (KWin.readConfig(`type${type[0].toUpperCase() + type.slice(1)}`, i.default))
-          types.push(type);
+    let data = [];
+    for (const [fallback, types] of [[true, ['normalWindow']], [false, ['dialog', 'utility', 'menu', 'popupMenu', 'dropdownMenu', 'notification', 'criticalNotification', 'comboBox', 'tooltip']]]) {
+      for (const type of types) {
+        if (KWin.readConfig(`type${type[0].toUpperCase() + type.slice(1)}`, fallback))
+          data.push(type);
       }
     }
-    return types;
+    return data;
   }
 
   function readGrid(screens, defaults) {
