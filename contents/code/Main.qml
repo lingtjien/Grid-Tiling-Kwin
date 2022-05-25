@@ -62,8 +62,6 @@ Item {
     if (config.borderActive)
       connect(workspace, 'clientActivated', () => layout.render());
 
-    // hook into desktopLayoutChanged() or virtualScreenSizeChanged() to refresh
-
     shortcut.init();
   }
 
