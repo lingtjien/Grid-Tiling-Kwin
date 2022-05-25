@@ -21,26 +21,28 @@ Item {
     id: shortcut
   }
 
-  readonly property string saveName: 'Callback'
-  function connectSave(obj, prop, callback) {
-    obj[prop + saveName] = callback;
+  function connect(obj, prop, callback) {
+    if (!obj.hasOwnProperty('callbacks'))
+      obj.callbacks = [];
+    obj.callbacks.push({prop, callback});
     obj[prop].connect(callback);
   }
-  function disconnectRemove(obj, prop) {
-    obj[prop].disconnect(obj[prop + saveName]);
-    delete obj[prop + saveName];
+  function disconnect(obj) {
+    for (const {prop, callback} of obj.callbacks)
+      obj[prop].disconnect(callback);
+    delete obj.callbacks;
   }
 
   Component.onCompleted: {
     manager.init();
     layout.render();
 
-    connectSave(workspace, 'clientRemoved', client => {
+    connect(workspace, 'clientRemoved', client => {
       if (manager.remove(client))
         layout.render();
     });
 
-    connectSave(workspace, 'clientAdded', client => {
+    connect(workspace, 'clientAdded', client => {
       delay.set(config.delay, () => {
         if (manager.add(client)) {
           layout.render();
@@ -50,7 +52,7 @@ Item {
     });
 
     for (const method of ['clientMinimized', 'clientUnminimized']) {
-      connectSave(workspace, method, client => {
+      connect(workspace, method, client => {
         const screen = manager.getScreen(client);
         if (screen)
           screen.render(client.screenIndex, client.desktopIndex, client.activityId);
@@ -58,7 +60,7 @@ Item {
     }
 
     if (config.borderActive)
-      connectSave(workspace, 'clientActivated', () => layout.render());
+      connect(workspace, 'clientActivated', () => layout.render());
 
     // hook into desktopLayoutChanged() or virtualScreenSizeChanged() to refresh
 
@@ -66,11 +68,6 @@ Item {
   }
 
   Component.onDestruction: {
-    if (config.borderActive)
-      disconnectRemove(workspace, 'clientActivated');
-    for (const method of ['clientMinimized', 'clientUnminimized'])
-      disconnectRemove(workspace, method);
-    disconnectRemove(workspace, 'clientAdded');
-    disconnectRemove(workspace, 'clientRemoved');
+    disconnect(workspace);
   }
 }

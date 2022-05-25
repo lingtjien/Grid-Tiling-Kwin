@@ -108,14 +108,14 @@ Item {
   }
 
   function addSignals(client) {
-    connectSave(client, 'clientFinishUserMovedResized', () => {
+    connect(client, 'clientFinishUserMovedResized', () => {
       const screen = layout.activities[client.activityId].desktops[client.desktopIndex].screens[client.screenIndex];
       resized(client, screen);
       moved(client, screen.lines);
       screen.render(client.screenIndex, client.desktopIndex, client.activityId);
     });
 
-    connectSave(client, 'desktopChanged', () => {
+    connect(client, 'desktopChanged', () => {
       const activity = layout.activities[client.activityId];
       delay.set(config.delay, () => {
         if (client.onAllDesktops) {
@@ -141,7 +141,7 @@ Item {
       });
     });
 
-    connectSave(client, 'screenChanged', () => {
+    connect(client, 'screenChanged', () => {
       const desktop = layout.activities[client.activityId].desktops[client.desktopIndex];
       const start = client.screenIndex;
       let i = client.screen;
@@ -163,7 +163,7 @@ Item {
       });
     });
 
-    connectSave(client, 'activitiesChanged', () => {
+    connect(client, 'activitiesChanged', () => {
       const activities = client.activities;
       delay.set(config.delay, () => {
         if (activities.length !== 1 && !layout.moveClient(client, activities[0]))
@@ -176,10 +176,7 @@ Item {
   }
 
   function removeSignals(client) {
-    disconnectRemove(client, 'clientFinishUserMovedResized');
-    disconnectRemove(client, 'desktopChanged');
-    disconnectRemove(client, 'screenChanged');
-    disconnectRemove(client, 'activitiesChanged');
+    disconnect(client);
     return client;
   }
 
