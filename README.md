@@ -104,6 +104,7 @@ Delete the linked or copied files that you created during installation. To remov
 - Resizing clients with the mouse can result in weird visual artifacts when dragged outside of the bounds, just use the global shortcut that refreshes the layout.
 -  This was made with the intended use of using a set amount of virtual desktops. For the best result make sure you have more virtual desktops than you have clients normally. The script can handle more clients but once all desktops are full, all new clients will start as floating instead of tiling until there is space again to tile new clients.
 - I don't use dynamic virtual desktops, but it should be able to deal with it as long as the clients are closed when the virtual desktop is removed.
+- In X11 the logout dialog is set to normalWindow, to prevent this from tiling, add `ksmserver-logout-greeter` to the ignored name regex.
 
 ## Extra Settings Info
 
