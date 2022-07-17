@@ -1,0 +1,22 @@
+{
+  "KPlugin": {
+    "Authors": [
+      {
+        "Name": "LinG"
+      }
+    ],
+    "Description": "Automatically tile new windows with gaps in any grid size",
+    "Icon": "preferences-system-windows-script-test",
+    "Id": "grid-tiling",
+    "License": "GPL",
+    "Name": "Grid Tiling",
+    "ServiceTypes": [
+      "KWin/Script"
+    ],
+    "Version": "1.0.0"
+  },
+  "X-KDE-ConfigModule": "kwin/effects/configs/kcm_kwin4_genericscripted",
+  "X-KDE-PluginKeyword": "grid-tiling",
+  "X-Plasma-API": "declarativescript",
+  "X-Plasma-MainScript": "code/Main.qml"
+}
