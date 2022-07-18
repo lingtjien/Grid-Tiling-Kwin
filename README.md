@@ -1,6 +1,6 @@
 # Kwin Grid-Tiling Script
 
-[![](https://i.imgur.com/TzdWQVM.png)](https://youtu.be/N1Bg-H9Lpzs)
+[![](https://img.youtube.com/vi/N1Bg-H9Lpzs/maxresdefault.jpg)](https://youtu.be/N1Bg-H9Lpzs)
 
 ## Install
 
