@@ -36,10 +36,7 @@ Item {
     [3, ''], [4, ''], [5, ''], [6, ''], [7, ''], [8, ''], [9, ''], [10, '']
   ])
 
-  property var ignored: Item {
-    property var name: regex(KWin.readConfig('ignoredName', ''))
-    property var caption: regex(`^${KWin.readConfig('ignoredCaption', '')}$`)
-  }
+  property var ignored: regex(KWin.readConfig('ignored', ''))
 
   function regex(data) { // empty regex will always match, so only return a regex when there is an input, otherwise everything will be ignored by an empty regex test
     if (data)

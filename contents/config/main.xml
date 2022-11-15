@@ -50,13 +50,9 @@
       <label>amount of space at the right in px</label>
       <default>0</default>
     </entry>
-    <entry name="ignoredName" type="string">
+    <entry name="ignored" type="string">
       <label>ignored client name regex</label>
       <default></default>
-    </entry>
-    <entry name="ignoredCaption" type="string">
-      <label>ignored client caption regex</label>
-      <default/>
     </entry>
     <entry name="typeNormalWindow" type="bool">
       <default>true</default>

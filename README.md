@@ -56,9 +56,7 @@ Delete the linked or copied files that you created during installation. To remov
 - close all clients on the current virtual desktop `Grid-Tiling: Close Desktop`
 - set margins, gap size, default gap state, default tile state, default border state
 - set active clients to show border
-- ignore clients by `name` or `caption` regex, these clients are completely ignored and can't be tiled.
-
-*Note: ignored client names do not have to match the whole string, whereas ignored captions do.*
+- ignore clients by matching regex, these clients are completely ignored and can't be tiled.
 
 ## Recommended Setup
 - set window focus policy to `focus follows mouse - mouse precedence`
@@ -98,7 +96,8 @@ Delete the linked or copied files that you created during installation. To remov
 - Resizing clients with the mouse can result in weird visual artifacts when dragged outside of the bounds, just use the global shortcut that refreshes the layout.
 -  This was made with the intended use of using a set amount of virtual desktops. For the best result make sure you have more virtual desktops than you have clients normally. The script can handle more clients but once all desktops are full, all new clients will start as floating instead of tiling until there is space again to tile new clients.
 - I don't use dynamic virtual desktops, but it should be able to deal with it as long as the clients are closed when the virtual desktop is removed.
-- In X11 the logout dialog is set to normalWindow, to prevent this from tiling, add `ksmserver-logout-greeter` to the ignored name regex.
+- In X11 the logout dialog is set to normalWindow, to prevent this from tiling, add `ksmserver-logout-greeter` to the ignored regex.
+- Matching is performed using the javascript `RegExp` class which is build using the string that the user provides and then the `test` method is used on the Window class (application) property. You can find the value of this property on a window by opening the Windows Operations Menu (there is a global shortcut for this). For some examples check out the min space section of the configuration interface.
 
 ## Extra Settings Info
 

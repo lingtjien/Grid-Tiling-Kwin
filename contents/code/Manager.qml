@@ -5,7 +5,7 @@ Item {
   property var tiled: ({})
 
   function ignored(client) {
-    return client.transient || config.type.every(t => !client[t]) || (config.ignored.caption && config.ignored.caption.test(client.caption)) || (config.ignored.name && config.ignored.name.test(client.name));
+    return client.transient || config.type.every(t => !client[t]) || (config.ignored && config.ignored.test(client.name));
   }
 
   function addProps(client) {
