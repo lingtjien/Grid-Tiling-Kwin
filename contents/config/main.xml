@@ -54,36 +54,6 @@
       <label>ignored client name regex</label>
       <default>ksmserver-logout-greeter</default>
     </entry>
-    <entry name="typeNormalWindow" type="bool">
-      <default>true</default>
-    </entry>
-    <entry name="typeDialog" type="bool">
-      <default>false</default>
-    </entry>
-    <entry name="typeUtility" type="bool">
-      <default>false</default>
-    </entry>
-    <entry name="typeMenu" type="bool">
-      <default>false</default>
-    </entry>
-    <entry name="typePopupMenu" type="bool">
-      <default>false</default>
-    </entry>
-    <entry name="typeDropdownMenu" type="bool">
-      <default>false</default>
-    </entry>
-    <entry name="typeNotification" type="bool">
-      <default>false</default>
-    </entry>
-    <entry name="typeCriticalNotification" type="bool">
-      <default>false</default>
-    </entry>
-    <entry name="typeComboBox" type="bool">
-      <default>false</default>
-    </entry>
-    <entry name="typeTooltip" type="bool">
-      <default>false</default>
-    </entry>
     <entry name="rowsScreen0" type="string">
       <default>2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2</default>
     </entry>

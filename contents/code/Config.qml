@@ -28,8 +28,6 @@ Item {
     property int r: KWin.readConfig('marginR', 0)
   }
 
-  property var type: readType()
-
   property var minSpace: readMinSpace([
     [1, 'inkscape|krita|gimp|designer|creator|kdenlive'],
     [2, 'code|kdevelop|chromium|kate|spotify'],
@@ -45,17 +43,6 @@ Item {
 
   function splitTrimNumber(data) {
     return data.split(',').map(i => Number(i.trim())).filter(i => i);
-  }
-
-  function readType() {
-    let data = [];
-    for (const [fallback, types] of [[true, ['normalWindow']], [false, ['dialog', 'utility', 'menu', 'popupMenu', 'dropdownMenu', 'notification', 'criticalNotification', 'comboBox', 'tooltip']]]) {
-      for (const type of types) {
-        if (KWin.readConfig(`type${type[0].toUpperCase() + type.slice(1)}`, fallback))
-          data.push(type);
-      }
-    }
-    return data;
   }
 
   function readGrid(screens, defaults) {

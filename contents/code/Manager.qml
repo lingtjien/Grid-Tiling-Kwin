@@ -13,7 +13,7 @@ Item {
   }
 
   function ignored(client) {
-    return client.transient || includes(client.pid) || config.type.every(t => !client[t]) || (config.ignored && config.ignored.test(client.resourceName));
+    return client.transient || includes(client.pid) || !client.normalWindow || (config.ignored && config.ignored.test(client.resourceName));
   }
 
   function addProps(client) {
