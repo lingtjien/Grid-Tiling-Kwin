@@ -4,8 +4,16 @@ Item {
   property var floating: ({})
   property var tiled: ({})
 
+  function includes(pid) {
+    for (const c of Object.values(tiled)) {
+      if (c.pid === pid)
+        return true;
+    }
+    return false;
+  }
+
   function ignored(client) {
-    return client.transient || config.type.every(t => !client[t]) || (config.ignored && (config.ignored.test(client.resourceName) || config.ignored.test(client.caption)));
+    return client.transient || includes(client.pid) || config.type.every(t => !client[t]) || (config.ignored && config.ignored.test(client.resourceName));
   }
 
   function addProps(client) {
@@ -15,7 +23,7 @@ Item {
     };
     client.minSpace = config.smallestSpace;
     for (const [minSpace, name] of config.minSpace) {
-      if (name && (name.test(client.resourceName) || name.test(client.caption))) {
+      if (name && name.test(client.resourceName)) {
         client.minSpace = minSpace;
         break;
       }
