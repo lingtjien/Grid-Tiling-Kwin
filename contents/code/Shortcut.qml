@@ -90,32 +90,6 @@ Item {
           screen.render(client.screenIndex, client.desktopIndex, client.activityId);
       });
     }
-
-    for (const [text, shortcut, amount] of [
-      ['Move Next Desktop/Screen', 'Meta+End', 1],
-      ['Move Previous Desktop/Screen', 'Meta+Home', -1]
-    ]) {
-      register(text, shortcut, () => {
-        const client = workspace.activeClient;
-        if (!client || manager.ignored(client))
-          return;
-        const last = workspace.numScreens - 1;
-        const i = client.screen + amount;
-        if (i >= 0 && i < last) {
-          workspace.sendClientToScreen(client, i);
-        } else if (i < 0) {
-          workspace.sendClientToScreen(client, last);
-          client.desktop = client.desktop > 1 ? client.desktop - 1 : client.desktop = workspace.desktops;
-        } else {
-          workspace.sendClientToScreen(client, 0);
-          client.desktop = client.desktop < workspace.desktops ? client.desktop + 1 : 1;
-        }
-
-        delay.set(config.delay, () => {
-          workspace.currentDesktop = client.desktop;
-        });
-      })
-    }
   }
 
   function init() {

@@ -64,8 +64,8 @@ Delete the linked or copied files that you created during installation. To remov
 - set shortcuts `Grid-Tiling: Swap *Up/Down*` to `Meta+Ctrl+*Up/Down*`
 - set shortcuts `Grid-Tiling: Move/Swap *Left/Right*` to `Meta+Ctrl+*Left/Right*`
 - set shortcuts `Switch To Window *Left/Up/Down/Right*` to `Meta+Alt+*Left/Up/Down/Right*`
-- set shortcuts `Grid-Tiling: Move *Previous/Next* Desktop` to `Meta+*Home/End*`
-- set shortcuts `Window One Desktop *Down/Up*` to `Meta+*PgDn/PgUp*`
+- set shortcuts `Window To *Next/Previous* Desktop` to `Meta+*End/Home*`
+- set shortcuts `Window To *Next/Previous* Screen` to `Meta+*PgUp/PgDn*`
 
 - set shortcut `Grid-Tiling: Toggle Minimize Desktop` to `Meta+M`
 - set shortcut `Minimize Window` to `Meta+N`
@@ -86,8 +86,6 @@ Delete the linked or copied files that you created during installation. To remov
 
 - set shortcut `Grid-Tiling: Refresh` to `Meta+R`
 
-*If you use multiple screens you could also consider using the default shortcuts of KWin `Window To *Previous/Next* *Screen*` to `Meta+*PgDn/PgUp*` to easily move clients between screens*
-
 ## Useful To Know
 - This version of the script uses the latest KWin API methods. If you're using an older version of KWin, choose the appropriate branch.
 - After installing a KWin script you can activate it in the system settings, here you'll also find the configuration button.
@@ -97,6 +95,7 @@ Delete the linked or copied files that you created during installation. To remov
 -  This was made with the intended use of using a set amount of virtual desktops. For the best result make sure you have more virtual desktops than you have clients normally. The script can handle more clients but once all desktops are full, all new clients will start as floating instead of tiling until there is space again to tile new clients.
 - I don't use dynamic virtual desktops, but it should be able to deal with it as long as the clients are closed when the virtual desktop is removed.
 - Matching is performed using the javascript `RegExp` class which is build using the string that the user provides and then the `test` method is used on the Window class (application) property and the caption (equivalent pseudocode `RegExp(config).test(clientName) || RegExp(config).test(clientCaption)`). You can find the value for these properties on a window by opening the Windows Operations Menu (there is a global shortcut for this). For some examples check out the min space section of the configuration interface.
+- If you never plan on using multiple screens you could also consider using the KWin shortcuts `Move Window *Left/Up/Right/Down*` instead of the suggested `Window To *Previous/Next* *Desktop/Screen*`. So you have more flexibility to move clients between the grid of virtual desktops, while sacrificing the shortcuts that allow you to move them between screens.
 - Logging in wayland can be obtained by `journalctl -f _COMM=kwin_wayland`
 
 ## Extra Settings Info
