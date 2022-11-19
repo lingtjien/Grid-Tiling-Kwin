@@ -5,18 +5,17 @@ Item {
   property var tiled: ({})
 
   function ignored(client) {
-    return client.transient || config.type.every(t => !client[t]) || (config.ignored && config.ignored.test(client.name));
+    return client.transient || config.type.every(t => !client[t]) || (config.ignored && (config.ignored.test(client.resourceName) || config.ignored.test(client.caption)));
   }
 
   function addProps(client) {
-    client.name = new String(client.resourceName + client.caption);
     client.init = {
       noBorder: client.noBorder,
       geometry: client.geometry
     };
     client.minSpace = config.smallestSpace;
     for (const [minSpace, name] of config.minSpace) {
-      if (name && name.test(client.name)) {
+      if (name && (name.test(client.resourceName) || name.test(client.caption))) {
         client.minSpace = minSpace;
         break;
       }
