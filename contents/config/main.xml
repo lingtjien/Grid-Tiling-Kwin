@@ -52,7 +52,7 @@
     </entry>
     <entry name="ignored" type="string">
       <label>ignored client name regex</label>
-      <default></default>
+      <default>ksmserver-logout-greeter</default>
     </entry>
     <entry name="typeNormalWindow" type="bool">
       <default>true</default>

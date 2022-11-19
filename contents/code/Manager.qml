@@ -9,7 +9,7 @@ Item {
   }
 
   function addProps(client) {
-    client.name = String(client.resourceName);
+    client.name = new String(client.resourceName + client.caption);
     client.init = {
       noBorder: client.noBorder,
       geometry: client.geometry
