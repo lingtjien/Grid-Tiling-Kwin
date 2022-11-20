@@ -114,7 +114,6 @@
     <entry name="columnsScreen9" type="string">
       <default>2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2</default>
     </entry>
-
     <entry name="minSpace1" type="int">
       <default>1</default>
     </entry>
@@ -125,7 +124,7 @@
       <default>2</default>
     </entry>
     <entry name="minSpaceName2" type="string">
-      <default>code|kdevelop|chromium|kate|spotify</default>
+      <default>kdevelop|code</default>
     </entry>
     <entry name="minSpace3" type="int">
       <default>3</default>

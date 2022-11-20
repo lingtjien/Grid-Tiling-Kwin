@@ -30,7 +30,7 @@ Item {
 
   property var minSpace: readMinSpace([
     [1, 'inkscape|krita|gimp|designer|creator|kdenlive'],
-    [2, 'code|kdevelop|chromium|kate|spotify'],
+    [2, 'kdevelop|code'],
     [3, ''], [4, ''], [5, ''], [6, ''], [7, ''], [8, ''], [9, ''], [10, '']
   ])
 
