@@ -216,21 +216,42 @@
             </widget>
           </item>
           <item>
-            <layout class="QHBoxLayout" name="layoutIgnoredName">
+            <layout class="QHBoxLayout" name="layoutBlacklistName">
               <item>
-                <widget class="QLabel" name="labelIgnoredName">
+                <widget class="QLabel" name="labelBlacklistName">
                   <property name="text">
-                    <string>Ignored</string>
+                    <string>Blacklist</string>
                   </property>
                 </widget>
               </item>
               <item>
-                <widget class="QLineEdit" name="kcfg_ignored">
+                <widget class="QLineEdit" name="kcfg_blacklist">
                   <property name="text">
                     <string/>
                   </property>
                   <property name="toolTip">
                     <string>Apps not tiled if regex matches with name</string>
+                  </property>
+                </widget>
+              </item>
+            </layout>
+          </item>
+          <item>
+            <layout class="QHBoxLayout" name="layoutWhitelistName">
+              <item>
+                <widget class="QLabel" name="labelWhitelistName">
+                  <property name="text">
+                    <string>Whitelist</string>
+                  </property>
+                </widget>
+              </item>
+              <item>
+                <widget class="QLineEdit" name="kcfg_whitelist">
+                  <property name="text">
+                    <string/>
+                  </property>
+                  <property name="toolTip">
+                    <string>Apps always tiled if regex matches with name</string>
                   </property>
                 </widget>
               </item>

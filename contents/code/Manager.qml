@@ -13,7 +13,9 @@ Item {
   }
 
   function ignored(client) {
-    return client.transient || includes(client.pid) || !client.normalWindow || (config.ignored && config.ignored.test(client.resourceName));
+    if (config.whitelist && config.whitelist.test(client.resourceName))
+      return false;
+    return client.transient || !client.normalWindow || includes(client.pid) || (config.blacklist && config.blacklist.test(client.resourceName));
   }
 
   function addProps(client) {

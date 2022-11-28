@@ -56,7 +56,7 @@ Delete the linked or copied files that you created during installation. To remov
 - close all clients on the current virtual desktop `Grid-Tiling: Close Desktop`
 - set margins, gap size, default gap state, default tile state, default border state
 - set active clients to show border
-- ignore clients by matching regex, these clients are completely ignored and can't be tiled.
+- blacklist clients by matching regex, these clients are completely ignored and can't be tiled, vice versa for the whitelisted clients.
 
 ## Recommended Setup
 - set window focus policy to `focus follows mouse - mouse precedence`

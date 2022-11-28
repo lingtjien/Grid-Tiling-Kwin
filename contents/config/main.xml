@@ -50,9 +50,13 @@
       <label>amount of space at the right in px</label>
       <default>0</default>
     </entry>
-    <entry name="ignored" type="string">
-      <label>ignored client name regex</label>
+    <entry name="blacklist" type="string">
+      <label>blacklist client name regex</label>
       <default>ksmserver-logout-greeter</default>
+    </entry>
+    <entry name="whitelist" type="string">
+      <label>whitelist client name regex</label>
+      <default>chrome</default>
     </entry>
     <entry name="rowsScreen0" type="string">
       <default>2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2</default>

@@ -34,9 +34,10 @@ Item {
     [3, ''], [4, ''], [5, ''], [6, ''], [7, ''], [8, ''], [9, ''], [10, '']
   ])
 
-  property var ignored: regex(KWin.readConfig('ignored', 'ksmserver-logout-greeter'))
+  property var blacklist: regex(KWin.readConfig('blacklist', 'ksmserver-logout-greeter'))
+  property var whitelist: regex(KWin.readConfig('whitelist', 'chrome'))
 
-  function regex(data) { // empty regex will always match, so only return a regex when there is an input, otherwise everything will be ignored by an empty regex test
+  function regex(data) { // empty regex will always match, so only return a regex when there is an input, otherwise everything will be matched by an empty regex test
     if (data)
       return RegExp(data);
   }
