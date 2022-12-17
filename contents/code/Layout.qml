@@ -33,4 +33,8 @@ Item {
     for (const [activityId, activity] of Object.entries(activities))
       activity.render(activityId);
   }
+
+  function clear() {
+    activities = {};
+  }
 }

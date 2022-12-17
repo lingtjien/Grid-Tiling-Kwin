@@ -108,5 +108,10 @@ Item {
       manager.init();
       layout.render();
     });
+
+    register('Reset', 'Meta+Ctrl+R', () => {
+      manager.reset();
+      layout.render();
+    });
   }
 }

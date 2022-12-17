@@ -264,8 +264,20 @@ Item {
       add(client);
   }
 
-  Component.onDestruction: {
+  function clear() {
     for (const client of Object.values(tiled))
       removeSignals(client);
+    tiled = {};
+    floating = {};
+  }
+
+  function reset() {
+    clear();
+    layout.clear();
+    init();
+  }
+
+  Component.onDestruction: {
+    clear();
   }
 }
