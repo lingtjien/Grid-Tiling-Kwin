@@ -35,7 +35,7 @@ Item {
   ])
 
   property var blacklist: regex(KWin.readConfig('blacklist', 'ksmserver-logout-greeter'))
-  property var whitelist: regex(KWin.readConfig('whitelist', 'chrome'))
+  property var whitelist: regex(KWin.readConfig('whitelist', ''))
 
   function regex(data) { // empty regex will always match, so only return a regex when there is an input, otherwise everything will be matched by an empty regex test
     if (data)

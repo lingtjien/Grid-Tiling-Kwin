@@ -56,7 +56,7 @@
     </entry>
     <entry name="whitelist" type="string">
       <label>whitelist client name regex</label>
-      <default>chrome</default>
+      <default></default>
     </entry>
     <entry name="rowsScreen0" type="string">
       <default>2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2</default>

@@ -4,18 +4,10 @@ Item {
   property var floating: ({})
   property var tiled: ({})
 
-  function includes(pid) {
-    for (const c of Object.values(tiled)) {
-      if (c.pid === pid)
-        return true;
-    }
-    return false;
-  }
-
   function ignored(client) {
     if (config.whitelist && config.whitelist.test(client.resourceName))
       return false;
-    return client.transient || !client.normalWindow || includes(client.pid) || (config.blacklist && config.blacklist.test(client.resourceName));
+    return client.transient || !client.normalWindow || (config.blacklist && config.blacklist.test(client.resourceName));
   }
 
   function addProps(client) {
