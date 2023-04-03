@@ -37,6 +37,29 @@ Item {
         }
       }
     });
+
+    register('Toggle Maximize/Tiling Desktop', 'Meta+Z', () => {
+      const client = workspace.activeClient;
+      const screen = manager.getScreen(client);
+      if (screen) {
+        // activeClient is managed by grid-tiling
+        const minimize = screen.nclients() - screen.nminimizedClients() > 1;
+        for (const line of screen.lines) {
+          for (const cli of line.clients)
+            if (cli != client)
+              cli.minimized = minimize;
+        }
+      } else {
+        // activeClient is managed by system
+        const aScreen = manager.getActiveScreen();
+        const minimize = aScreen.nclients() - aScreen.nminimizedClients() >= 1;
+        for (const line of aScreen.lines) {
+          for (const cli of line.clients)
+            cli.minimized = minimize;
+        }
+        client.setMaximize(minimize, minimize);
+      }
+    });
   }
 
   function dividers() {
