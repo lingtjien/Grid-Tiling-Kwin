@@ -1,10 +1,11 @@
-import QtQuick 2.0
+import QtQuick;
+import org.kde.kwin
 
 Item {
   readonly property string prefix: 'Grid-Tiling: '
 
   function register(name, shortcut, method) {
-    KWin.registerShortcut(prefix + name, prefix + name, shortcut, method);
+    KWin.registerShortcut(prefix + name, prefix + name, shortcut, method); // deprecated needs to be rewritten to pure QML
   }
 
   function togglers() {

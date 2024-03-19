@@ -17,8 +17,8 @@ kpackagetool5 --type KWin/Script -i *path*
 ```
 mkdir -p ~/.local/share/kwin/scripts/grid-tiling
 cd ~/.local/share/kwin/scripts/grid-tiling
-ln -s *path*/contents .
-ln -s *path*/metadata.json .
+ln -s *path*/contents
+ln -s *path*/metadata.json
 ```
 
 *Note: You can replace `ln -s` for `cp`, if you prefer to copy and not have it linked to your cloned repository (if you do this then you're pretty much manually doing what `kpackagetool5` does), using `ln` instead of `cp` will result in an automatic update when you pull the latest changes*
@@ -85,6 +85,7 @@ Delete the linked or copied files that you created during installation. To remov
 - set shortcut `Close Window` to `Meta+W`
 
 - set shortcut `Grid-Tiling: Refresh` to `Meta+R`
+- set shortcut `Grid-Tiling: Reset` to `Meta+Ctrl+R`
 
 ## Useful To Know
 - This version of the script uses the latest KWin API methods. If you're using an older version of KWin, choose the appropriate branch.
@@ -92,7 +93,7 @@ Delete the linked or copied files that you created during installation. To remov
 - When you adjust the settings in the menu, this script needs to be restarted before the settings are applied. You can do this by turning the script off, apply, turn it back on and apply again or a complete KWin restart (re-log/reboot).
 - After updates, some of the shortcuts may have been renamed, but KWin still keeps the old ones registered. To remove the no longer used shortcuts, first disable this script, then go to the shortcuts settings window and use the delete button on the `KWin` application that contains the shortcuts to this script.
 - Resizing clients with the mouse can result in weird visual artifacts when dragged outside of the bounds, just use the global shortcut that refreshes the layout.
--  This was made with the intended use of using a set amount of virtual desktops. For the best result make sure you have more virtual desktops than you have clients normally. The script can handle more clients but once all desktops are full, all new clients will start as floating instead of tiling until there is space again to tile new clients.
+- This was made with the intended use of using a set amount of virtual desktops. For the best result make sure you have more virtual desktops than you have clients normally. The script can handle more clients but once all desktops are full, all new clients will start as floating instead of tiling until there is space again to tile new clients.
 - I don't use dynamic virtual desktops, but it should be able to deal with it as long as the clients are closed when the virtual desktop is removed.
 - Matching is performed using the javascript `RegExp` class which is build using the string that the user provides and then the `test` method is used on the Window class (application) property (equivalent pseudocode `RegExp(config).test(clientName)`). You can find the value for these properties on a window by opening the Windows Operations Menu (there is a global shortcut for this). For some examples check out the min space section of the configuration interface.
 - If you never plan on using multiple screens you could also consider using the KWin shortcuts `Move Window *Left/Up/Right/Down*` instead of the suggested `Window To *Previous/Next* *Desktop/Screen*`. So you have more flexibility to move clients between the grid of virtual desktops, while sacrificing the shortcuts that allow you to move them between screens.
