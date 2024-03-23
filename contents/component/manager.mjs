@@ -1,10 +1,21 @@
-import { shared } from 'shared.mjs';
+import { shared, setTimeout } from 'shared.mjs';
 import { config, calc } from 'config.mjs';
 import { Layout } from 'layout.mjs';
 
 const floating = {};
 const tiled = {};
 const layout = Layout();
+
+function connect(window, signal, callback) {
+  if (!window.hasOwnProperty('connected')) window.connected = [];
+  window.connected.push({ signal, callback });
+  window[signal].connect(callback);
+}
+function disconnect(window) {
+  for (const { signal, callback } of window.connected) window[signal].disconnect(callback);
+  delete window.connected;
+  return window;
+}
 
 function ignored(window) {
   if (config.whitelist && config.whitelist.test(window.resourceName)) return false;
@@ -16,6 +27,10 @@ function addProps(window) {
     noBorder: window.noBorder,
     frameGeometry: window.frameGeometry,
   };
+
+  window.activities = [window.activities[0]];
+  window.desktops = [window.desktops[0]];
+
   window.minSpace = config.smallestSpace;
   for (const [minSpace, name] of config.minSpace) {
     if (name && name.test(window.resourceName)) {
@@ -45,17 +60,6 @@ function unTile(window) {
   }
   delete tiled[disconnect(window).internalId];
   return (floating[window.internalId] = window);
-}
-
-function connect(window, signal, callback) {
-  if (!window.hasOwnProperty('connected')) window.connected = [];
-  window.connected.push({ signal, callback });
-  window[signal].connect(callback);
-}
-function disconnect(window) {
-  for (const { signal, callback } of window.connected) window[signal].disconnect(callback);
-  delete window.connected;
-  return window;
 }
 
 function addSignals(window) {
@@ -133,19 +137,22 @@ function addSignals(window) {
 }
 
 export function add(window) {
-  if (
-    window &&
-    window.activities.length === 1 &&
-    !floating.hasOwnProperty(window.internalId) &&
-    !tiled.hasOwnProperty(window.internalId) &&
-    !ignored(addProps(window))
-  ) {
-    if (config.tile && tile(window)) {
-      layout.render();
-      shared.workspace.currentDesktop = window.desktops[0];
+  setTimeout(() => {
+    if (
+      window &&
+      !floating.hasOwnProperty(window.internalId) &&
+      !tiled.hasOwnProperty(window.internalId) &&
+      window.activities.length &&
+      window.desktops.length &&
+      !ignored(addProps(window))
+    ) {
+      if (config.tile && tile(window)) {
+        layout.render();
+        shared.workspace.currentDesktop = window.desktops[0];
+      }
+      floating[window.internalId] = window;
     }
-    floating[window.internalId] = window;
-  }
+  }, config.delay);
 }
 
 export function remove(window) {
@@ -230,36 +237,36 @@ export function moved(client, lines) {
 export function getActivity(window) {
   if (window && tiled.hasOwnProperty(window.internalId)) {
     window = tiled[window.internalId];
-    return layout.activities[window.activityId];
+    return layout.activities[window.activities[0].id];
   }
 }
 
 export function getDesktop(window) {
   const activity = getActivity(window);
-  if (activity) return activity.desktops[window.desktopIndex];
+  if (activity) return activity.desktops[window.desktops[0].id];
 }
 
 export function getScreen(window) {
   const desktop = getDesktop(window);
-  if (desktop) return desktop.screens[window.screenIndex];
+  if (desktop) return desktop.screens[window.output.name];
 }
 
 export function getActiveActivity() {
-  const activity = layout.activities[shared.workspace.currentActivity];
+  const activity = layout.activities[shared.workspace.currentActivity.id];
   if (activity) return activity;
 }
 
 export function getActiveDesktop() {
   const activity = getActiveActivity();
   if (activity) {
-    return activity.desktops[shared.workspace.currentDesktop - 1]; // TODO
+    return activity.desktops[shared.workspace.currentDesktop.id];
   }
 }
 
 export function getActiveScreen() {
   const desktop = getActiveDesktop();
   if (desktop) {
-    return desktop.screens[shared.workspace.activeScreen]; // TODO
+    return desktop.screens[shared.workspace.activeScreen.name];
   }
 }
 

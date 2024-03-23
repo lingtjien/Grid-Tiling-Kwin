@@ -2,54 +2,52 @@ import { shared } from 'shared.mjs';
 import { Desktop } from 'desktop.mjs';
 
 export function Activity() {
-  const desktops = [];
+  const desktops = {}; // key = KWin::VirtualDesktop::id
 
   function count() {
-    return desktops.reduce((n, d) => n + d.count(), 0);
-  }
-
-  function addDesktop() {
-    if (desktops.length < Workspace.desktops.length) {
-      const d = Desktop();
-      desktops.push(d);
-      return d;
-    }
+    return Object.values(desktops).reduce((n, d) => n + d.count(), 0);
   }
 
   function add(window) {
-    const start = shared.workspace.desktops.findIndex(
-      window.desktops.length > 1 ? shared.workspace.currentDesktop : window.desktops[0]
-    );
-    let i = start;
-    do {
-      while (i >= desktops.length) {
-        if (!addDesktop()) return;
+    const id = !window.desktops.length ? window.desktops[0].id : shared.workspace.currentDesktop.id;
+    if (!desktops.hasOwnProperty(id)) desktops[id] = Desktop();
+    if (desktops[id].add(window, id)) {
+      return window;
+    } else {
+      for (const { id } of shared.workspace.desktops) {
+        if (!desktops.hasOwnProperty(id)) {
+          const desktop = Desktop();
+          desktop.add(window, id);
+          desktops[id] = desktop;
+          return window;
+        }
       }
-      if (desktops[i].add(window, i)) {
-        window.desktopIndex = i;
-        return window;
-      }
-      if (++i >= workspace.desktops.length) i = 0;
-    } while (i !== start);
+    }
   }
 
   function remove(window) {
-    // do not remove the desktop to prevent moving of clients when desktops are closed
-    return desktops[window.desktopIndex].remove(window);
-  }
-
-  function move(window, desktopIndex) {
-    // desktopIndex = target
-    if (desktopIndex < 0 || window.desktopIndex === desktopIndex) return;
-    while (desktopIndex >= desktops.length) {
-      if (!addDesktop()) return;
+    const id = window.desktops[0].id;
+    if (desktops.hasOwnProperty(id)) {
+      const desktop = desktops[id];
+      if (desktop.remove(window)) {
+        if (!desktop.count()) delete desktops[id];
+        return window;
+      }
     }
-    if (desktops[desktopIndex].add(window, desktopIndex) && desktops[window.desktopIndex].remove(window)) return window;
   }
 
-  function render(activityId) {
-    for (const [i, desktop] of desktops.entries()) desktop.render(i, activityId);
+  function move(window, id) {
+    // id = target
+    const current = window.desktops[0].id;
+    if (current !== id) {
+      if (!desktops.hasOwnProperty(id)) desktops[id] = Desktop();
+      if (desktops[id].add(window) && desktops[current].remove(window)) return window;
+    }
   }
 
-  return { desktops, count, add, remove, render };
+  function render() {
+    for (const [i, desktop] of Object.entries(desktops)) desktop.render(i);
+  }
+
+  return { desktops, count, add, remove, move, render };
 }

@@ -1,8 +1,7 @@
-import { shared } from 'shared.mjs';
-import { calc, clampDivider, config } from 'config.mjs';
+import { calc, clampDivider, config, grid } from 'config.mjs';
 import { List } from 'list.mjs';
 
-export function Screen() {
+export function Output() {
   const lists = [];
   const dividers = [];
 
@@ -10,18 +9,13 @@ export function Screen() {
     return lists.reduce((n, l) => n + l.windows.length, 0);
   }
 
-  function nminimizedWindows() {
-    return lists.reduce((n, l) => n + l.nminimized(), 0);
-  }
-
-  function nminimized() {
-    // not total number of minimized windows in screen
-    return lists.reduce((n, l) => n + l.minimized(), 0);
+  function minimized() {
+    return lists.reduce((s, l) => s + l.minimized(), 0);
   }
 
   function addList(index) {
     if (lists.some((l) => l.minSpace() > 1 / (lists.length + 1)))
-      // check if adding a new line won't decrease the size of the clients inside any of the existing lines below their minSpace
+      // check if adding a new line won't decrease the size of the windows inside any of the existing lines below their minSpace
       return;
 
     const l = List();
@@ -47,7 +41,7 @@ export function Screen() {
   function smallest() {
     if (lists.length) {
       let i = 0;
-      let minSpace = list[i].minSpace();
+      let minSpace = lists[i].minSpace();
       for (const [j, l] of lists.slice(1).entries()) {
         const m = l.minSpace();
         if (m < minSpace) {
@@ -68,13 +62,13 @@ export function Screen() {
       list.windows.length < grid[0] &&
       (lists.length >= grid[1] || lists.length > list.windows.length)
     ) {
-      if (list.add(window)) {
-        window.listIndex = i;
-        return window;
-      }
+      list.add(window);
+      window.listIndex = i;
+      return window;
     } else if (window.minSpace <= 1 / (lists.length + 1) && lists.length < grid[1]) {
       list = addList();
-      if (list && list.add(window)) {
+      if (list) {
+        list.add(window);
         window.listIndex = lists.length - 1;
         return window;
       }
@@ -82,14 +76,17 @@ export function Screen() {
   }
 
   function remove(window) {
-    const list = lists[window.listIndex];
-    if (list.remove(window)) {
-      if (!list.windows.length) removeLine(window.listIndex);
-      return true;
+    const i = window.listIndex;
+    if (i < lists.length) {
+      const list = lists[i];
+      if (list.remove(window)) {
+        if (!list.windows.length) removeLine(i);
+        return window;
+      }
     }
   }
 
-  function swapList(amount, listIndex) {
+  function swap(listIndex, amount) {
     const i = listIndex + amount;
     if (i >= 0 && i < lists.length) {
       const line = lists[listIndex];
@@ -100,7 +97,7 @@ export function Screen() {
   }
 
   function move(window, amount) {
-    const max = config.grid[screenIndex][desktopIndex];
+    const max = grid(windows.desktops[0].id, window.output.name);
 
     let i = window.listIndex + amount;
     while (
@@ -140,28 +137,26 @@ export function Screen() {
     changeDividerBefore(amount, listIndex);
   }
 
-  function render(screenIndex, desktopIndex, activityId) {
-    const area = shared.workspace.clientArea(0, screenIndex, desktopIndex + 1);
-    print('area', area); //TODO
-    const width = config.width(area.width, lists.length - nminimized());
+  function render(area) {
+    const width = calc.width(area.width, lists.length - minimized());
 
     let x = calc.x(area.x);
     let current = 0;
     let previous = 0;
-    for (let [i, line] of lists.entries()) {
-      if (line.minimized()) continue;
+    for (let [i, list] of lists.entries()) {
+      if (list.minimized()) continue;
 
       const divider = i === lists.length - 1 || (i < lists.length - 1 && lists[i + 1].minimized()) ? 0 : dividers[i];
 
       current = width * divider;
       const w = -previous + width + current;
 
-      line.render(x, w, area.y, area.height, i, screenIndex, desktopIndex, activityId);
+      for (const window of list.render(x, area.y, w, area.height)) window.listIndex = i;
 
       x += w + config.gap;
       previous = current;
     }
   }
 
-  return { lists, count, add, remove, move, render };
+  return { lists, count, minimized, add, remove, move, render };
 }

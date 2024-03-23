@@ -12,18 +12,6 @@ function splitTrimNumber(data) {
     .filter((i) => i);
 }
 
-function grid(read, screens, defaults) {
-  const data = [];
-  for (let i = 0; i < screens; ++i) {
-    const rows = splitTrimNumber(read(`rowsScreen${i}`, defaults));
-    const columns = splitTrimNumber(read(`columnsScreen${i}`, defaults));
-    const d = [];
-    for (let j = 0; j < rows.length && j < columns.length; ++j) d.push([rows[j], columns[j]]);
-    data.push(d);
-  }
-  return data;
-}
-
 function minSpace(read, defaults) {
   const data = [];
   for (let [i, d] of defaults) {
@@ -35,11 +23,13 @@ function minSpace(read, defaults) {
 }
 
 export function load(read) {
-  config.grid = grid(read, 10, '2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2');
-  config.smallestSpace = config.grid.reduce(
-    (min, data) => data.reduce((m, [row, col]) => Math.min(m, 1 / (row * col)), min),
-    1
-  );
+  // config.grid = grid(read, 10, '2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2');
+  // config.smallestSpace = config.grid.reduce(
+  //   (min, data) => data.reduce((m, [row, col]) => Math.min(m, 1 / (row * col)), min),
+  //   1
+  // );
+
+  config.smallestSpace = 1 / (2 * 2); // TODO
 
   config.gap = read('gapShow', true) ? read('gapValue', 16) : 0;
 
@@ -77,6 +67,10 @@ export function load(read) {
 
   config.blacklist = regex(read('blacklist', 'ksmserver-logout-greeter'));
   config.whitelist = regex(read('whitelist', ''));
+}
+
+export function grid(desktopId, screenName) {
+  return [2, 2]; // TODO
 }
 
 export function clampDivider(value) {

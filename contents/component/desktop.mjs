@@ -1,53 +1,55 @@
-import { shared } from 'shared.mjs';
-import { Screen } from 'screen.mjs';
+import { shared, area } from 'shared.mjs';
+import { grid } from 'config.mjs';
+import { Output } from 'output.mjs';
 
 export function Desktop() {
-  const screens = [];
+  const outputs = {}; // key = KWin::Output::name
 
   function count() {
-    return screens.reduce((n, s) => n + s.count(), 0);
+    return Object.values(outputs).reduce((n, o) => n + o.count(), 0);
   }
 
-  function addScreen() {
-    if (screens.length < shared.workspace.screens.length) {
-      const s = Screen();
-      this.screens.push(s);
-      return s;
+  function add(window, desktopId) {
+    const name = window.output.name;
+    if (!outputs.hasOwnProperty(name)) outputs[name] = Output();
+    if (outputs[name].add(window, grid(desktopId, name))) {
+      return window;
+    } else {
+      for (const { name } of shared.workspace.screens) {
+        if (!outputs.hasOwnProperty(name)) {
+          const output = Output();
+          output.add(window, grid(desktopId, name));
+          outputs[name] = output;
+          return window;
+        }
+      }
     }
-  }
-
-  function add(window, desktopIndex) {
-    const start = shared.workspace.screens.findIndex(window.output);
-    let i = start;
-    do {
-      while (i >= screens.length) {
-        if (!addScreen()) return;
-      }
-      if (screens[i].add(window, config.grid[i][desktopIndex])) {
-        window.screenIndex = i;
-        return window;
-      }
-      if (++i >= workspace.screens.length) i = 0;
-    } while (i !== start);
+    // couldn't find any outputs with sufficient space to add window too
   }
 
   function remove(window) {
-    // do not remove the screen to prevent moving of clients when screens are closed
-    return screens[window.screenIndex].remove(window);
-  }
-
-  function move(window, screenIndex) {
-    // screenIndex = target
-    if (screenIndex < 0 || window.screenIndex === screenIndex) return;
-    while (screenIndex >= screens.length) {
-      if (!addScreen()) return;
+    const name = window.output.name;
+    if (outputs.hasOwnProperty(name)) {
+      const output = outputs[name];
+      if (output.remove(window)) {
+        if (!output.count()) delete outputs[name];
+        return window;
+      }
     }
-    if (screens[screenIndex].add(window) && screens[window.screenIndex].remove(window)) return window;
   }
 
-  function render(desktopIndex, activityId) {
-    for (const [i, screen] of screens.entries()) screen.render(i, desktopIndex, activityId);
+  function move(window, name) {
+    // name = target
+    const current = window.output.name;
+    if (current !== name) {
+      if (!outputs.hasOwnProperty(name)) outputs[name] = Output();
+      if (outputs[name].add(window) && outputs[current].remove(window)) return window;
+    }
   }
 
-  return { screens, count, add, remove, move, render };
+  function render(desktopId) {
+    for (const [name, output] of Object.entries(outputs)) output.render(area(desktopId, name));
+  }
+
+  return { outputs, count, add, remove, move, render };
 }

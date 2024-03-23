@@ -1,7 +1,7 @@
 import { Activity } from 'activity.mjs';
 
 export function Layout() {
-  let activities = {};
+  let activities = {}; // key = activity id
 
   function add(window) {
     const id = window.activities[0];
@@ -15,20 +15,22 @@ export function Layout() {
   function remove(window) {
     if (activities[window.activityId].remove(window)) {
       if (!activities[window.activityId].count()) delete activities[window.activityId];
-      return true;
+      return window;
     }
   }
 
-  function moveWindow(window, activityId) {
-    // if (client.activityId !== activityId && addClient(client, activityId)) {
-    //   removeClient(client.clientIndex, client.lineIndex, client.screenIndex, client.desktopIndex, client.activityId);
-    //   return client;
-    // }
+  function move(window, id) {
+    // id = target
+    const current = window.activities[0].id;
+    if (current !== id) {
+      if (!activities.hasOwnProperty(id)) activities[id] = Activity();
+      if (activities[id].add(window) && activities[current].remove(window)) return window;
+    }
   }
 
   function render() {
-    for (const [activityId, activity] of Object.entries(activities)) activity.render(activityId);
+    for (const activity of Object.values(activities)) activity.render();
   }
 
-  return { activities, add, remove, render };
+  return { activities, add, remove, move, render };
 }

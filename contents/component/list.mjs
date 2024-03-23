@@ -1,37 +1,34 @@
-import { clampDivider } from 'config.mjs';
+import { calc, clampDivider, config } from 'config.mjs';
 
 export function List() {
   const windows = [];
   const dividers = [];
 
-  function nminimized() {
-    return windows.reduce((n, c) => n + c.minimized, 0);
-  }
   function minimized() {
-    return nminimized() === windows.length;
+    return windows.reduce((s, w) => s + w.minimized, 0);
   }
   function minSpace() {
-    return windows.reduce((sum, c) => sum + c.minSpace, 0);
+    return windows.reduce((s, w) => s + w.minSpace, 0);
   }
   function add(window) {
-    // the size is the total size of a virtual desktop this column can occupy
     window.windowIndex = windows.length;
     windows.push(window);
-    if (windows.length > 0) dividers.push(0); // do not add a new divider when the first client is added to the column
-    return window;
+    if (windows.length > 0) dividers.push(0); // do not add a new divider when the first window is added to the column
   }
   function remove(window) {
     const i = window.windowIndex;
-    windows.splice(i, 1);
-    if (i === 0) {
-      if (dividers.length > 0) dividers.shift();
-    } else {
-      dividers.splice(i - 1, 1);
+    if (i < windows.length) {
+      windows.splice(i, 1);
+      if (i === 0) {
+        if (dividers.length > 0) dividers.shift();
+      } else {
+        dividers.splice(i - 1, 1);
+      }
+      return window;
     }
-    return true;
   }
 
-  function swapClient(amount, windowIndex) {
+  function swap(windowIndex, amount) {
     const i = windowIndex + amount;
     if (i >= 0 && i < windows.length) {
       const window = windows[windowIndex];
@@ -50,12 +47,13 @@ export function List() {
     changeDividerAfter(amount, windowIndex);
     changeDividerBefore(amount, windowIndex);
   }
-  function render(x, w, areaY, areaHeight, listIndex, screenIndex, desktopIndex, activityId) {
-    const height = config.height(areaHeight, windows.length - nminimized());
+  function render(x, y, width, height) {
+    height = calc.height(height, windows.length - minimized());
+    y = calc.y(y);
 
-    let y = config.y(areaY);
     let current = 0;
     let previous = 0;
+    const rendered = [];
     for (let [i, window] of windows.entries()) {
       if (window.minimized) continue;
 
@@ -64,27 +62,23 @@ export function List() {
 
       current = height * divider;
       const h = height + current - previous;
-      const geometry = Qt.rect(Math.floor(x), Math.floor(y), Math.floor(w), Math.floor(h));
+      const geometry = Qt.rect(Math.floor(x), Math.floor(y), Math.floor(width), Math.floor(h));
 
       // these properties are used internally only so they must be set first as they are used to check
       window.renderGeometry = geometry;
       window.windowIndex = i;
-      window.listIndex = listIndex;
-      window.screenIndex = screenIndex;
-      window.desktopIndex = desktopIndex;
-      window.activityId = activityId;
 
       // these properties are from kwin and will thus trigger additional signals, these properties must be set last to prevent the signals that are hooked into this script from triggering before the internal properties have been set
       window.noBorder = config.borderActive && window.active ? false : !config.border;
-      window.desktops = [shared.workspace.desktops[desktopIndex]];
-      window.output = shared.workspace.screens[screenIndex];
       window.frameGeometry = geometry;
+
+      rendered.push(window);
 
       y += h + config.gap;
       previous = current;
     }
-    return 0;
+    return rendered;
   }
 
-  return { windows, add, remove, render, nminimized, minSpace };
+  return { windows, minimized, minSpace, add, remove, swap, render };
 }

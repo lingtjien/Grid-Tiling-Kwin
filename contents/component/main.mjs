@@ -9,9 +9,10 @@ function connect(signal, callback) {
   shared.workspace[signal].connect(callback);
 }
 
-export function init(workspace, kwin) {
+export function init(workspace, kwin, timer) {
   shared.workspace = workspace;
   shared.kwin = kwin;
+  shared.timer = timer;
 
   load(kwin.readConfig);
 
