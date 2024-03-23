@@ -1,4 +1,4 @@
-import { calc, clampDivider, config, grid } from 'config.mjs';
+import { calc, clampDivider, config } from 'config.mjs';
 import { List } from 'list.mjs';
 
 export function Output() {
@@ -96,14 +96,12 @@ export function Output() {
     }
   }
 
-  function move(window, amount) {
-    const max = grid(windows.desktops[0].id, window.output.name);
-
+  function move(window, amount, grid) {
     let i = window.listIndex + amount;
     while (
       i >= 0 &&
       i < lists.length &&
-      (lists[i].minSpace() + window.minSpace > 1 / lists.length || lists[i].windows.length >= max[0])
+      (lists[i].minSpace() + window.minSpace > 1 / lists.length || lists[i].windows.length >= grid[0])
     )
       i += amount;
 
@@ -112,7 +110,7 @@ export function Output() {
       lists[i].add(window);
       window.listIndex = i;
       return window;
-    } else if (lists.length < max[1]) {
+    } else if (lists.length < grid[1]) {
       const j = amount < 0 ? 0 : lists.length;
       const list = addList(j);
       if (list) {
@@ -124,17 +122,17 @@ export function Output() {
     }
   }
 
-  function changeDividerAfter(amount, listIndex) {
+  function dividerPost(listIndex, amount) {
     if (listIndex < lists.length - 1) dividers[listIndex] = clampDivider(dividers[listIndex] + amount);
   }
 
-  function changeDividerBefore(amount, listIndex) {
+  function dividerPre(listIndex, amount) {
     if (listIndex > 0) dividers[listIndex - 1] = clampDivider(dividers[listIndex - 1] - amount);
   }
 
-  function changeDivider(amount, listIndex) {
-    changeDividerAfter(amount, listIndex);
-    changeDividerBefore(amount, listIndex);
+  function divider(listIndex, amount) {
+    dividerPost(listIndex, amount);
+    dividerPre(listIndex, amount);
   }
 
   function render(area) {
@@ -158,5 +156,5 @@ export function Output() {
     }
   }
 
-  return { lists, count, minimized, add, remove, move, render };
+  return { lists, count, minimized, add, remove, swap, move, divider, render };
 }

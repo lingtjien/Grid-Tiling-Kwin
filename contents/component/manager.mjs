@@ -169,12 +169,15 @@ export function remove(window) {
   }
 }
 
-export function tileToggle(window) {
+export function toggle() {
+  const window = shared.workspace.activeWindow;
   if (window) {
-    if (floating.hasOwnProperty(window.internalId)) {
-      return tile(window);
-    } else if (tiled.hasOwnProperty(window.internalId)) {
-      return unTile(window);
+    if (
+      (floating.hasOwnProperty(window.internalId) && tile(window)) ||
+      (tiled.hasOwnProperty(window.internalId) && unTile(window))
+    ) {
+      layout.render();
+      return window;
     }
     return add(window);
   }
@@ -237,7 +240,7 @@ export function moved(client, lines) {
 export function getActivity(window) {
   if (window && tiled.hasOwnProperty(window.internalId)) {
     window = tiled[window.internalId];
-    return layout.activities[window.activities[0].id];
+    return layout.activities[window.activities[0]];
   }
 }
 
@@ -246,14 +249,13 @@ export function getDesktop(window) {
   if (activity) return activity.desktops[window.desktops[0].id];
 }
 
-export function getScreen(window) {
+export function getOutput(window) {
   const desktop = getDesktop(window);
-  if (desktop) return desktop.screens[window.output.name];
+  if (desktop) return desktop.outputs[window.output.name];
 }
 
 export function getActiveActivity() {
-  const activity = layout.activities[shared.workspace.currentActivity.id];
-  if (activity) return activity;
+  return layout.activities[shared.workspace.currentActivity];
 }
 
 export function getActiveDesktop() {
@@ -263,11 +265,15 @@ export function getActiveDesktop() {
   }
 }
 
-export function getActiveScreen() {
+export function getActiveOutput() {
   const desktop = getActiveDesktop();
   if (desktop) {
-    return desktop.screens[shared.workspace.activeScreen.name];
+    return desktop.outputs[shared.workspace.activeScreen.name];
   }
+}
+
+export function render() {
+  layout.render();
 }
 
 export function stop() {

@@ -48,7 +48,15 @@ export function Desktop() {
   }
 
   function render(desktopId) {
-    for (const [name, output] of Object.entries(outputs)) output.render(area(desktopId, name));
+    const desktop = shared.workspace.desktops.find((d) => d.id === desktopId);
+    for (const [name, output] of Object.entries(outputs)) {
+      output.render(
+        area(
+          desktop,
+          shared.workspace.screens.find((s) => s.name === name)
+        )
+      );
+    }
   }
 
   return { outputs, count, add, remove, move, render };

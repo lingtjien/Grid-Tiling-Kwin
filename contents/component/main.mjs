@@ -1,6 +1,6 @@
 import { shared } from 'shared.mjs';
-import { add, remove, start, stop } from 'manager.mjs';
 import { config, load } from 'config.mjs';
+import { add, remove, start, stop } from 'manager.mjs';
 
 const signals = [];
 
@@ -31,8 +31,6 @@ export function init(workspace, kwin, timer) {
 
   // if (config.borderActive)
   // connect('windowActivated', () => layout.render());
-
-  // shortcut.init();
 }
 
 export function destroy() {

@@ -37,16 +37,18 @@ export function List() {
       return window;
     }
   }
-  function changeDividerAfter(amount, windowIndex) {
+
+  function dividerPost(windowIndex, amount) {
     if (windowIndex < windows.length - 1) dividers[windowIndex] = clampDivider(dividers[windowIndex] + amount);
   }
-  function changeDividerBefore(amount, windowIndex) {
+  function dividerPre(windowIndex, amount) {
     if (windowIndex > 0) dividers[windowIndex - 1] = clampDivider(dividers[windowIndex - 1] - amount);
   }
-  function changeDivider(amount, windowIndex) {
-    changeDividerAfter(amount, windowIndex);
-    changeDividerBefore(amount, windowIndex);
+  function divider(windowIndex, amount) {
+    dividerPost(windowIndex, amount);
+    dividerPre(windowIndex, amount);
   }
+
   function render(x, y, width, height) {
     height = calc.height(height, windows.length - minimized());
     y = calc.y(y);
@@ -63,7 +65,7 @@ export function List() {
       current = height * divider;
       const h = height + current - previous;
       const geometry = Qt.rect(Math.floor(x), Math.floor(y), Math.floor(width), Math.floor(h));
-
+      print('RENDER LIST', window.resourceName);
       // these properties are used internally only so they must be set first as they are used to check
       window.renderGeometry = geometry;
       window.windowIndex = i;
@@ -80,5 +82,5 @@ export function List() {
     return rendered;
   }
 
-  return { windows, minimized, minSpace, add, remove, swap, render };
+  return { windows, minimized, minSpace, add, remove, swap, divider, render };
 }

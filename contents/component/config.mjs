@@ -22,6 +22,10 @@ function minSpace(read, defaults) {
   return data;
 }
 
+export function setGap() {
+  config.gap = config.gapShow ? config.gapValue : 0;
+}
+
 export function load(read) {
   // config.grid = grid(read, 10, '2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2');
   // config.smallestSpace = config.grid.reduce(
@@ -31,7 +35,9 @@ export function load(read) {
 
   config.smallestSpace = 1 / (2 * 2); // TODO
 
-  config.gap = read('gapShow', true) ? read('gapValue', 16) : 0;
+  config.gapShow = read('gapShow', true);
+  config.gapValue = read('gapValue', 16);
+  setGap();
 
   config.divider = {
     bound: read('dividerBound', 0.4),

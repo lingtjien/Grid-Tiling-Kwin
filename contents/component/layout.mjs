@@ -13,15 +13,16 @@ export function Layout() {
   }
 
   function remove(window) {
-    if (activities[window.activityId].remove(window)) {
-      if (!activities[window.activityId].count()) delete activities[window.activityId];
+    const id = window.activities[0];
+    if (activities[id].remove(window)) {
+      if (!activities[id].count()) delete activities[id];
       return window;
     }
   }
 
   function move(window, id) {
     // id = target
-    const current = window.activities[0].id;
+    const current = window.activities[0];
     if (current !== id) {
       if (!activities.hasOwnProperty(id)) activities[id] = Activity();
       if (activities[id].add(window) && activities[current].remove(window)) return window;
