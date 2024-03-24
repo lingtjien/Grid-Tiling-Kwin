@@ -59,6 +59,16 @@ export function List() {
     dividerPre(windowIndex, amount);
   }
 
+  function overlap(window, area) {
+    let remainder = window.frameGeometry.y + 0.5 * window.frameGeometry.height - config.margin.t - area.y; // center
+    for (const w of windows) {
+      if (!w.minimized) {
+        remainder -= w.frameGeometry.height + config.gap;
+        if (remainder < 0) return w;
+      }
+    }
+  }
+
   function render(x, y, width, height) {
     height = calc.height(height, windows.length - minimized());
     y = calc.y(y);
@@ -92,5 +102,5 @@ export function List() {
     return rendered;
   }
 
-  return { windows, minimized, minSpace, add, remove, swap, divider, dividerPre, dividerPost, render };
+  return { windows, minimized, minSpace, add, remove, swap, divider, dividerPre, dividerPost, overlap, render };
 }

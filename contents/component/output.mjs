@@ -134,56 +134,45 @@ export function Output() {
     for (const [key, value] of Object.entries(window.frameGeometry)) diff[key] = value - window.renderGeometry[key];
     if (diff.width === 0 && diff.height === 0) return;
 
-    const height = calc.height(
-      area.height,
-      lists[window.listIndex].windows.length - lists[window.listIndex].minimized()
-    );
     const width = calc.width(area.width, lists.length - minimized());
     if (diff.width !== 0) {
       if (diff.x === 0) dividerPost(window.listIndex, diff.width / width);
       else dividerPre(window.listIndex, diff.width / width);
     }
-    // TODO move into list
+
+    const height = calc.height(
+      area.height,
+      lists[window.listIndex].windows.length - lists[window.listIndex].minimized()
+    );
     if (diff.height !== 0) {
       if (diff.y === 0) lists[window.listIndex].dividerPost(window.windowIndex, diff.height / height);
       else lists[window.listIndex].dividerPre(window.windowIndex, diff.height / height);
     }
   }
 
-  function moved(window, area) {
-    let remainder = window.frameGeometry.x + 0.5 * window.frameGeometry.width - config.margin.l - area.x; // middle - start
-    let swapList;
+  function overlap(window, area) {
+    let remainder = window.frameGeometry.x + 0.5 * window.frameGeometry.width - config.margin.l - area.x; // center
     for (const list of lists) {
       if (!list.minimized()) {
         remainder -= list.windows[0].frameGeometry.width + config.gap;
-        if (remainder < 0) {
-          swapList = list;
-          break;
-        }
+        if (remainder < 0) return list;
       }
     }
-    if (!swapList) return;
-    // TODO move into list
-    remainder = window.frameGeometry.y + 0.5 * window.frameGeometry.height - config.margin.t - area.y;
-    let swapWindow;
-    for (const w of swapList.windows) {
-      if (!w.minimized) {
-        remainder -= w.frameGeometry.height + config.gap;
-        if (remainder < 0) {
-          swapWindow = w;
-          break;
-        }
-      }
-    }
-    if (!swapWindow) return;
+  }
 
-    const list = lists[window.listIndex];
-    if (
-      list.minSpace() - window.minSpace + swapWindow.minSpace <= 1 / lists.length &&
-      swapList.minSpace() - swapWindow.minSpace + window.minSpace <= 1 / lists.length
-    ) {
-      list.windows[window.windowIndex] = swapWindow;
-      swapList.windows[swapWindow.windowIndex] = window;
+  function moved(window, area) {
+    const swapList = overlap(window, area);
+    if (swapList) {
+      const swapWindow = swapList.overlap(window, area);
+      const list = lists[window.listIndex];
+      if (
+        swapWindow &&
+        list.minSpace() - window.minSpace + swapWindow.minSpace <= 1 / lists.length &&
+        swapList.minSpace() - swapWindow.minSpace + window.minSpace <= 1 / lists.length
+      ) {
+        list.windows[window.windowIndex] = swapWindow;
+        swapList.windows[swapWindow.windowIndex] = window;
+      }
     }
   }
 
