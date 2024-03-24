@@ -92,5 +92,5 @@ export function List() {
     return rendered;
   }
 
-  return { windows, minimized, minSpace, add, remove, swap, divider, render };
+  return { windows, minimized, minSpace, add, remove, swap, divider, dividerPre, dividerPost, render };
 }

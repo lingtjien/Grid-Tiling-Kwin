@@ -129,6 +129,56 @@ export function Output() {
     dividerPre(listIndex, amount);
   }
 
+  function resized(window, area) {
+    let diff = {};
+    for (const [key, value] of Object.entries(window.frameGeometry)) diff[key] = value - window.renderGeometry[key];
+    if (diff.width === 0 && diff.height === 0) return;
+
+    const height = calc.height(
+      area.height,
+      lists[window.listIndex].windows.length - lists[window.listIndex].minimized()
+    );
+    const width = calc.width(area.width, lists.length - minimized());
+    if (diff.width !== 0) {
+      if (diff.x === 0) dividerPost(window.listIndex, diff.width / width);
+      else dividerPre(window.listIndex, diff.width / width);
+    }
+
+    if (diff.height !== 0) {
+      if (diff.y === 0) lists[window.listIndex].dividerPost(window.windowIndex, diff.height / height);
+      else lists[window.listIndex].dividerPre(window.windowIndex, diff.height / height);
+    }
+  }
+
+  function moved(window, area) {
+    // TODO
+    let remainder = client.geometry.x + 0.5 * client.geometry.width - config.margin.l - area.x; // middle - start
+    const swap_line = lines.find((l) => {
+      if (!l.minimized()) {
+        remainder -= l.clients[0].geometry.width + config.gap;
+        return remainder < 0;
+      }
+    });
+    if (swap_line) {
+      remainder = client.geometry.y + 0.5 * client.geometry.height - config.margin.t - area.y;
+      const swap_client = swap_line.clients.find((c) => {
+        if (!c.minimized) {
+          remainder -= c.geometry.height + config.gap;
+          return remainder < 0;
+        }
+      });
+      const line = lines[client.lineIndex];
+      if (
+        swap_client &&
+        line.minSpace() - client.minSpace + swap_client.minSpace <= 1 / lines.length &&
+        swap_line.minSpace() - swap_client.minSpace + client.minSpace <= 1 / lines.length
+      ) {
+        line.clients[client.clientIndex] = swap_client;
+        swap_line.clients[swap_client.clientIndex] = client;
+      }
+    }
+  }
+
   function render(area) {
     const width = calc.width(area.width, lists.length - minimized());
 
@@ -150,5 +200,5 @@ export function Output() {
     }
   }
 
-  return { lists, count, minimized, add, remove, swap, move, divider, render };
+  return { lists, count, minimized, add, remove, swap, move, divider, resized, render };
 }

@@ -1,4 +1,4 @@
-import { shared, setTimeout } from 'shared.mjs';
+import { area, shared, setTimeout } from 'shared.mjs';
 import { config, calc } from 'config.mjs';
 import { Layout } from 'layout.mjs';
 
@@ -63,13 +63,12 @@ function unTile(window) {
 }
 
 function addSignals(window) {
-  //TODO
   connect(window, 'moveResizedChanged', () => {
-    print('moveResizedChanged', window);
-    // const screen = layout.activities[client.activityId].desktops[client.desktopIndex].screens[client.screenIndex];
-    // resized(client, screen);
-    // moved(client, screen.lines);
-    // screen.render(client.screenIndex, client.desktopIndex, client.activityId);
+    const output = getOutput(window);
+    const a = area(window.desktops[0], window.output);
+    output.resized(window, a);
+    // output.moved(window, a);
+    output.render(a);
   });
 
   connect(window, 'desktopsChanged', () => {
@@ -180,60 +179,6 @@ export function toggle() {
       return window;
     }
     return add(window);
-  }
-}
-
-export function resized(client, screen) {
-  // TODO
-  let diff = {};
-  for (const i of Object.keys(client.geometry)) diff[i] = client.geometry[i] - client.geometryRender[i];
-  if (diff.width === 0 && diff.height === 0) return;
-
-  const area = workspace.clientArea(0, client.screen, client.desktop);
-  const height = calc.height(
-    area.height,
-    screen.lines[client.lineIndex].clients.length - screen.lines[client.lineIndex].nminimized()
-  );
-  const width = calc.width(area.width, screen.lines.length - screen.nminimized());
-  if (diff.width !== 0) {
-    if (diff.x === 0) screen.changeDividerAfter(diff.width / width, client.lineIndex);
-    else screen.changeDividerBefore(diff.width / width, client.lineIndex);
-  }
-
-  if (diff.height !== 0) {
-    if (diff.y === 0) screen.lines[client.lineIndex].changeDividerAfter(diff.height / height, client.clientIndex);
-    else screen.lines[client.lineIndex].changeDividerBefore(diff.height / height, client.clientIndex);
-  }
-}
-
-export function moved(client, lines) {
-  // TODO
-  const area = workspace.clientArea(0, client.screen, client.desktop);
-
-  let remainder = client.geometry.x + 0.5 * client.geometry.width - config.margin.l - area.x; // middle - start
-  const swap_line = lines.find((l) => {
-    if (!l.minimized()) {
-      remainder -= l.clients[0].geometry.width + config.gap;
-      return remainder < 0;
-    }
-  });
-  if (swap_line) {
-    remainder = client.geometry.y + 0.5 * client.geometry.height - config.margin.t - area.y;
-    const swap_client = swap_line.clients.find((c) => {
-      if (!c.minimized) {
-        remainder -= c.geometry.height + config.gap;
-        return remainder < 0;
-      }
-    });
-    const line = lines[client.lineIndex];
-    if (
-      swap_client &&
-      line.minSpace() - client.minSpace + swap_client.minSpace <= 1 / lines.length &&
-      swap_line.minSpace() - swap_client.minSpace + client.minSpace <= 1 / lines.length
-    ) {
-      line.clients[client.clientIndex] = swap_client;
-      swap_line.clients[swap_client.clientIndex] = client;
-    }
   }
 }
 
