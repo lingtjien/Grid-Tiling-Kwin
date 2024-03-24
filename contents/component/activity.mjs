@@ -14,15 +14,19 @@ export function Activity() {
     if (desktops[id].add(window, id)) {
       return window;
     } else {
-      for (const { id } of shared.workspace.desktops) {
+      for (const d of shared.workspace.desktops) {
+        const id = d.id;
         if (!desktops.hasOwnProperty(id)) {
           const desktop = Desktop();
-          desktop.add(window, id);
-          desktops[id] = desktop;
-          return window;
+          if (desktop.add(window, id)) {
+            window.desktops = [d];
+            desktops[id] = desktop;
+            return window;
+          }
         }
       }
     }
+    // couldn't find any desktops with sufficient space to add window too
   }
 
   function remove(window) {

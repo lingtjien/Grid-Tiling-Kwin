@@ -15,12 +15,15 @@ export function Desktop() {
     if (outputs[serial].add(window, grid(desktopId, serial))) {
       return window;
     } else {
-      for (const { serial } of shared.workspace.screens) {
+      for (const o of shared.workspace.screens) {
+        const serial = o.serialNumber;
         if (!outputs.hasOwnProperty(serial)) {
           const output = Output();
-          output.add(window, grid(desktopId, serial));
-          outputs[serial] = output;
-          return window;
+          if (output.add(window, grid(desktopId, serial))) {
+            window.output = o;
+            outputs[serial] = output;
+            return window;
+          }
         }
       }
     }
