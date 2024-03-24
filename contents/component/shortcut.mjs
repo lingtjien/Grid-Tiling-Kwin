@@ -1,6 +1,6 @@
 import { area, shared } from 'shared.mjs';
 import { config, grid, setGap } from 'config.mjs';
-import { getActiveOutput, getOutput, render, restart, start, toggle as tileFloat } from 'manager.mjs';
+import { getOutput, render, restart, start, toggle as tileFloat } from 'manager.mjs';
 
 export { tileFloat };
 export const refresh = start;
@@ -20,7 +20,7 @@ export const toggle = {
     render();
   },
   minimizeDesktop: () => {
-    const output = getActiveOutput();
+    const output = getOutput(shared.workspace.activeWindow);
     if (output) {
       const minimize = output.minimized() < output.count();
       for (const list of output.lists) {

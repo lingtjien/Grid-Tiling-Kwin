@@ -197,24 +197,6 @@ export function getOutput(window) {
   if (desktop) return desktop.outputs[window.output.serialNumber];
 }
 
-export function getActiveActivity() {
-  return layout.activities[shared.workspace.currentActivity];
-}
-
-export function getActiveDesktop() {
-  const activity = getActiveActivity();
-  if (activity) {
-    return activity.desktops[shared.workspace.currentDesktop.id];
-  }
-}
-
-export function getActiveOutput() {
-  const desktop = getActiveDesktop();
-  if (desktop) {
-    return desktop.outputs[shared.workspace.activeScreen.serialNumber];
-  }
-}
-
 export function render() {
   layout.render();
 }

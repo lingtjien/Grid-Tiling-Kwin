@@ -104,9 +104,12 @@ export function Output() {
   }
 
   function move(window, amount, grid) {
-    const t = window.listIndex + amount;
+    let t = window.listIndex + amount;
     let target = lists[t];
-    if (!target && lists.length < grid[1]) target = lists[addList(amount < 0)];
+    if (!target && lists.length < grid[1] && lists[window.listIndex].windows.length > 1) {
+      t = addList(amount < 0);
+      target = lists[t];
+    }
 
     if (target && target.minSpace() + window.minSpace <= 1 / lists.length && target.windows.length < grid[0]) {
       remove(window);
@@ -190,6 +193,7 @@ export function Output() {
       current = width * divider;
       const w = -previous + width + current;
 
+      overwrite.listIndex = i;
       list.render(x, area.y, w, area.height, overwrite);
 
       x += w + config.gap;
