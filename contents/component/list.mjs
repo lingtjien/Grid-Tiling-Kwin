@@ -69,13 +69,12 @@ export function List() {
     }
   }
 
-  function render(x, y, width, height) {
+  function render(x, y, width, height, overwrite = {}) {
     height = calc.height(height, windows.length - minimized());
     y = calc.y(y);
 
     let current = 0;
     let previous = 0;
-    const rendered = [];
     for (let [i, window] of windows.entries()) {
       if (window.minimized) continue;
 
@@ -89,17 +88,15 @@ export function List() {
       // these properties are used internally only so they must be set first as they are used to check
       window.renderGeometry = geometry;
       window.windowIndex = i;
+      Object.assign(window, overwrite);
 
       // these properties are from kwin and will thus trigger additional signals, these properties must be set last to prevent the signals that are hooked into this script from triggering before the internal properties have been set
       window.noBorder = config.borderActive && window.active ? false : !config.border;
       window.frameGeometry = geometry;
 
-      rendered.push(window);
-
       y += h + config.gap;
       previous = current;
     }
-    return rendered;
   }
 
   return { windows, minimized, minSpace, add, remove, swap, divider, dividerPre, dividerPost, overlap, render };

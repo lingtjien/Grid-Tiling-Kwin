@@ -49,8 +49,15 @@ export function Activity() {
     }
   }
 
-  function render() {
-    for (const [i, desktop] of Object.entries(desktops)) desktop.render(i);
+  // provide at least activityId in overwrite
+  function render(overwrite) {
+    for (const [id, desktop] of Object.entries(desktops)) {
+      overwrite.desktopId = id;
+      desktop.render(
+        shared.workspace.desktops.find((d) => d.id === id),
+        overwrite
+      );
+    }
   }
 
   return { desktops, count, add, remove, move, render };

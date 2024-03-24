@@ -29,7 +29,7 @@ export function Layout() {
   }
 
   function render() {
-    for (const activity of Object.values(activities)) activity.render();
+    for (const [id, activity] of Object.entries(activities)) activity.render({ activityId: id });
   }
 
   return { activities, add, remove, move, render };

@@ -176,7 +176,7 @@ export function Output() {
     }
   }
 
-  function render(area) {
+  function render(area, overwrite = {}) {
     const width = calc.width(area.width, lists.length - minimized());
 
     let x = calc.x(area.x);
@@ -190,7 +190,7 @@ export function Output() {
       current = width * divider;
       const w = -previous + width + current;
 
-      for (const window of list.render(x, area.y, w, area.height)) window.listIndex = i;
+      list.render(x, area.y, w, area.height, overwrite);
 
       x += w + config.gap;
       previous = current;

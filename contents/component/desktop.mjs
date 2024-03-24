@@ -50,14 +50,16 @@ export function Desktop() {
     }
   }
 
-  function render(desktopId) {
-    const desktop = shared.workspace.desktops.find((d) => d.id === desktopId);
-    for (const [serialNumber, output] of Object.entries(outputs)) {
+  // provide at least desktopId in overwrite
+  function render(desktop, overwrite) {
+    for (const [serial, output] of Object.entries(outputs)) {
+      overwrite.outputSerial = serial;
       output.render(
         area(
           desktop,
-          shared.workspace.screens.find((s) => s.serialNumber === serialNumber)
-        )
+          shared.workspace.screens.find((s) => s.serialNumber === serial)
+        ),
+        overwrite
       );
     }
   }

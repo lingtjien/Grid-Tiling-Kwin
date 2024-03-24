@@ -72,30 +72,28 @@ function addSignals(window) {
   });
 
   connect(window, 'desktopsChanged', () => {
-    print('desktopsChanged', window);
-    // const activity = layout.activities[client.activityId];
-    // delay.set(config.delay, () => {
-    //   if (client.onAllDesktops) {
-    //     unTile(client);
-    //   } else {
-    //     const start = client.desktopIndex;
-    //     let i = client.desktop - 1;
+    // const activity = getActivity(window);
+    // setTimeout(() => {
+    //   if (window.desktops.length !== 1) {
+    //     const current = window.desktops[0];
+    //     const start = window.desktopIndex;
+    //     let i = window.desktop - 1;
     //     const direction = Math.sign(i - start);
     //     if (direction) {
-    //       while (!activity.moveClient(i, client.clientIndex, client.lineIndex, client.screenIndex, client.desktopIndex))
-    //       {
+    //       while (
+    //         !activity.moveClient(i, window.clientIndex, window.lineIndex, window.screenIndex, window.desktopIndex)
+    //       ) {
     //         i += direction;
-    //         if (i >= workspace.desktops)
-    //           i = 0;
-    //         else if (i < 0)
-    //           i = workspace.desktops - 1;
-    //         if (i === start)
-    //           break;
+    //         if (i >= workspace.desktops) i = 0;
+    //         else if (i < 0) i = workspace.desktops - 1;
+    //         if (i === start) break;
     //       }
     //     }
+    //   } else {
+    //     unTile(window);
     //   }
-    //   activity.render(client.activityId);
-    // });
+    //   activity.render(window.activityId);
+    // }, config.delay);
   });
 
   // TODO signal seems to be renamed, all window screen props -> output prop
