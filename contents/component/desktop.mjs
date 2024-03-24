@@ -3,23 +3,23 @@ import { grid } from 'config.mjs';
 import { Output } from 'output.mjs';
 
 export function Desktop() {
-  const outputs = {}; // key = KWin::Output::name
+  const outputs = {}; // key = KWin::Output::serialNumber
 
   function count() {
     return Object.values(outputs).reduce((n, o) => n + o.count(), 0);
   }
 
   function add(window, desktopId) {
-    const name = window.output.name;
-    if (!outputs.hasOwnProperty(name)) outputs[name] = Output();
-    if (outputs[name].add(window, grid(desktopId, name))) {
+    const serial = window.output.serialNumber;
+    if (!outputs.hasOwnProperty(serial)) outputs[serial] = Output();
+    if (outputs[serial].add(window, grid(desktopId, serial))) {
       return window;
     } else {
-      for (const { name } of shared.workspace.screens) {
-        if (!outputs.hasOwnProperty(name)) {
+      for (const { serial } of shared.workspace.screens) {
+        if (!outputs.hasOwnProperty(serial)) {
           const output = Output();
-          output.add(window, grid(desktopId, name));
-          outputs[name] = output;
+          output.add(window, grid(desktopId, serial));
+          outputs[serial] = output;
           return window;
         }
       }
@@ -28,32 +28,32 @@ export function Desktop() {
   }
 
   function remove(window) {
-    const name = window.output.name;
-    if (outputs.hasOwnProperty(name)) {
-      const output = outputs[name];
+    const serial = window.output.serialNumber;
+    if (outputs.hasOwnProperty(serial)) {
+      const output = outputs[serial];
       if (output.remove(window)) {
-        if (!output.count()) delete outputs[name];
+        if (!output.count()) delete outputs[serial];
         return window;
       }
     }
   }
 
-  function move(window, name) {
-    // name = target
-    const current = window.output.name;
-    if (current !== name) {
-      if (!outputs.hasOwnProperty(name)) outputs[name] = Output();
-      if (outputs[name].add(window) && outputs[current].remove(window)) return window;
+  function move(window, serial) {
+    // serial = target
+    const current = window.output.serialNumber;
+    if (current !== serial) {
+      if (!outputs.hasOwnProperty(serial)) outputs[serial] = Output();
+      if (outputs[serial].add(window) && outputs[current].remove(window)) return window;
     }
   }
 
   function render(desktopId) {
     const desktop = shared.workspace.desktops.find((d) => d.id === desktopId);
-    for (const [name, output] of Object.entries(outputs)) {
+    for (const [serialNumber, output] of Object.entries(outputs)) {
       output.render(
         area(
           desktop,
-          shared.workspace.screens.find((s) => s.name === name)
+          shared.workspace.screens.find((s) => s.serialNumber === serialNumber)
         )
       );
     }

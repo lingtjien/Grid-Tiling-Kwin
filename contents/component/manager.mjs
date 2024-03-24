@@ -251,7 +251,7 @@ export function getDesktop(window) {
 
 export function getOutput(window) {
   const desktop = getDesktop(window);
-  if (desktop) return desktop.outputs[window.output.name];
+  if (desktop) return desktop.outputs[window.output.serialNumber];
 }
 
 export function getActiveActivity() {
@@ -268,7 +268,7 @@ export function getActiveDesktop() {
 export function getActiveOutput() {
   const desktop = getActiveDesktop();
   if (desktop) {
-    return desktop.outputs[shared.workspace.activeScreen.name];
+    return desktop.outputs[shared.workspace.activeScreen.serialNumber];
   }
 }
 

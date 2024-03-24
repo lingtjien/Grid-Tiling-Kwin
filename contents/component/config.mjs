@@ -75,7 +75,7 @@ export function load(read) {
   config.whitelist = regex(read('whitelist', ''));
 }
 
-export function grid(desktopId, screenName) {
+export function grid(desktopId, screenSerial) {
   return [2, 2]; // TODO
 }
 

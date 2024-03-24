@@ -65,7 +65,7 @@ export function List() {
       current = height * divider;
       const h = height + current - previous;
       const geometry = Qt.rect(Math.floor(x), Math.floor(y), Math.floor(width), Math.floor(h));
-      print('RENDER LIST', window.resourceName);
+
       // these properties are used internally only so they must be set first as they are used to check
       window.renderGeometry = geometry;
       window.windowIndex = i;
