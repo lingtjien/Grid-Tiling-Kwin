@@ -50,16 +50,19 @@ function tile(window) {
 }
 
 function unTile(window) {
-  if (window.hasOwnProperty('init')) {
-    for (const [prop, value] of Object.entries(window.init)) window[prop] = value;
-  }
+  if (tiled.hasOwnProperty(window.internalId)) {
+    if (window.hasOwnProperty('init')) {
+      for (const [prop, value] of Object.entries(window.init)) window[prop] = value;
+    }
 
-  window = tiled[window.internalId];
-  if (layout.remove(window)) {
-    layout.render();
+    window = tiled[window.internalId];
+    if (layout.remove(window)) {
+      layout.render();
+    }
+    delete tiled[disconnect(window).internalId];
+    floating[window.internalId] = window;
+    return window;
   }
-  delete tiled[disconnect(window).internalId];
-  return (floating[window.internalId] = window);
 }
 
 function addSignals(window) {
@@ -74,7 +77,10 @@ function addSignals(window) {
   connect(window, 'desktopsChanged', () => {
     const activity = getActivity(window);
     if (activity) {
-      if (window.desktops.length === 1) setTimeout(() => activity.moved(window), config.delay);
+      if (window.desktops.length === 1)
+        setTimeout(() => {
+          if (!activity.moved(window)) unTile(window);
+        }, config.delay);
       else unTile(window);
       activity.render({ activityId: window.activityId });
     }
@@ -105,13 +111,14 @@ function addSignals(window) {
   // });
 
   connect(window, 'activitiesChanged', () => {
-    print('activitiesChanged', window);
-    // const activities = client.activities;
-    // delay.set(config.delay, () => {
-    //   if (activities.length !== 1 && !layout.moveClient(client, activities[0]))
-    //     unTile(client);
-    //   layout.render();
-    // });
+    if (activity) {
+      if (window.activities.length === 1)
+        setTimeout(() => {
+          if (!layout.moved(window)) unTile(window);
+        }, config.delay);
+      else unTile(window);
+      layout.render();
+    }
   });
 
   return window;

@@ -20,13 +20,14 @@ export function Layout() {
     }
   }
 
-  function move(window, id) {
-    // id = target
-    const current = window.activities[0];
-    // TODO set id correctly
-    if (current !== id) {
-      if (!activities.hasOwnProperty(id)) activities[id] = Activity();
-      if (activities[id].add(window) && activities[current].remove(window)) return window;
+  function moved(window) {
+    const current = window.activityId;
+    const target = window.activities[0];
+
+    if (!activities.hasOwnProperty(target)) activities[target] = Activity();
+    if (activities[target].add(window) && activities[current].remove(window)) {
+      window.activityId = target;
+      return window;
     }
   }
 
@@ -34,5 +35,5 @@ export function Layout() {
     for (const [id, activity] of Object.entries(activities)) activity.render({ activityId: id });
   }
 
-  return { activities, add, remove, move, render };
+  return { activities, add, remove, moved, render };
 }
