@@ -70,6 +70,8 @@ export function Activity() {
         if (i < 0) i = n - 1;
         if (i >= n) i = 0;
       }
+    } else {
+      return window; // same is also valid
     }
   }
 

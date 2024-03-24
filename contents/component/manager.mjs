@@ -86,7 +86,7 @@ function addSignals(window) {
     }
   });
 
-  // TODO signal seems to be renamed, all window screen props -> output prop
+  // TODO
   // connect(window, 'screenChanged', () => {
   // print('screenChanged', window);
   // const desktop = layout.activities[client.activityId].desktops[client.desktopIndex];
@@ -111,14 +111,12 @@ function addSignals(window) {
   // });
 
   connect(window, 'activitiesChanged', () => {
-    if (activity) {
-      if (window.activities.length === 1)
-        setTimeout(() => {
-          if (!layout.moved(window)) unTile(window);
-        }, config.delay);
-      else unTile(window);
-      layout.render();
-    }
+    if (window.activities.length === 1)
+      setTimeout(() => {
+        if (!layout.moved(window)) unTile(window);
+      }, config.delay);
+    else unTile(window);
+    layout.render();
   });
 
   return window;

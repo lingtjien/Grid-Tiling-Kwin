@@ -33,7 +33,7 @@ export function load(read) {
   //   1
   // );
 
-  config.smallestSpace = 1 / (4 * 4); // TODO
+  config.smallestSpace = 1 / (2 * 2); // TODO
 
   config.gapShow = read('gapShow', true);
   config.gapValue = read('gapValue', 16);
@@ -76,7 +76,7 @@ export function load(read) {
 }
 
 export function grid(desktopId, screenSerial) {
-  return [4, 4]; // TODO
+  return [2, 2]; // TODO
 }
 
 export function clampDivider(value) {

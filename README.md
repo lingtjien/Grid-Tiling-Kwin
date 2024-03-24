@@ -97,7 +97,7 @@ Delete the linked or copied files that you created during installation. To remov
 - I don't use dynamic virtual desktops, but it should be able to deal with it as long as the clients are closed when the virtual desktop is removed.
 - Matching is performed using the javascript `RegExp` class which is build using the string that the user provides and then the `test` method is used on the Window class (application) property (equivalent pseudocode `RegExp(config).test(clientName)`). You can find the value for these properties on a window by opening the Windows Operations Menu (there is a global shortcut for this). For some examples check out the min space section of the configuration interface.
 - If you never plan on using multiple screens you could also consider using the KWin shortcuts `Move Window *Left/Up/Right/Down*` instead of the suggested `Window To *Previous/Next* *Desktop/Screen*`. So you have more flexibility to move clients between the grid of virtual desktops, while sacrificing the shortcuts that allow you to move them between screens.
-- Logging in wayland can be obtained by `journalctl -f _COMM=kwin_wayland`
+- Logging in wayland can be obtained by `journalctl _COMM=kwin_wayland`
 
 ## Extra Settings Info
 
