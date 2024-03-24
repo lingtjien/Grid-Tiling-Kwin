@@ -20,7 +20,7 @@ export const toggle = {
     render();
   },
   minimizeDesktop: () => {
-    const output = getOutput(shared.workspace.activeWindow);
+    const output = getOutput();
     if (output) {
       const minimize = output.minimized() < output.count();
       for (const list of output.lists) {

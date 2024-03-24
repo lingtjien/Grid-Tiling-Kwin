@@ -181,20 +181,18 @@ export function toggle() {
 }
 
 export function getActivity(window) {
-  if (window && tiled.hasOwnProperty(window.internalId)) {
-    window = tiled[window.internalId];
-    return layout.activities[window.activities[0]];
-  }
+  if (window && tiled.hasOwnProperty(window.internalId)) window = tiled[window.internalId];
+  return layout.activities[window ? window.activityId : shared.workspace.currentActivity];
 }
 
 export function getDesktop(window) {
   const activity = getActivity(window);
-  if (activity) return activity.desktops[window.desktops[0].id];
+  if (activity) return activity.desktops[window ? window.desktopId : shared.workspace.currentDesktop.id];
 }
 
 export function getOutput(window) {
   const desktop = getDesktop(window);
-  if (desktop) return desktop.outputs[window.output.serialNumber];
+  if (desktop) return desktop.outputs[window ? window.outputSerial : shared.workspace.activeScreen.serialNumber];
 }
 
 export function render() {
