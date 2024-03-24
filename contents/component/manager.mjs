@@ -2,9 +2,9 @@ import { shared, setTimeout } from 'shared.mjs';
 import { config, calc } from 'config.mjs';
 import { Layout } from 'layout.mjs';
 
-const floating = {};
-const tiled = {};
-const layout = Layout();
+let floating = {};
+let tiled = {};
+let layout = Layout();
 
 function connect(window, signal, callback) {
   if (!window.hasOwnProperty('connected')) window.connected = [];
@@ -280,6 +280,7 @@ export function stop() {
   for (const window of Object.values(tiled)) disconnect(window);
   tiled = {};
   floating = {};
+  layout = Layout();
 }
 
 export function restart() {

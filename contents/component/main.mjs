@@ -2,7 +2,7 @@ import { shared } from 'shared.mjs';
 import { config, load } from 'config.mjs';
 import { add, remove, start, stop } from 'manager.mjs';
 
-const signals = [];
+let signals = [];
 
 function connect(signal, callback) {
   signals.push({ signal, callback });
