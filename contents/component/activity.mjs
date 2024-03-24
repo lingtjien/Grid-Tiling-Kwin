@@ -42,13 +42,34 @@ export function Activity() {
     }
   }
 
-  function move(window, id) {
-    // id = target
-    const current = window.desktops[0].id;
-    // TODO set desktopId correctly
-    if (current !== id) {
-      if (!desktops.hasOwnProperty(id)) desktops[id] = Desktop();
-      if (desktops[id].add(window) && desktops[current].remove(window)) return window;
+  function moved(window) {
+    const current = window.desktopId;
+    const target = window.desktops[0].id;
+    let c, t;
+    for (const [i, desktop] of shared.workspace.desktops.entries()) {
+      if (desktop.id === current) c = i;
+      if (desktop.id === target) t = i;
+    }
+
+    const direction = Math.sign(t - c);
+    if (direction) {
+      const n = shared.workspace.desktops.length;
+      let i = t;
+      while (i !== c) {
+        const desktop = shared.workspace.desktops[i];
+        const id = desktop.id;
+        if (!desktops.hasOwnProperty(id)) desktops[id] = Desktop();
+        if (desktops[id].add(window) && desktops[current].remove(window)) {
+          window.desktopId = id;
+          window.desktops = [desktop];
+          shared.workspace.currentDesktop = desktop;
+          return window;
+        }
+
+        i += direction;
+        if (i < 0) i = n - 1;
+        if (i >= n) i = 0;
+      }
     }
   }
 
@@ -63,5 +84,5 @@ export function Activity() {
     }
   }
 
-  return { desktops, count, add, remove, move, render };
+  return { desktops, count, add, remove, moved, render };
 }

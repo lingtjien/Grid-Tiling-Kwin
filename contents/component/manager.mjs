@@ -1,5 +1,5 @@
 import { area, shared, setTimeout } from 'shared.mjs';
-import { config, calc } from 'config.mjs';
+import { config } from 'config.mjs';
 import { Layout } from 'layout.mjs';
 
 let floating = {};
@@ -72,30 +72,12 @@ function addSignals(window) {
   });
 
   connect(window, 'desktopsChanged', () => {
-    // const activity = getActivity(window);
-    // setTimeout(() => {
-    //   if (window.desktops.length !== 1) {
-    //     const current = window.desktopId;
-    //     const target = window.desktops[0].id;
-    //     let c, t;
-    //     for (const [i, desktop] of shared.workspace.desktops.entries()) {
-    //       if (desktop.id === current) c = i;
-    //       if (desktop.id === target) t = i;
-    //     }
-    //     const direction = Math.sign(t - c);
-    //     if (direction) {
-    //       while (!activity.move(window, target)) {
-    //         i += direction;
-    //         if (i >= workspace.desktops) i = 0;
-    //         else if (i < 0) i = workspace.desktops - 1;
-    //         if (i === start) break;
-    //       }
-    //     }
-    //   } else {
-    //     unTile(window);
-    //   }
-    //   activity.render({ activityId: window.activityId });
-    // }, config.delay);
+    const activity = getActivity(window);
+    if (activity) {
+      if (window.desktops.length === 1) setTimeout(() => activity.moved(window), config.delay);
+      else unTile(window);
+      activity.render({ activityId: window.activityId });
+    }
   });
 
   // TODO signal seems to be renamed, all window screen props -> output prop
