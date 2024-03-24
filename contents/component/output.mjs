@@ -42,8 +42,8 @@ export function Output() {
     if (lists.length) {
       let i = 0;
       let minSpace = lists[i].minSpace();
-      for (const [j, l] of lists.slice(1).entries()) {
-        const m = l.minSpace();
+      for (let j = 1; j < lists.length; ++j) {
+        const m = lists[j].minSpace();
         if (m < minSpace) {
           i = j;
           minSpace = m;
