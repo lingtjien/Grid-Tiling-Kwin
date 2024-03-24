@@ -7,17 +7,21 @@ export function List() {
   function minimized() {
     return windows.reduce((s, w) => s + w.minimized, 0);
   }
+
   function minSpace() {
     return windows.reduce((s, w) => s + w.minSpace, 0);
   }
+
   function add(window) {
     window.windowIndex = windows.length;
     windows.push(window);
     if (windows.length > 0) dividers.push(0); // do not add a new divider when the first window is added to the column
   }
+
   function remove(window) {
     const i = window.windowIndex;
     if (i < windows.length) {
+      for (let j = i + 1; j < windows.length; ++j) windows[j].windowIndex -= 1;
       windows.splice(i, 1);
       if (i === 0) {
         if (dividers.length > 0) dividers.shift();
@@ -34,6 +38,10 @@ export function List() {
       const window = windows[windowIndex];
       windows[windowIndex] = windows[i];
       windows[i] = window;
+
+      for (let j = 0; j < windowIndex; ++j) windows[windowIndex].windowIndex = i;
+      for (let j = 0; j < i; ++j) windows[i].windowIndex = windowIndex;
+
       return window;
     }
   }
@@ -41,9 +49,11 @@ export function List() {
   function dividerPost(windowIndex, amount) {
     if (windowIndex < windows.length - 1) dividers[windowIndex] = clampDivider(dividers[windowIndex] + amount);
   }
+
   function dividerPre(windowIndex, amount) {
     if (windowIndex > 0) dividers[windowIndex - 1] = clampDivider(dividers[windowIndex - 1] - amount);
   }
+
   function divider(windowIndex, amount) {
     dividerPost(windowIndex, amount);
     dividerPre(windowIndex, amount);

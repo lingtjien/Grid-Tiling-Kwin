@@ -13,23 +13,25 @@ export function Output() {
     return lists.reduce((s, l) => s + l.minimized(), 0);
   }
 
-  function addList(index) {
-    if (lists.some((l) => l.minSpace() > 1 / (lists.length + 1)))
-      // check if adding a new line won't decrease the size of the windows inside any of the existing lines below their minSpace
-      return;
-
-    const l = List();
-    if (index === undefined) {
-      lists.push(l);
-      if (lists.length > 1) dividers.push(0);
-    } else {
-      lists.splice(index, 0, l);
-      if (lists.length > 1) dividers.splice(index, 0, 0);
+  function addList(start = false) {
+    // check if adding a new line won't decrease the size of the windows inside any of the existing lines below their minSpace
+    if (!lists.some((l) => l.minSpace() > 1 / (lists.length + 1))) {
+      if (start) {
+        for (const l of lists) {
+          for (const w of l.windows) w.listIndex += 1;
+        }
+        if (lists.unshift(List()) > 1) dividers.unshift(0);
+      } else {
+        if (lists.push(List()) > 1) dividers.push(0);
+      }
+      return start ? 0 : lists.length - 1;
     }
-    return l;
   }
 
   function removeLine(index) {
+    for (let i = index + 1; i < lists.length; ++i) {
+      for (const w of lists[i].windows) w.listIndex -= 1;
+    }
     lists.splice(index, 1);
     if (index === 0) {
       if (dividers.length > 0) dividers.shift();
@@ -66,10 +68,11 @@ export function Output() {
       window.listIndex = i;
       return window;
     } else if (window.minSpace <= 1 / (lists.length + 1) && lists.length < grid[1]) {
-      list = addList();
+      const j = addList();
+      list = lists[j];
       if (list) {
         list.add(window);
-        window.listIndex = lists.length - 1;
+        window.listIndex = j;
         return window;
       }
     }
@@ -88,37 +91,28 @@ export function Output() {
 
   function swap(listIndex, amount) {
     const i = listIndex + amount;
-    if (i >= 0 && i < lists.length) {
-      const line = lists[listIndex];
+    const list = lists[listIndex];
+    if (list && i >= 0 && i < lists.length) {
       lists[listIndex] = lists[i];
-      lists[i] = line;
-      return line;
+      lists[i] = list;
+
+      for (const w of lists[listIndex].windows) w.windowIndex = i;
+      for (const w of lists[i].windows) w.windowIndex = listIndex;
+
+      return list;
     }
   }
 
   function move(window, amount, grid) {
-    let i = window.listIndex + amount;
-    while (
-      i >= 0 &&
-      i < lists.length &&
-      (lists[i].minSpace() + window.minSpace > 1 / lists.length || lists[i].windows.length >= grid[0])
-    )
-      i += amount;
+    const t = window.listIndex + amount;
+    let target = lists[t];
+    if (!target && lists.length < grid[1]) target = lists[addList(amount < 0)];
 
-    if (i >= 0 && i < lists.length) {
+    if (target && target.minSpace() + window.minSpace <= 1 / lists.length && target.windows.length < grid[0]) {
       remove(window);
-      lists[i].add(window);
-      window.listIndex = i;
+      target.add(window);
+      window.listIndex = t;
       return window;
-    } else if (lists.length < grid[1]) {
-      const j = amount < 0 ? 0 : lists.length;
-      const list = addList(j);
-      if (list) {
-        remove(window);
-        list.add(window);
-        window.listIndex = j;
-        return window;
-      }
     }
   }
 
