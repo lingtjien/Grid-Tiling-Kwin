@@ -13,6 +13,7 @@ export function Desktop() {
     const serial = window.output.serialNumber;
     if (!outputs.hasOwnProperty(serial)) outputs[serial] = Output();
     if (outputs[serial].add(window, grid(desktopId, serial))) {
+      window.outputSerial = serial;
       return window;
     } else {
       for (const o of shared.workspace.screens) {
@@ -20,8 +21,9 @@ export function Desktop() {
         if (!outputs.hasOwnProperty(serial)) {
           const output = Output();
           if (output.add(window, grid(desktopId, serial))) {
-            window.output = o;
             outputs[serial] = output;
+            window.outputSerial = serial;
+            window.output = o;
             return window;
           }
         }
@@ -44,6 +46,7 @@ export function Desktop() {
   function move(window, serial) {
     // serial = target
     const current = window.output.serialNumber;
+    // TODO set outputSerial correctly
     if (current !== serial) {
       if (!outputs.hasOwnProperty(serial)) outputs[serial] = Output();
       if (outputs[serial].add(window) && outputs[current].remove(window)) return window;

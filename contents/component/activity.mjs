@@ -12,6 +12,7 @@ export function Activity() {
     const id = !window.desktops.length ? window.desktops[0].id : shared.workspace.currentDesktop.id;
     if (!desktops.hasOwnProperty(id)) desktops[id] = Desktop();
     if (desktops[id].add(window, id)) {
+      window.desktopId = id;
       return window;
     } else {
       for (const d of shared.workspace.desktops) {
@@ -19,8 +20,9 @@ export function Activity() {
         if (!desktops.hasOwnProperty(id)) {
           const desktop = Desktop();
           if (desktop.add(window, id)) {
-            window.desktops = [d];
             desktops[id] = desktop;
+            window.desktopId = id;
+            window.desktops = [d];
             return window;
           }
         }
@@ -43,6 +45,7 @@ export function Activity() {
   function move(window, id) {
     // id = target
     const current = window.desktops[0].id;
+    // TODO set desktopId correctly
     if (current !== id) {
       if (!desktops.hasOwnProperty(id)) desktops[id] = Desktop();
       if (desktops[id].add(window) && desktops[current].remove(window)) return window;

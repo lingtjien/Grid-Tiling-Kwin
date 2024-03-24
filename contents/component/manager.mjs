@@ -75,14 +75,16 @@ function addSignals(window) {
     // const activity = getActivity(window);
     // setTimeout(() => {
     //   if (window.desktops.length !== 1) {
-    //     const current = window.desktops[0];
-    //     const start = window.desktopIndex;
-    //     let i = window.desktop - 1;
-    //     const direction = Math.sign(i - start);
+    //     const current = window.desktopId;
+    //     const target = window.desktops[0].id;
+    //     let c, t;
+    //     for (const [i, desktop] of shared.workspace.desktops.entries()) {
+    //       if (desktop.id === current) c = i;
+    //       if (desktop.id === target) t = i;
+    //     }
+    //     const direction = Math.sign(t - c);
     //     if (direction) {
-    //       while (
-    //         !activity.moveClient(i, window.clientIndex, window.lineIndex, window.screenIndex, window.desktopIndex)
-    //       ) {
+    //       while (!activity.move(window, target)) {
     //         i += direction;
     //         if (i >= workspace.desktops) i = 0;
     //         else if (i < 0) i = workspace.desktops - 1;
@@ -92,7 +94,7 @@ function addSignals(window) {
     //   } else {
     //     unTile(window);
     //   }
-    //   activity.render(window.activityId);
+    //   activity.render({ activityId: window.activityId });
     // }, config.delay);
   });
 

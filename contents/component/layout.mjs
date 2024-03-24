@@ -7,6 +7,7 @@ export function Layout() {
     const id = window.activities[0];
     if (!activities.hasOwnProperty(id)) activities[id] = Activity();
     if (activities[id].add(window)) {
+      window.activityId = id;
       return window;
     }
   }
@@ -22,6 +23,7 @@ export function Layout() {
   function move(window, id) {
     // id = target
     const current = window.activities[0];
+    // TODO set id correctly
     if (current !== id) {
       if (!activities.hasOwnProperty(id)) activities[id] = Activity();
       if (activities[id].add(window) && activities[current].remove(window)) return window;
