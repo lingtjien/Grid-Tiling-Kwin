@@ -67,7 +67,7 @@ function addSignals(window) {
     const output = getOutput(window);
     const a = area(window.desktops[0], window.output);
     output.resized(window, a);
-    // output.moved(window, a);
+    output.moved(window, a);
     output.render(a);
   });
 

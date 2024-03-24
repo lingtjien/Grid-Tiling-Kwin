@@ -143,7 +143,7 @@ export function Output() {
       if (diff.x === 0) dividerPost(window.listIndex, diff.width / width);
       else dividerPre(window.listIndex, diff.width / width);
     }
-
+    // TODO move into list
     if (diff.height !== 0) {
       if (diff.y === 0) lists[window.listIndex].dividerPost(window.windowIndex, diff.height / height);
       else lists[window.listIndex].dividerPre(window.windowIndex, diff.height / height);
@@ -151,31 +151,39 @@ export function Output() {
   }
 
   function moved(window, area) {
-    // TODO
-    let remainder = client.geometry.x + 0.5 * client.geometry.width - config.margin.l - area.x; // middle - start
-    const swap_line = lines.find((l) => {
-      if (!l.minimized()) {
-        remainder -= l.clients[0].geometry.width + config.gap;
-        return remainder < 0;
-      }
-    });
-    if (swap_line) {
-      remainder = client.geometry.y + 0.5 * client.geometry.height - config.margin.t - area.y;
-      const swap_client = swap_line.clients.find((c) => {
-        if (!c.minimized) {
-          remainder -= c.geometry.height + config.gap;
-          return remainder < 0;
+    let remainder = window.frameGeometry.x + 0.5 * window.frameGeometry.width - config.margin.l - area.x; // middle - start
+    let swapList;
+    for (const list of lists) {
+      if (!list.minimized()) {
+        remainder -= list.windows[0].frameGeometry.width + config.gap;
+        if (remainder < 0) {
+          swapList = list;
+          break;
         }
-      });
-      const line = lines[client.lineIndex];
-      if (
-        swap_client &&
-        line.minSpace() - client.minSpace + swap_client.minSpace <= 1 / lines.length &&
-        swap_line.minSpace() - swap_client.minSpace + client.minSpace <= 1 / lines.length
-      ) {
-        line.clients[client.clientIndex] = swap_client;
-        swap_line.clients[swap_client.clientIndex] = client;
       }
+    }
+    if (!swapList) return;
+    // TODO move into list
+    remainder = window.frameGeometry.y + 0.5 * window.frameGeometry.height - config.margin.t - area.y;
+    let swapWindow;
+    for (const w of swapList.windows) {
+      if (!w.minimized) {
+        remainder -= w.frameGeometry.height + config.gap;
+        if (remainder < 0) {
+          swapWindow = w;
+          break;
+        }
+      }
+    }
+    if (!swapWindow) return;
+
+    const list = lists[window.listIndex];
+    if (
+      list.minSpace() - window.minSpace + swapWindow.minSpace <= 1 / lists.length &&
+      swapList.minSpace() - swapWindow.minSpace + window.minSpace <= 1 / lists.length
+    ) {
+      list.windows[window.windowIndex] = swapWindow;
+      swapList.windows[swapWindow.windowIndex] = window;
     }
   }
 
@@ -200,5 +208,5 @@ export function Output() {
     }
   }
 
-  return { lists, count, minimized, add, remove, swap, move, divider, resized, render };
+  return { lists, count, minimized, add, remove, swap, move, divider, resized, moved, render };
 }
