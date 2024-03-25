@@ -33,7 +33,7 @@ export function Desktop() {
   }
 
   function remove(window) {
-    const serial = window.output.serialNumber;
+    const serial = window.outputSerial;
     if (outputs.hasOwnProperty(serial)) {
       const output = outputs[serial];
       if (output.remove(window)) {

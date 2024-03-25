@@ -13,7 +13,7 @@ export function Layout() {
   }
 
   function remove(window) {
-    const id = window.activities[0];
+    const id = window.activityId;
     if (activities[id].remove(window)) {
       if (!activities[id].count()) delete activities[id];
       return window;

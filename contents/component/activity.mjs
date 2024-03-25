@@ -32,7 +32,7 @@ export function Activity() {
   }
 
   function remove(window) {
-    const id = window.desktops[0].id;
+    const id = window.desktopId;
     if (desktops.hasOwnProperty(id)) {
       const desktop = desktops[id];
       if (desktop.remove(window)) {
@@ -50,7 +50,6 @@ export function Activity() {
       if (desktop.id === current) c = i;
       if (desktop.id === target) t = i;
     }
-
     const direction = Math.sign(t - c);
     if (direction) {
       const n = shared.workspace.desktops.length;
@@ -59,10 +58,11 @@ export function Activity() {
         const desktop = shared.workspace.desktops[i];
         const id = desktop.id;
         if (!desktops.hasOwnProperty(id)) desktops[id] = Desktop();
-        if (desktops[id].add(window) && desktops[current].remove(window)) {
+        const w = Object.assign({}, window);
+        if (desktops[id].add(window)) {
+          remove(w);
           window.desktopId = id;
           window.desktops = [desktop];
-          shared.workspace.currentDesktop = desktop;
           return window;
         }
 

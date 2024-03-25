@@ -77,12 +77,16 @@ function addSignals(window) {
   connect(window, 'desktopsChanged', () => {
     const activity = getActivity(window);
     if (activity) {
-      if (window.desktops.length === 1)
+      if (window.desktops.length === 1) {
         setTimeout(() => {
           if (!activity.moved(window)) unTile(window);
+          shared.workspace.currentDesktop = window.desktops[0];
+          activity.render({ activityId: window.activityId });
         }, config.delay);
-      else unTile(window);
-      activity.render({ activityId: window.activityId });
+      } else {
+        unTile(window);
+        activity.render({ activityId: window.activityId });
+      }
     }
   });
 
