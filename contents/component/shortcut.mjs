@@ -22,7 +22,7 @@ export const toggle = {
   minimizeDesktop: () => {
     const output = getOutput();
     if (output) {
-      const minimize = output.minimized() < output.count();
+      const minimize = output.lists.reduce((s, l) => s + l.minimized(), 0) === 0;
       for (const list of output.lists) {
         for (const window of list.windows) window.minimized = minimize;
       }

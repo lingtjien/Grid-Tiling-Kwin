@@ -78,8 +78,11 @@ export function List() {
     for (let [i, window] of windows.entries()) {
       if (window.minimized) continue;
 
-      const divider =
-        i === windows.length - 1 || (i < windows.length - 1 && windows[i + 1].minimized) ? 0 : dividers[i];
+      let divider = dividers[i] || 0;
+      if (divider) {
+        const w = windows[i + 1];
+        if (w && w.minimized) divider = 0;
+      }
 
       current = height * divider;
       const h = height + current - previous;

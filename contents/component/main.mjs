@@ -1,6 +1,6 @@
 import { shared } from 'shared.mjs';
 import { config, load } from 'config.mjs';
-import { add, remove, start, stop } from 'manager.mjs';
+import { activated, add, remove, start, stop } from 'manager.mjs';
 
 let signals = [];
 
@@ -20,17 +20,7 @@ export function init(workspace, kwin, timer) {
 
   connect('windowRemoved', remove);
   connect('windowAdded', add);
-
-  // for (const method of ['clientMinimized', 'clientUnminimized']) {
-  //   connect(method, client => {
-  //     const screen = Manager.getScreen(client);
-  //     if (screen)
-  //       screen.render(client.screenIndex, client.desktopIndex, client.activityId);
-  //   });
-  // }
-
-  // if (config.borderActive)
-  // connect('windowActivated', () => layout.render());
+  // if (config.borderActive) connect('windowActivated', activated);
 }
 
 export function destroy() {

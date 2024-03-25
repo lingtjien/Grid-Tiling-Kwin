@@ -10,7 +10,7 @@ export function Output() {
   }
 
   function minimized() {
-    return lists.reduce((s, l) => s + l.minimized(), 0);
+    return lists.reduce((s, l) => s + (l.minimized() === l.windows.length), 0);
   }
 
   function addList(start = false) {
@@ -181,17 +181,20 @@ export function Output() {
 
   function render(area, overwrite = {}) {
     const width = calc.width(area.width, lists.length - minimized());
-
     let x = calc.x(area.x);
     let current = 0;
     let previous = 0;
     for (let [i, list] of lists.entries()) {
-      if (list.minimized()) continue;
+      if (list.minimized() === list.windows.length) continue;
 
-      const divider = i === lists.length - 1 || (i < lists.length - 1 && lists[i + 1].minimized()) ? 0 : dividers[i];
+      let divider = dividers[i] || 0;
+      if (divider) {
+        const l = lists[i + 1];
+        if (l && l.minimized() === l.windows.length) divider = 0;
+      }
 
       current = width * divider;
-      const w = -previous + width + current;
+      const w = width + current - previous;
 
       overwrite.listIndex = i;
       list.render(x, area.y, w, area.height, overwrite);

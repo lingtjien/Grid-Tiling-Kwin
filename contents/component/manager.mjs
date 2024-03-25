@@ -74,6 +74,11 @@ function addSignals(window) {
     output.render(a);
   });
 
+  connect(window, 'minimizedChanged', () => {
+    const output = getOutput(window);
+    if (output) output.render(area(window.desktops[0], window.output));
+  });
+
   connect(window, 'desktopsChanged', () => {
     const activity = getActivity(window);
     if (activity) {
@@ -157,6 +162,11 @@ export function remove(window) {
       delete floating[window.internalId];
     }
   }
+}
+
+export function activated(window) {
+  const output = getOutput(window);
+  if (output) output.render(area(window.desktops[0], window.output));
 }
 
 export function toggle() {
