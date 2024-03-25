@@ -1,10 +1,10 @@
 import { area, shared } from 'shared.mjs';
+import { init, destroy } from 'main.mjs';
 import { config, grid, setGap } from 'config.mjs';
-import { getOutput, render, restart, start, toggle as tileFloat } from 'manager.mjs';
+import { getOutput, render, start, toggle as tileFloat } from 'manager.mjs';
 
 export { tileFloat };
 export const refresh = start;
-export const reset = restart;
 
 export const toggle = {
   tile: () => {
@@ -87,4 +87,9 @@ export function closeDesktop() {
     )
       window.closeWindow();
   }
+}
+
+export function reset() {
+  destroy();
+  init(shared.workspace, shared.kwin, shared.timer);
 }

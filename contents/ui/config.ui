@@ -77,7 +77,7 @@
                 </widget>
               </item>
               <item>
-                <widget class="QSpinBox" name="kcfg_gapValue"/>
+                <widget class="QSpinBox" name="kcfg_gapValue" />
               </item>
               <item>
                 <widget class="QLabel" name="labelDividerBound">
@@ -174,7 +174,7 @@
                 </widget>
               </item>
               <item>
-                <widget class="QSpinBox" name="kcfg_marginL"/>
+                <widget class="QSpinBox" name="kcfg_marginL" />
               </item>
               <item>
                 <widget class="QLabel" name="labelMarginBottom">
@@ -184,7 +184,7 @@
                 </widget>
               </item>
               <item>
-                <widget class="QSpinBox" name="kcfg_marginB"/>
+                <widget class="QSpinBox" name="kcfg_marginB" />
               </item>
               <item>
                 <widget class="QLabel" name="labelMarginTop">
@@ -194,7 +194,7 @@
                 </widget>
               </item>
               <item>
-                <widget class="QSpinBox" name="kcfg_marginT"/>
+                <widget class="QSpinBox" name="kcfg_marginT" />
               </item>
               <item>
                 <widget class="QLabel" name="labelMarginRight">
@@ -204,7 +204,7 @@
                 </widget>
               </item>
               <item>
-                <widget class="QSpinBox" name="kcfg_marginR"/>
+                <widget class="QSpinBox" name="kcfg_marginR" />
               </item>
             </layout>
           </item>
@@ -227,7 +227,7 @@
               <item>
                 <widget class="QLineEdit" name="kcfg_blacklist">
                   <property name="text">
-                    <string/>
+                    <string />
                   </property>
                   <property name="toolTip">
                     <string>Apps not tiled if regex matches with name</string>
@@ -248,7 +248,7 @@
               <item>
                 <widget class="QLineEdit" name="kcfg_whitelist">
                   <property name="text">
-                    <string/>
+                    <string />
                   </property>
                   <property name="toolTip">
                     <string>Apps always tiled if regex matches with name</string>
@@ -280,220 +280,294 @@
                 <bool>true</bool>
               </property>
               <widget class="QWidget" name="scrollAreaGrid">
-                <layout class="QGridLayout" name="gridGrid">
-                  <item row="0" column="0">
-                    <widget class="QLabel" name="labelRows">
-                      <property name="text">
-                        <string>Rows</string>
+                <layout class="QVBoxLayout" name="layoutGridBody">
+                  <item>
+                    <layout class="QHBoxLayout" name="layoutGridGroup1">
+                      <item>
+                        <spacer name="gridHeaderSpacerLeft1">
+                          <property name="orientation">
+                            <enum>Qt::Horizontal</enum>
+                          </property>
+                        </spacer>
+                      </item>
+                      <item>
+                        <widget class="QLabel" name="gridHeaderTitle1">
+                          <property name="layoutDirection">
+                            <enum>Qt::LeftToRight</enum>
+                          </property>
+                          <property name="text">
+                            <string>Screens</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item>
+                        <spacer name="gridHeaderSpacerRight1">
+                          <property name="orientation">
+                            <enum>Qt::Horizontal</enum>
+                          </property>
+                        </spacer>
+                      </item>
+                    </layout>
+                  </item>
+                  <item>
+                    <layout class="QHBoxLayout" name="layoutGridGroup1">
+                      <item>
+                        <widget class="QLabel" name="labelScreenRows">
+                          <property name="text">
+                            <string>Rows</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item>
+                        <widget class="QLineEdit" name="kcfg_screenRows">
+                          <property name="toolTip">
+                            <string>Number of rows per screen (separated by comma)</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item>
+                        <widget class="QLabel" name="labelScreenColumns">
+                          <property name="text">
+                            <string>Columns</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item>
+                        <widget class="QLineEdit" name="kcfg_screenColumns">
+                          <property name="toolTip">
+                            <string>Number of columns per screen (separated by comma)</string>
+                          </property>
+                        </widget>
+                      </item>
+                    </layout>
+                  </item>
+                  <item>
+                    <widget class="Line" name="lineGrid1">
+                      <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
                       </property>
                     </widget>
                   </item>
-                  <item row="0" column="1">
-                    <widget class="QLabel" name="labelColumns">
-                      <property name="text">
-                        <string>Columns</string>
-                      </property>
-                    </widget>
+                  <item>
+                    <layout class="QHBoxLayout" name="layoutGridGroup2">
+                      <item>
+                        <spacer name="gridHeaderSpacerLeft2">
+                          <property name="orientation">
+                            <enum>Qt::Horizontal</enum>
+                          </property>
+                        </spacer>
+                      </item>
+                      <item>
+                        <widget class="QLabel" name="gridHeaderTitle2">
+                          <property name="layoutDirection">
+                            <enum>Qt::LeftToRight</enum>
+                          </property>
+                          <property name="text">
+                            <string>Desktops</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item>
+                        <spacer name="gridHeaderSpacerRight2">
+                          <property name="orientation">
+                            <enum>Qt::Horizontal</enum>
+                          </property>
+                        </spacer>
+                      </item>
+                    </layout>
                   </item>
-                  <item row="1" column="0">
-                    <widget class="QLineEdit" name="kcfg_rowsScreen0">
-                      <property name="toolTip">
-                        <string>Amount of rows per virtual desktop on screen 0</string>
-                      </property>
-                      <property name="toolTipDuration">
-                        <number>5000</number>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="2" column="0">
-                    <widget class="QLineEdit" name="kcfg_rowsScreen1">
-                      <property name="toolTip">
-                        <string>Amount of rows per virtual desktop on screen 1</string>
-                      </property>
-                      <property name="toolTipDuration">
-                        <number>5000</number>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="3" column="0">
-                    <widget class="QLineEdit" name="kcfg_rowsScreen2">
-                      <property name="toolTip">
-                        <string>Amount of rows per virtual desktop on screen 2</string>
-                      </property>
-                      <property name="toolTipDuration">
-                        <number>5000</number>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="4" column="0">
-                    <widget class="QLineEdit" name="kcfg_rowsScreen3">
-                      <property name="toolTip">
-                        <string>Amount of rows per virtual desktop on screen 3</string>
-                      </property>
-                      <property name="toolTipDuration">
-                        <number>5000</number>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="5" column="0">
-                    <widget class="QLineEdit" name="kcfg_rowsScreen4">
-                      <property name="toolTip">
-                        <string>Amount of rows per virtual desktop on screen 4</string>
-                      </property>
-                      <property name="toolTipDuration">
-                        <number>5000</number>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="6" column="0">
-                    <widget class="QLineEdit" name="kcfg_rowsScreen5">
-                      <property name="toolTip">
-                        <string>Amount of rows per virtual desktop on screen 5</string>
-                      </property>
-                      <property name="toolTipDuration">
-                        <number>5000</number>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="7" column="0">
-                    <widget class="QLineEdit" name="kcfg_rowsScreen6">
-                      <property name="toolTip">
-                        <string>Amount of rows per virtual desktop on screen 6</string>
-                      </property>
-                      <property name="toolTipDuration">
-                        <number>5000</number>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="8" column="0">
-                    <widget class="QLineEdit" name="kcfg_rowsScreen7">
-                      <property name="toolTip">
-                        <string>Amount of rows per virtual desktop on screen 7</string>
-                      </property>
-                      <property name="toolTipDuration">
-                        <number>5000</number>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="9" column="0">
-                    <widget class="QLineEdit" name="kcfg_rowsScreen8">
-                      <property name="toolTip">
-                        <string>Amount of rows per virtual desktop on screen 8</string>
-                      </property>
-                      <property name="toolTipDuration">
-                        <number>5000</number>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="10" column="0">
-                    <widget class="QLineEdit" name="kcfg_rowsScreen9">
-                      <property name="toolTip">
-                        <string>Amount of rows per virtual desktop on screen 9</string>
-                      </property>
-                      <property name="toolTipDuration">
-                        <number>5000</number>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="1" column="1">
-                    <widget class="QLineEdit" name="kcfg_columnsScreen0">
-                      <property name="toolTip">
-                        <string>Amount of columns per virtual desktop on screen 0</string>
-                      </property>
-                      <property name="toolTipDuration">
-                        <number>5000</number>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="2" column="1">
-                    <widget class="QLineEdit" name="kcfg_columnsScreen1">
-                      <property name="toolTip">
-                        <string>Amount of columns per virtual desktop on screen 1</string>
-                      </property>
-                      <property name="toolTipDuration">
-                        <number>5000</number>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="3" column="1">
-                    <widget class="QLineEdit" name="kcfg_columnsScreen2">
-                      <property name="toolTip">
-                        <string>Amount of columns per virtual desktop on screen 2</string>
-                      </property>
-                      <property name="toolTipDuration">
-                        <number>5000</number>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="4" column="1">
-                    <widget class="QLineEdit" name="kcfg_columnsScreen3">
-                      <property name="toolTip">
-                        <string>Amount of columns per virtual desktop on screen 3</string>
-                      </property>
-                      <property name="toolTipDuration">
-                        <number>5000</number>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="5" column="1">
-                    <widget class="QLineEdit" name="kcfg_columnsScreen4">
-                      <property name="toolTip">
-                        <string>Amount of columns per virtual desktop on screen 4</string>
-                      </property>
-                      <property name="toolTipDuration">
-                        <number>5000</number>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="6" column="1">
-                    <widget class="QLineEdit" name="kcfg_columnsScreen5">
-                      <property name="toolTip">
-                        <string>Amount of columns per virtual desktop on screen 5</string>
-                      </property>
-                      <property name="toolTipDuration">
-                        <number>5000</number>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="7" column="1">
-                    <widget class="QLineEdit" name="kcfg_columnsScreen6">
-                      <property name="toolTip">
-                        <string>Amount of columns per virtual desktop on screen 6</string>
-                      </property>
-                      <property name="toolTipDuration">
-                        <number>5000</number>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="8" column="1">
-                    <widget class="QLineEdit" name="kcfg_columnsScreen7">
-                      <property name="toolTip">
-                        <string>Amount of columns per virtual desktop on screen 7</string>
-                      </property>
-                      <property name="toolTipDuration">
-                        <number>5000</number>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="9" column="1">
-                    <widget class="QLineEdit" name="kcfg_columnsScreen8">
-                      <property name="toolTip">
-                        <string>Amount of columns per virtual desktop on screen 8</string>
-                      </property>
-                      <property name="toolTipDuration">
-                        <number>5000</number>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="10" column="1">
-                    <widget class="QLineEdit" name="kcfg_columnsScreen9">
-                      <property name="toolTip">
-                        <string>Amount of columns per virtual desktop on screen 9</string>
-                      </property>
-                      <property name="toolTipDuration">
-                        <number>5000</number>
-                      </property>
-                    </widget>
+                  <item>
+                    <layout class="QGridLayout" name="gridGrid" columnstretch="1,1,4">
+                      <item row="0" column="0">
+                        <widget class="QLabel" name="labelGridName">
+                          <property name="text">
+                            <string>Rows</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item row="0" column="1">
+                        <widget class="QLabel" name="labelGridName">
+                          <property name="text">
+                            <string>Columns</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item row="0" column="2">
+                        <widget class="QLabel" name="labelGridValue">
+                          <property name="text">
+                            <string>Name</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item row="1" column="0">
+                        <widget class="QLineEdit" name="kcfg_desktopRows1">
+                          <property name="toolTip">
+                            <string>Number of rows per screen (separated by comma)</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item row="1" column="1">
+                        <widget class="QLineEdit" name="kcfg_desktopColumns1">
+                          <property name="toolTip">
+                            <string>Number of columns per screen (separated by comma)</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item row="1" column="2">
+                        <widget class="QLineEdit" name="kcfg_desktopName1">
+                          <property name="toolTip">
+                            <string>Match given regex with desktop name</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item row="2" column="0">
+                        <widget class="QLineEdit" name="kcfg_desktopRows2">
+                          <property name="toolTip">
+                            <string>Number of rows per screen (separated by comma)</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item row="2" column="1">
+                        <widget class="QLineEdit" name="kcfg_desktopColumns2">
+                          <property name="toolTip">
+                            <string>Number of columns per screen (separated by comma)</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item row="2" column="2">
+                        <widget class="QLineEdit" name="kcfg_desktopName2">
+                          <property name="toolTip">
+                            <string>Match given regex with desktop name</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item row="3" column="0">
+                        <widget class="QLineEdit" name="kcfg_desktopRows3">
+                          <property name="toolTip">
+                            <string>Number of rows per screen (separated by comma)</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item row="3" column="1">
+                        <widget class="QLineEdit" name="kcfg_desktopColumns3">
+                          <property name="toolTip">
+                            <string>Number of columns per screen (separated by comma)</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item row="3" column="2">
+                        <widget class="QLineEdit" name="kcfg_desktopName3">
+                          <property name="toolTip">
+                            <string>Match given regex with desktop name</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item row="4" column="0">
+                        <widget class="QLineEdit" name="kcfg_desktopRows4">
+                          <property name="toolTip">
+                            <string>Number of rows per screen (separated by comma)</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item row="4" column="1">
+                        <widget class="QLineEdit" name="kcfg_desktopColumns4">
+                          <property name="toolTip">
+                            <string>Number of columns per screen (separated by comma)</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item row="4" column="2">
+                        <widget class="QLineEdit" name="kcfg_desktopName4">
+                          <property name="toolTip">
+                            <string>Match given regex with desktop name</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item row="5" column="0">
+                        <widget class="QLineEdit" name="kcfg_desktopRows5">
+                          <property name="toolTip">
+                            <string>Number of rows per screen (separated by comma)</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item row="5" column="1">
+                        <widget class="QLineEdit" name="kcfg_desktopColumns5">
+                          <property name="toolTip">
+                            <string>Number of columns per screen (separated by comma)</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item row="5" column="2">
+                        <widget class="QLineEdit" name="kcfg_desktopName5">
+                          <property name="toolTip">
+                            <string>Match given regex with desktop name</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item row="6" column="0">
+                        <widget class="QLineEdit" name="kcfg_desktopRows6">
+                          <property name="toolTip">
+                            <string>Number of rows per screen (separated by comma)</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item row="6" column="1">
+                        <widget class="QLineEdit" name="kcfg_desktopColumns6">
+                          <property name="toolTip">
+                            <string>Number of columns per screen (separated by comma)</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item row="6" column="2">
+                        <widget class="QLineEdit" name="kcfg_desktopName6">
+                          <property name="toolTip">
+                            <string>Match given regex with desktop name</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item row="7" column="0">
+                        <widget class="QLineEdit" name="kcfg_desktopRows7">
+                          <property name="toolTip">
+                            <string>Number of rows per screen (separated by comma)</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item row="7" column="1">
+                        <widget class="QLineEdit" name="kcfg_desktopColumns7">
+                          <property name="toolTip">
+                            <string>Number of columns per screen (separated by comma)</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item row="7" column="2">
+                        <widget class="QLineEdit" name="kcfg_desktopName7">
+                          <property name="toolTip">
+                            <string>Match given regex with desktop name</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item row="8" column="0">
+                        <widget class="QLineEdit" name="kcfg_desktopRows8">
+                          <property name="toolTip">
+                            <string>Number of rows per screen (separated by comma)</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item row="8" column="1">
+                        <widget class="QLineEdit" name="kcfg_desktopColumns8">
+                          <property name="toolTip">
+                            <string>Number of columns per screen (separated by comma)</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item row="8" column="2">
+                        <widget class="QLineEdit" name="kcfg_desktopName8">
+                          <property name="toolTip">
+                            <string>Match given regex with desktop name</string>
+                          </property>
+                        </widget>
+                      </item>
+                    </layout>
                   </item>
                 </layout>
               </widget>
@@ -531,7 +605,7 @@
                     </widget>
                   </item>
                   <item row="1" column="0">
-                    <widget class="QSpinBox" name="kcfg_minSpace1"/>
+                    <widget class="QSpinBox" name="kcfg_minSpace1" />
                   </item>
                   <item row="1" column="1">
                     <widget class="QLineEdit" name="kcfg_minSpaceName1">
@@ -541,7 +615,7 @@
                     </widget>
                   </item>
                   <item row="2" column="0">
-                    <widget class="QSpinBox" name="kcfg_minSpace2"/>
+                    <widget class="QSpinBox" name="kcfg_minSpace2" />
                   </item>
                   <item row="2" column="1">
                     <widget class="QLineEdit" name="kcfg_minSpaceName2">
@@ -551,7 +625,7 @@
                     </widget>
                   </item>
                   <item row="3" column="0">
-                    <widget class="QSpinBox" name="kcfg_minSpace3"/>
+                    <widget class="QSpinBox" name="kcfg_minSpace3" />
                   </item>
                   <item row="3" column="1">
                     <widget class="QLineEdit" name="kcfg_minSpaceName3">
@@ -561,7 +635,7 @@
                     </widget>
                   </item>
                   <item row="4" column="0">
-                    <widget class="QSpinBox" name="kcfg_minSpace4"/>
+                    <widget class="QSpinBox" name="kcfg_minSpace4" />
                   </item>
                   <item row="4" column="1">
                     <widget class="QLineEdit" name="kcfg_minSpaceName4">
@@ -571,7 +645,7 @@
                     </widget>
                   </item>
                   <item row="5" column="0">
-                    <widget class="QSpinBox" name="kcfg_minSpace5"/>
+                    <widget class="QSpinBox" name="kcfg_minSpace5" />
                   </item>
                   <item row="5" column="1">
                     <widget class="QLineEdit" name="kcfg_minSpaceName5">
@@ -581,7 +655,7 @@
                     </widget>
                   </item>
                   <item row="6" column="0">
-                    <widget class="QSpinBox" name="kcfg_minSpace6"/>
+                    <widget class="QSpinBox" name="kcfg_minSpace6" />
                   </item>
                   <item row="6" column="1">
                     <widget class="QLineEdit" name="kcfg_minSpaceName6">
@@ -591,7 +665,7 @@
                     </widget>
                   </item>
                   <item row="7" column="0">
-                    <widget class="QSpinBox" name="kcfg_minSpace7"/>
+                    <widget class="QSpinBox" name="kcfg_minSpace7" />
                   </item>
                   <item row="7" column="1">
                     <widget class="QLineEdit" name="kcfg_minSpaceName7">
@@ -601,30 +675,10 @@
                     </widget>
                   </item>
                   <item row="8" column="0">
-                    <widget class="QSpinBox" name="kcfg_minSpace8"/>
+                    <widget class="QSpinBox" name="kcfg_minSpace8" />
                   </item>
                   <item row="8" column="1">
                     <widget class="QLineEdit" name="kcfg_minSpaceName8">
-                      <property name="toolTip">
-                        <string>Match given regex with app name</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="9" column="0">
-                    <widget class="QSpinBox" name="kcfg_minSpace9"/>
-                  </item>
-                  <item row="9" column="1">
-                    <widget class="QLineEdit" name="kcfg_minSpaceName9">
-                      <property name="toolTip">
-                        <string>Match given regex with app name</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="10" column="0">
-                    <widget class="QSpinBox" name="kcfg_minSpace10"/>
-                  </item>
-                  <item row="10" column="1">
-                    <widget class="QLineEdit" name="kcfg_minSpaceName10">
                       <property name="toolTip">
                         <string>Match given regex with app name</string>
                       </property>
@@ -638,6 +692,6 @@
       </widget>
     </widget>
   </widget>
-  <resources/>
-  <connections/>
+  <resources />
+  <connections />
 </ui>

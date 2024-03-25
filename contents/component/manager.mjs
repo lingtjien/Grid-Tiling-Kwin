@@ -31,7 +31,7 @@ function addProps(window) {
   window.activities = [window.activities[0]];
   window.desktops = [window.desktops[0]];
 
-  window.minSpace = config.smallestSpace;
+  window.minSpace = 0.01;
   for (const [minSpace, name] of config.minSpace) {
     if (name && name.test(window.resourceName)) {
       window.minSpace = minSpace;
@@ -193,11 +193,6 @@ export function stop() {
   tiled = {};
   floating = {};
   layout = Layout();
-}
-
-export function restart() {
-  stop();
-  start();
 }
 
 export function start() {
