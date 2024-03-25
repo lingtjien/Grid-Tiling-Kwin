@@ -43,12 +43,14 @@ export function Activity() {
   }
 
   function moved(window) {
-    const current = window.desktopId;
-    const target = window.desktops[0].id;
-    let c, t;
+    let start, c, t;
     for (const [i, desktop] of shared.workspace.desktops.entries()) {
-      if (desktop.id === current) c = i;
-      if (desktop.id === target) t = i;
+      const id = desktop.id;
+      if (id === window.desktopId) {
+        c = i;
+        start = desktop;
+      }
+      if (id === window.desktops[0].id) t = i;
     }
     const direction = Math.sign(t - c);
     if (direction) {
@@ -70,9 +72,11 @@ export function Activity() {
         if (i < 0) i = n - 1;
         if (i >= n) i = 0;
       }
-    } else {
-      return window; // same is also valid
-    }
+
+      // could not add to any of the other outputs
+      window.desktops = [start];
+    } // same is also valid
+    return window;
   }
 
   // provide at least activityId in overwrite

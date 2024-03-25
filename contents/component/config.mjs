@@ -63,8 +63,8 @@ export function setGap() {
 
 export function load(read) {
   config.grid = {
-    screen: parseScreenGrid(splitTrim(read('screenRows', '2,2,2')), splitTrim(read('screenColumns', '2,2,2'))), // Record<screenSerial, [row, column]>
-    desktop: parseDesktopGrid(read), // Record<desktopId, Record<screenSerial, [row, column]>>
+    screen: parseScreenGrid(splitTrim(read('screenRows', '2,2,2')), splitTrim(read('screenColumns', '2,2,2'))), // Record<outputSerial, [row, column]>
+    desktop: parseDesktopGrid(read), // Record<desktopId, Record<outputSerial, [row, column]>>
   };
 
   config.gapShow = read('gapShow', true);
@@ -107,9 +107,9 @@ export function load(read) {
   config.whitelist = regex(read('whitelist', ''));
 }
 
-export function grid(desktopId, screenSerial) {
+export function grid(desktopId, outputSerial) {
   const d = config.grid.desktop[desktopId];
-  return d ? d[screenSerial] : config.grid.screen[screenSerial];
+  return d ? d[outputSerial] : config.grid.screen[outputSerial];
 }
 
 export function clampDivider(value) {

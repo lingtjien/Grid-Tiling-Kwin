@@ -1,5 +1,6 @@
 export const shared = { workspace: null, kwin: null, timer: null };
 
+// KWin desktop and output object types, not our custom internal ones
 export function area(desktop, output) {
   return shared.workspace.clientArea(0, output, desktop);
 }

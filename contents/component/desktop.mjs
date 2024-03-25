@@ -43,14 +43,42 @@ export function Desktop() {
     }
   }
 
-  function move(window, serial) {
-    // serial = target
-    const current = window.output.serialNumber;
-    // TODO set outputSerial correctly
-    if (current !== serial) {
-      if (!outputs.hasOwnProperty(serial)) outputs[serial] = Output();
-      if (outputs[serial].add(window) && outputs[current].remove(window)) return window;
+  function moved(window) {
+    // TODO composite similar methods if this one works the same
+    let start, c, t;
+    for (const [i, screen] of shared.workspace.screens.entries()) {
+      const serial = screen.serialNumber;
+      if (serial === window.outputSerial) {
+        c = i;
+        start = screen;
+      }
+      if (serial === window.output.serialNumber) t = i;
     }
+    const direction = Math.sign(t - c);
+    if (direction) {
+      const n = shared.workspace.screens.length;
+      let i = t;
+      while (i !== c) {
+        const screen = shared.workspace.screens[i];
+        const serial = screen.serialNumber;
+        if (!outputs.hasOwnProperty(serial)) outputs[serial] = Output();
+        const w = Object.assign({}, window);
+        if (outputs[serial].add(window)) {
+          remove(w);
+          window.outputSerial = serial;
+          window.output = screen;
+          return window;
+        }
+
+        i += direction;
+        if (i < 0) i = n - 1;
+        if (i >= n) i = 0;
+      }
+
+      // could not add to any of the other outputs
+      window.output = start;
+    } // same is also valid
+    return window;
   }
 
   // provide at least desktopId in overwrite
@@ -67,5 +95,5 @@ export function Desktop() {
     }
   }
 
-  return { outputs, count, add, remove, move, render };
+  return { outputs, count, add, remove, moved, render };
 }

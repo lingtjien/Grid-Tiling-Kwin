@@ -79,14 +79,24 @@ function addSignals(window) {
     if (output) output.render(area(window.desktops[0], window.output));
   });
 
+  connect(window, 'activitiesChanged', () => {
+    if (window.activities.length === 1)
+      setTimeout(() => {
+        if (!layout.moved(window)) unTile(window);
+        layout.render();
+      }, config.delay);
+    else unTile(window);
+    layout.render();
+  });
+
   connect(window, 'desktopsChanged', () => {
     const activity = getActivity(window);
     if (activity) {
       if (window.desktops.length === 1) {
         setTimeout(() => {
-          if (!activity.moved(window)) unTile(window);
-          shared.workspace.currentDesktop = window.desktops[0];
+          activity.moved(window);
           activity.render({ activityId: window.activityId });
+          shared.workspace.currentDesktop = window.desktops[0];
         }, config.delay);
       } else {
         unTile(window);
@@ -95,37 +105,14 @@ function addSignals(window) {
     }
   });
 
-  // TODO
-  // connect(window, 'screenChanged', () => {
-  // print('screenChanged', window);
-  // const desktop = layout.activities[client.activityId].desktops[client.desktopIndex];
-  // const start = client.screenIndex;
-  // let i = client.screen;
-  // const direction = Math.sign(i - start);
-  // delay.set(config.delay, () => {
-  //   if (direction) {
-  //     while (!desktop.moveClient(i, client.clientIndex, client.lineIndex, client.screenIndex, client.desktopIndex))
-  //     {
-  //       i += direction;
-  //       if (i >= workspace.numScreens)
-  //         i = 0;
-  //       else if (i < 0)
-  //         i = workspace.numScreens - 1;
-  //       if (i === start)
-  //         break;
-  //     }
-  //   }
-  //   desktop.render(client.desktopIndex, client.activityId);
-  // });
-  // });
-
-  connect(window, 'activitiesChanged', () => {
-    if (window.activities.length === 1)
+  connect(window, 'outputChanged', () => {
+    const desktop = getDesktop(window);
+    if (desktop) {
       setTimeout(() => {
-        if (!layout.moved(window)) unTile(window);
+        desktop.moved(window);
+        desktop.render(window.desktops[0], { desktopId: window.desktopId });
       }, config.delay);
-    else unTile(window);
-    layout.render();
+    }
   });
 
   return window;

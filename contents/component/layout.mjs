@@ -21,11 +21,11 @@ export function Layout() {
   }
 
   function moved(window) {
-    const current = window.activityId;
     const target = window.activities[0];
-
     if (!activities.hasOwnProperty(target)) activities[target] = Activity();
-    if (activities[target].add(window) && activities[current].remove(window)) {
+    const w = Object.assign({}, window);
+    if (activities[target].add(window)) {
+      remove(w);
       window.activityId = target;
       return window;
     }
