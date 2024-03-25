@@ -9,7 +9,7 @@ export function Activity() {
   }
 
   function add(window) {
-    const id = !window.desktops.length ? window.desktops[0].id : shared.workspace.currentDesktop.id;
+    const id = window.desktops[0].id;
     if (!desktops.hasOwnProperty(id)) desktops[id] = Desktop();
     if (desktops[id].add(window, id)) {
       window.desktopId = id;

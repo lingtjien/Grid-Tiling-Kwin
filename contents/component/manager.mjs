@@ -126,8 +126,9 @@ export function add(window) {
       !tiled.hasOwnProperty(window.internalId) &&
       window.activities.length &&
       window.desktops.length &&
-      !ignored(addProps(window))
+      !ignored(window)
     ) {
+      addProps(window);
       if (config.tile && tile(window)) {
         layout.render();
         shared.workspace.currentDesktop = window.desktops[0];

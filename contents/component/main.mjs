@@ -20,7 +20,7 @@ export function init(workspace, kwin, timer) {
 
   connect('windowRemoved', remove);
   connect('windowAdded', add);
-  // if (config.borderActive) connect('windowActivated', activated);
+  if (config.borderActive) connect('windowActivated', activated);
 }
 
 export function destroy() {
