@@ -63,7 +63,7 @@ export function setGap() {
 
 export function load(read) {
   config.grid = {
-    screen: parseScreenGrid(splitTrim(read('screenRows', '2,2,2')), splitTrim(read('screenColumns', '2,2,2'))), // Record<outputSerial, [row, column]>
+    screen: parseScreenGrid(splitTrim(read('screenRows', '2')), splitTrim(read('screenColumns', '2'))), // Record<outputSerial, [row, column]>
     desktop: parseDesktopGrid(read), // Record<desktopId, Record<outputSerial, [row, column]>>
   };
 
@@ -92,7 +92,7 @@ export function load(read) {
 
   config.minSpace = minSpace(read, [
     [1, 'inkscape|krita|gimp|kdenlive'],
-    [2, 'code|google-chrome'],
+    [2, 'code|chrome'],
     [3, ''],
     [4, ''],
     [5, ''],
@@ -103,7 +103,7 @@ export function load(read) {
     [10, ''],
   ]);
 
-  config.blacklist = regex(read('blacklist', 'ksmserver-logout-greeter'));
+  config.blacklist = regex(read('blacklist', ''));
   config.whitelist = regex(read('whitelist', ''));
 }
 

@@ -54,17 +54,17 @@
     </entry>
     <entry name="blacklist" type="String">
       <label>blacklist client name regex</label>
-      <default>ksmserver-logout-greeter</default>
+      <default></default>
     </entry>
     <entry name="whitelist" type="String">
       <label>whitelist client name regex</label>
       <default></default>
     </entry>
     <entry name="screenColumns" type="String">
-      <default>2,2,2</default>
+      <default>2</default>
     </entry>
     <entry name="screenRows" type="String">
-      <default>2,2,2</default>
+      <default>2</default>
     </entry>
     <entry name="desktopRows1" type="String">
       <default>2</default>
@@ -148,7 +148,7 @@
       <default>2</default>
     </entry>
     <entry name="minSpaceName2" type="String">
-      <default>code|google-chrome</default>
+      <default>code|chrome</default>
     </entry>
     <entry name="minSpace3" type="Int">
       <default>3</default>
