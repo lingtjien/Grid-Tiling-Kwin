@@ -103,7 +103,7 @@ export function load(read) {
     [10, ''],
   ]);
 
-  config.blacklist = regex(read('blacklist', ''));
+  config.blacklist = regex(read('blacklist', 'plasmashell'));
   config.whitelist = regex(read('whitelist', ''));
 }
 

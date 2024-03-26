@@ -19,7 +19,7 @@ function disconnect(window) {
 
 function ignored(window) {
   if (config.whitelist && config.whitelist.test(window.resourceName)) return false;
-  return window.transient || !window.normalWindow || (window.blacklist && config.blacklist.test(window.resourceName));
+  return window.transient || !window.normalWindow || (config.blacklist && config.blacklist.test(window.resourceName));
 }
 
 function addProps(window) {

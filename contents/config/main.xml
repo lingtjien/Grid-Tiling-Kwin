@@ -54,7 +54,7 @@
     </entry>
     <entry name="blacklist" type="String">
       <label>blacklist client name regex</label>
-      <default></default>
+      <default>plasmashell</default>
     </entry>
     <entry name="whitelist" type="String">
       <label>whitelist client name regex</label>
