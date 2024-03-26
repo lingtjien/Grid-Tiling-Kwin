@@ -60,7 +60,7 @@ export function Desktop() {
         const serial = output.serialNumber;
         if (!outputs.hasOwnProperty(serial)) outputs[serial] = Output();
         const w = Object.assign({}, window);
-        if (outputs[serial].add(window)) {
+        if (outputs[serial].add(window, grid(window.desktopId, serial))) {
           remove(w);
           window.outputSerial = serial;
           shared.workspace.sendClientToScreen(window, output); // output is read only in api
