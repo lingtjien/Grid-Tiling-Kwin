@@ -17,14 +17,11 @@ export function Activity() {
     } else {
       for (const d of shared.workspace.desktops) {
         const id = d.id;
-        if (!desktops.hasOwnProperty(id)) {
-          const desktop = Desktop();
-          if (desktop.add(window, id)) {
-            desktops[id] = desktop;
-            window.desktopId = id;
-            window.desktops = [d];
-            return window;
-          }
+        if (!desktops.hasOwnProperty(id)) desktops[id] = Desktop();
+        if (desktops[id].add(window, id)) {
+          window.desktopId = id;
+          window.desktops = [d];
+          return window;
         }
       }
     }

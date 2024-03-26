@@ -18,14 +18,11 @@ export function Desktop() {
     } else {
       for (const o of shared.workspace.screens) {
         const serial = o.serialNumber;
-        if (!outputs.hasOwnProperty(serial)) {
-          const output = Output();
-          if (output.add(window, grid(desktopId, serial))) {
-            outputs[serial] = output;
-            window.outputSerial = serial;
-            window.output = o;
-            return window;
-          }
+        if (!outputs.hasOwnProperty(serial)) outputs[serial] = Output();
+        if (outputs[serial].add(window, grid(desktopId, serial))) {
+          window.outputSerial = serial;
+          shared.workspace.sendClientToScreen(window, o); // output is read only in api
+          return window;
         }
       }
     }
@@ -59,14 +56,14 @@ export function Desktop() {
       const n = shared.workspace.screens.length;
       let i = t;
       while (i !== c) {
-        const screen = shared.workspace.screens[i];
-        const serial = screen.serialNumber;
+        const output = shared.workspace.screens[i];
+        const serial = output.serialNumber;
         if (!outputs.hasOwnProperty(serial)) outputs[serial] = Output();
         const w = Object.assign({}, window);
         if (outputs[serial].add(window)) {
           remove(w);
           window.outputSerial = serial;
-          window.output = screen;
+          shared.workspace.sendClientToScreen(window, output); // output is read only in api
           return window;
         }
 
