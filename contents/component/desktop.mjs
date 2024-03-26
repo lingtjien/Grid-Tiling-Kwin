@@ -41,7 +41,6 @@ export function Desktop() {
   }
 
   function moved(window) {
-    // TODO composite similar methods if this one works the same
     let start, c, t;
     for (const [i, screen] of shared.workspace.screens.entries()) {
       const serial = screen.serialNumber;
@@ -71,10 +70,7 @@ export function Desktop() {
         if (i < 0) i = n - 1;
         if (i >= n) i = 0;
       }
-
-      // could not add to any of the other outputs
-      window.output = start;
-    } // same is also valid
+    }
     return window;
   }
 

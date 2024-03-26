@@ -69,10 +69,7 @@ export function Activity() {
         if (i < 0) i = n - 1;
         if (i >= n) i = 0;
       }
-
-      // could not add to any of the other outputs
-      window.desktops = [start];
-    } // same is also valid
+    }
     return window;
   }
 
