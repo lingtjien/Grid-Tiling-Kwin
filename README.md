@@ -21,7 +21,7 @@ ln -s <path>/metadata.json
 - automatically tile windows, up to any custom grid size per desktop and per screen
   - new windows are first attempted to be added to the desktop and screen that the application itself set
   - insufficient space will result in the script automatically trying other screens first before trying other desktops, ultimately resorting to not tiling the new window if none have any space.
-- grid size can be configured on a per screen basis using a comma separated list of integers in the UI
+- grid size can be configured on a per screen basis using a comma separated list of integers in the configuration user interface
   - screen rows and columns defines the defaults per screen, example: `rows=2,2` and `colums=2,3` results `screen 1: 2x2`, `screen 2: 2x3`
   - rows and columns for screens that were not defined will default to the first element
   - desktop rows, columns and names define overrides based on matching the desktop name using regex
@@ -81,3 +81,7 @@ ln -s <path>/metadata.json
 - name matching is performed using the javascript `RegExp` class which is build using the string that the user provides and then the `test` method is used on the window class (application) property (equivalent JS code `RegExp(config).test(window.resourceName)`). You can find the value for these properties on a window by opening the Windows Operations Menu (there is a global shortcut for this). For some examples check out the min space section of the configuration interface
 - If you never plan on using multiple screens you could also consider repurposing the KWin shortcuts for moving windows between screens to desktops instead. So you have more flexibility to move windows between the grid of desktops, while sacrificing the shortcuts that allow you to move them between screens
 - Logging can be obtained from your system log, for example in wayland using `journalctl _COMM=kwin_wayland`
+
+---
+
+[![](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/donate/?hosted_button_id=BUNHJLSFY78PC)
