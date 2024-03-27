@@ -99,7 +99,7 @@ export function load(read) {
   };
 
   config.minSpace = minSpace(read, [
-    [1, 'inkscape|krita|gimp|kdenlive'],
+    [1, 'systemsettings|inkscape|krita|gimp|kdenlive'],
     [2, 'code|chrome'],
     [3, ''],
     [4, ''],

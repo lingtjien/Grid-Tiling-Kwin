@@ -142,7 +142,7 @@
       <default>1</default>
     </entry>
     <entry name="minSpaceName1" type="String">
-      <default>inkscape|krita|gimp|kdenlive</default>
+      <default>systemsettings|inkscape|krita|gimp|kdenlive</default>
     </entry>
     <entry name="minSpace2" type="Int">
       <default>2</default>
