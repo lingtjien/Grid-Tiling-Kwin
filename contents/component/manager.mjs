@@ -31,7 +31,7 @@ function addProps(window) {
   window.activities = [window.activities[0]];
   window.desktops = [window.desktops[0]];
 
-  window.minSpace = 0.01;
+  window.minSpace = config.smallestSpace;
   for (const [minSpace, name] of config.minSpace) {
     if (name && name.test(window.resourceName)) {
       window.minSpace = minSpace;

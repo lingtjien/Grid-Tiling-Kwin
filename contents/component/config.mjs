@@ -47,6 +47,10 @@ function parseDesktopGrid(read) {
   return grid;
 }
 
+function smallest(grid) {
+  return Object.values(grid).reduce((s, [r, c]) => Math.min(s, 1 / (r * c)), 1);
+}
+
 function minSpace(read, defaults) {
   const data = [];
   for (let [i, d] of defaults) {
@@ -66,6 +70,10 @@ export function load(read) {
     screen: parseScreenGrid(splitTrim(read('screenRows', '2')), splitTrim(read('screenColumns', '2'))), // Record<outputSerial, [row, column]>
     desktop: parseDesktopGrid(read), // Record<desktopId, Record<outputSerial, [row, column]>>
   };
+  config.smallestSpace = Object.values(config.grid.desktop).reduce(
+    (s, d) => Math.min(s, smallest(d)),
+    smallest(config.grid.screen)
+  );
 
   config.gapShow = read('gapShow', true);
   config.gapValue = read('gapValue', 16);
