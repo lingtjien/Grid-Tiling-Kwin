@@ -159,6 +159,7 @@ export function Output() {
       if (diff.y === 0) lists[window.listIndex].dividerPost(window.windowIndex, diff.height / height);
       else lists[window.listIndex].dividerPre(window.windowIndex, diff.height / height);
     }
+    return window;
   }
 
   function overlap(window, area) {
@@ -175,14 +176,22 @@ export function Output() {
     const swapList = overlap(window, area);
     if (swapList) {
       const swapWindow = swapList.overlap(window, area);
-      const list = lists[window.listIndex];
       if (
+        window !== swapWindow &&
         swapWindow &&
-        list.minSpace() - window.minSpace + swapWindow.minSpace <= 1 / lists.length &&
+        lists[window.listIndex].minSpace() - window.minSpace + swapWindow.minSpace <= 1 / lists.length &&
         swapList.minSpace() - swapWindow.minSpace + window.minSpace <= 1 / lists.length
       ) {
-        list.windows[window.windowIndex] = swapWindow;
-        swapList.windows[swapWindow.windowIndex] = window;
+        const swapWindowIndex = swapWindow.windowIndex;
+        const swapListIndex = swapWindow.listIndex;
+
+        swapWindow.windowIndex = window.windowIndex;
+        swapWindow.listIndex = window.listIndex;
+        lists[window.listIndex].windows[window.windowIndex] = swapWindow;
+
+        window.windowIndex = swapWindowIndex;
+        window.listIndex = swapListIndex;
+        swapList.windows[swapWindowIndex] = window;
       }
     }
   }

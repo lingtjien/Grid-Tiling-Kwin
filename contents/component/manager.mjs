@@ -69,8 +69,7 @@ function addSignals(window) {
   connect(window, 'moveResizedChanged', () => {
     const output = getOutput(window);
     const a = area(window.desktops[0], window.output);
-    output.resized(window, a);
-    output.moved(window, a);
+    if (!output.resized(window, a)) output.moved(window, a);
     output.render(a);
   });
 
