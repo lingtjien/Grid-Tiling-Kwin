@@ -75,15 +75,13 @@ export function Desktop() {
   }
 
   // provide at least desktopId in overwrite
-  function render(desktop, overwrite) {
+  function render(desktop) {
     for (const [serial, output] of Object.entries(outputs)) {
-      overwrite.outputSerial = serial;
       output.render(
         area(
           desktop,
           shared.workspace.screens.find((s) => s.serialNumber === serial)
-        ),
-        overwrite
+        )
       );
     }
   }

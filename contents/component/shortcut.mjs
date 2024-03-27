@@ -70,7 +70,7 @@ for (const [key, amount] of [
     const output = getOutput(window);
     if (
       output &&
-      (output.move(window, amount, grid(window.desktops[0].id, window.output.serialNumber)) ||
+      (output.move(window, amount, grid(window.desktopId, window.outputSerial)) ||
         output.swap(window.listIndex, amount))
     )
       output.render(area(window.desktops[0], window.output));

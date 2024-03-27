@@ -95,12 +95,12 @@ function addSignals(window) {
       if (window.desktops.length === 1) {
         setTimeout(() => {
           activity.moved(window);
-          activity.render({ activityId: window.activityId });
+          activity.render();
           shared.workspace.currentDesktop = window.desktops[0];
         }, config.delay);
       } else {
         unTile(window);
-        activity.render({ activityId: window.activityId });
+        activity.render();
       }
     }
   });
@@ -110,7 +110,7 @@ function addSignals(window) {
     if (desktop) {
       setTimeout(() => {
         desktop.moved(window);
-        desktop.render(window.desktops[0], { desktopId: window.desktopId });
+        desktop.render(window.desktops[0]);
       }, config.delay);
     }
   });

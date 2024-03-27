@@ -33,16 +33,18 @@ export function List() {
   }
 
   function swap(windowIndex, amount) {
-    const i = windowIndex + amount;
-    if (i >= 0 && i < windows.length) {
-      const window = windows[windowIndex];
-      windows[windowIndex] = windows[i];
-      windows[i] = window;
+    const t = windowIndex + amount;
+    const target = windows[t];
+    if (target) {
+      const current = windows[windowIndex];
 
-      for (let j = 0; j < windowIndex; ++j) windows[windowIndex].windowIndex = i;
-      for (let j = 0; j < i; ++j) windows[i].windowIndex = windowIndex;
+      target.windowIndex = windowIndex;
+      windows[windowIndex] = target;
 
-      return window;
+      current.windowIndex = t;
+      windows[t] = current;
+
+      return current;
     }
   }
 
@@ -69,7 +71,7 @@ export function List() {
     }
   }
 
-  function render(x, y, width, height, overwrite = {}) {
+  function render(x, y, width, height) {
     height = calc.height(height, windows.length - minimized());
     y = calc.y(y);
 
@@ -88,10 +90,7 @@ export function List() {
       const h = height + current - previous;
       const geometry = Qt.rect(Math.floor(x), Math.floor(y), Math.floor(width), Math.floor(h));
 
-      // these properties are used internally only so they must be set first as they are used to check
       window.renderGeometry = geometry;
-      window.windowIndex = i;
-      Object.assign(window, overwrite);
 
       // these properties are from kwin and will thus trigger additional signals, these properties must be set last to prevent the signals that are hooked into this script from triggering before the internal properties have been set
       window.noBorder = config.borderActive && window.active ? false : !config.border;

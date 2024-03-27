@@ -73,14 +73,9 @@ export function Activity() {
     return window;
   }
 
-  // provide at least activityId in overwrite
-  function render(overwrite) {
+  function render() {
     for (const [id, desktop] of Object.entries(desktops)) {
-      overwrite.desktopId = id;
-      desktop.render(
-        shared.workspace.desktops.find((d) => d.id === id),
-        overwrite
-      );
+      desktop.render(shared.workspace.desktops.find((d) => d.id === id));
     }
   }
 

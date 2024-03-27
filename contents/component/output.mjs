@@ -90,16 +90,18 @@ export function Output() {
   }
 
   function swap(listIndex, amount) {
-    const i = listIndex + amount;
-    const list = lists[listIndex];
-    if (list && i >= 0 && i < lists.length) {
-      lists[listIndex] = lists[i];
-      lists[i] = list;
+    const t = listIndex + amount;
+    const target = lists[t];
+    if (target) {
+      const current = lists[listIndex];
 
-      for (const w of lists[listIndex].windows) w.windowIndex = i;
-      for (const w of lists[i].windows) w.windowIndex = listIndex;
+      for (const w of target.windows) w.listIndex = listIndex;
+      lists[listIndex] = target;
 
-      return list;
+      for (const w of current.windows) w.listIndex = t;
+      lists[t] = current;
+
+      return current;
     }
   }
 
@@ -112,7 +114,13 @@ export function Output() {
     }
 
     if (target && target.minSpace() + window.minSpace <= 1 / lists.length && target.windows.length < grid[0]) {
-      remove(window);
+      const c = window.listIndex;
+      const current = lists[c];
+      current.remove(window);
+      if (!current.windows.length) {
+        removeLine(c);
+        if (t > c) --t;
+      }
       target.add(window);
       window.listIndex = t;
       return window;
@@ -179,7 +187,7 @@ export function Output() {
     }
   }
 
-  function render(area, overwrite = {}) {
+  function render(area) {
     const width = calc.width(area.width, lists.length - minimized());
     let x = calc.x(area.x);
     let current = 0;
@@ -196,8 +204,7 @@ export function Output() {
       current = width * divider;
       const w = width + current - previous;
 
-      overwrite.listIndex = i;
-      list.render(x, area.y, w, area.height, overwrite);
+      list.render(x, area.y, w, area.height);
 
       x += w + config.gap;
       previous = current;

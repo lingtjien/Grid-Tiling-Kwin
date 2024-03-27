@@ -32,7 +32,7 @@ export function Layout() {
   }
 
   function render() {
-    for (const [id, activity] of Object.entries(activities)) activity.render({ activityId: id });
+    for (const activity of Object.values(activities)) activity.render();
   }
 
   return { activities, add, remove, moved, render };
