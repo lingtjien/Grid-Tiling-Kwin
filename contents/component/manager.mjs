@@ -118,23 +118,23 @@ function addSignals(window) {
 }
 
 export function add(window) {
-  setTimeout(() => {
-    if (
-      window &&
-      !floating.hasOwnProperty(window.internalId) &&
-      !tiled.hasOwnProperty(window.internalId) &&
-      window.activities.length &&
-      window.desktops.length &&
-      !ignored(window)
-    ) {
+  if (
+    window &&
+    window.activities.length &&
+    window.desktops.length &&
+    !floating.hasOwnProperty(window.internalId) &&
+    !tiled.hasOwnProperty(window.internalId) &&
+    !ignored(window)
+  ) {
+    setTimeout(() => {
       addProps(window);
       if (config.tile && tile(window)) {
         layout.render();
         shared.workspace.currentDesktop = window.desktops[0];
       }
       floating[window.internalId] = window;
-    }
-  }, config.delay);
+    }, config.delay);
+  }
 }
 
 export function remove(window) {
