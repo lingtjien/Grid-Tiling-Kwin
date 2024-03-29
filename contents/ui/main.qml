@@ -36,6 +36,13 @@ Item {
   }
 
   ShortcutHandler {
+    name: prefix + 'Toggle Tile'
+    text: prefix + 'Toggle Tile'
+    sequence: 'Meta+Shift+T'
+    onActivated: Shortcut.toggle.tile()
+  }
+
+  ShortcutHandler {
     name: prefix + 'Toggle Gap'
     text: prefix + 'Toggle Gap'
     sequence: 'Meta+G'
