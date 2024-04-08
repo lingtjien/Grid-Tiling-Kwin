@@ -40,18 +40,15 @@ export function Activity() {
   }
 
   function moved(window) {
-    let start, c, t;
+    let c, t;
     for (const [i, desktop] of shared.workspace.desktops.entries()) {
       const id = desktop.id;
-      if (id === window.desktopId) {
-        c = i;
-        start = desktop;
-      }
+      if (id === window.desktopId) c = i;
       if (id === window.desktops[0].id) t = i;
     }
     const direction = Math.sign(t - c);
     if (direction) {
-      const n = shared.workspace.desktops.length;
+      const max = shared.workspace.desktops.length;
       let i = t;
       while (i !== c) {
         const desktop = shared.workspace.desktops[i];
@@ -66,8 +63,8 @@ export function Activity() {
         }
 
         i += direction;
-        if (i < 0) i = n - 1;
-        if (i >= n) i = 0;
+        if (i < 0) i = max - 1;
+        if (i >= max) i = 0;
       }
     }
     return window;

@@ -3,24 +3,24 @@ import { grid } from 'config.mjs';
 import { Output } from 'output.mjs';
 
 export function Desktop() {
-  const outputs = {}; // key = KWin::Output::serialNumber
+  const outputs = {}; // key = KWin::Output::name
 
   function count() {
     return Object.values(outputs).reduce((n, o) => n + o.count(), 0);
   }
 
   function add(window, desktopId) {
-    const serial = window.output.serialNumber;
-    if (!outputs.hasOwnProperty(serial)) outputs[serial] = Output();
-    if (outputs[serial].add(window, grid(desktopId, serial))) {
-      window.outputSerial = serial;
+    const name = window.output.name;
+    if (!outputs.hasOwnProperty(name)) outputs[name] = Output();
+    if (outputs[name].add(window, grid(desktopId, name))) {
+      window.outputName = name;
       return window;
     } else {
       for (const o of shared.workspace.screens) {
-        const serial = o.serialNumber;
-        if (!outputs.hasOwnProperty(serial)) outputs[serial] = Output();
-        if (outputs[serial].add(window, grid(desktopId, serial))) {
-          window.outputSerial = serial;
+        const n = o.name;
+        if (!outputs.hasOwnProperty(n)) outputs[n] = Output();
+        if (outputs[n].add(window, grid(desktopId, n))) {
+          window.outputName = n;
           shared.workspace.sendClientToScreen(window, o); // output is read only in api
           return window;
         }
@@ -30,45 +30,40 @@ export function Desktop() {
   }
 
   function remove(window) {
-    const serial = window.outputSerial;
-    if (outputs.hasOwnProperty(serial)) {
-      const output = outputs[serial];
-      if (output.remove(window)) {
-        if (!output.count()) delete outputs[serial];
-        return window;
-      }
+    const n = window.outputName;
+    const output = outputs[n];
+    if (output && output.remove(window)) {
+      if (!output.count()) delete outputs[n];
+      return window;
     }
   }
 
   function moved(window) {
-    let start, c, t;
-    for (const [i, screen] of shared.workspace.screens.entries()) {
-      const serial = screen.serialNumber;
-      if (serial === window.outputSerial) {
-        c = i;
-        start = screen;
-      }
-      if (serial === window.output.serialNumber) t = i;
+    let c, t;
+    for (const [i, output] of shared.workspace.screens.entries()) {
+      const n = output.name;
+      if (n === window.outputName) c = i;
+      if (n === window.output.name) t = i;
     }
     const direction = Math.sign(t - c);
     if (direction) {
-      const n = shared.workspace.screens.length;
+      const max = shared.workspace.screens.length;
       let i = t;
       while (i !== c) {
         const output = shared.workspace.screens[i];
-        const serial = output.serialNumber;
-        if (!outputs.hasOwnProperty(serial)) outputs[serial] = Output();
+        const n = output.name;
+        if (!outputs.hasOwnProperty(n)) outputs[n] = Output();
         const w = Object.assign({}, window);
-        if (outputs[serial].add(window, grid(window.desktopId, serial))) {
+        if (outputs[n].add(window, grid(window.desktopId, n))) {
           remove(w);
-          window.outputSerial = serial;
+          window.outputName = n;
           shared.workspace.sendClientToScreen(window, output); // output is read only in api
           return window;
         }
 
         i += direction;
-        if (i < 0) i = n - 1;
-        if (i >= n) i = 0;
+        if (i < 0) i = max - 1;
+        if (i >= max) i = 0;
       }
     }
     return window;
@@ -76,11 +71,11 @@ export function Desktop() {
 
   // provide at least desktopId in overwrite
   function render(desktop) {
-    for (const [serial, output] of Object.entries(outputs)) {
+    for (const [name, output] of Object.entries(outputs)) {
       output.render(
         area(
           desktop,
-          shared.workspace.screens.find((s) => s.serialNumber === serial)
+          shared.workspace.screens.find((s) => s.name === name)
         )
       );
     }

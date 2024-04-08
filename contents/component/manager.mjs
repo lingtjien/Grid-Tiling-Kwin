@@ -182,7 +182,7 @@ export function getDesktop(window) {
 
 export function getOutput(window) {
   const desktop = getDesktop(window);
-  if (desktop) return desktop.outputs[window ? window.outputSerial : shared.workspace.activeScreen.serialNumber];
+  if (desktop) return desktop.outputs[window ? window.outputName : shared.workspace.activeScreen.name];
 }
 
 export function render() {

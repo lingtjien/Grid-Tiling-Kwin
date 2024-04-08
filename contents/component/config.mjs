@@ -17,7 +17,7 @@ function splitTrim(data) {
 function parseScreenGrid(rows, columns) {
   const grid = {};
   for (let i = 0; i < shared.workspace.screens.length; ++i) {
-    grid[shared.workspace.screens[i].serialNumber] = [
+    grid[shared.workspace.screens[i].name] = [
       rows[i < rows.length ? i : 0],
       columns[i < columns.length ? i : 0],
     ];
@@ -67,8 +67,8 @@ export function setGap() {
 
 export function load(read) {
   config.grid = {
-    screen: parseScreenGrid(splitTrim(read('screenRows', '2')), splitTrim(read('screenColumns', '2'))), // Record<outputSerial, [row, column]>
-    desktop: parseDesktopGrid(read), // Record<desktopId, Record<outputSerial, [row, column]>>
+    screen: parseScreenGrid(splitTrim(read('screenRows', '2')), splitTrim(read('screenColumns', '2'))), // Record<outputName, [row, column]>
+    desktop: parseDesktopGrid(read), // Record<desktopId, Record<outputName, [row, column]>>
   };
   config.smallestSpace = Object.values(config.grid.desktop).reduce(
     (s, d) => Math.min(s, smallest(d)),
@@ -115,9 +115,9 @@ export function load(read) {
   config.whitelist = regex(read('whitelist', ''));
 }
 
-export function grid(desktopId, outputSerial) {
+export function grid(desktopId, outputName) {
   const d = config.grid.desktop[desktopId];
-  return d ? d[outputSerial] : config.grid.screen[outputSerial];
+  return d ? d[outputName] : config.grid.screen[outputName];
 }
 
 export function clampDivider(value) {
