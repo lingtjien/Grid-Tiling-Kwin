@@ -79,13 +79,11 @@ function addSignals(window) {
   });
 
   connect(window, 'activitiesChanged', () => {
-    if (window.activities.length === 1)
-      setTimeout(() => {
-        if (!layout.moved(window)) unTile(window);
-        layout.render();
-      }, config.delay);
-    else unTile(window);
-    layout.render();
+    setTimeout(() => {
+      if (window.deleted) return;
+      if (window.activities.length !== 1 || !layout.moved(window)) unTile(window);
+      layout.render();
+    }, config.delay);
   });
 
   connect(window, 'desktopsChanged', () => {
