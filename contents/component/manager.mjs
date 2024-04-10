@@ -80,34 +80,39 @@ function addSignals(window) {
 
   connect(window, 'activitiesChanged', () => {
     setTimeout(() => {
-      if (window.deleted) return;
-      if (window.activities.length !== 1 || !layout.moved(window)) unTile(window);
-      layout.render();
+      if (!window.deleted) {
+        if (window.activities.length !== 1 || !layout.moved(window)) unTile(window);
+        layout.render();
+      }
     }, config.delay);
   });
 
   connect(window, 'desktopsChanged', () => {
     setTimeout(() => {
-      if (window.deleted) return;
-      const activity = getActivity(window);
-      if (!activity) return;
-      if (window.desktops.length === 1) {
-        activity.moved(window);
-        shared.workspace.currentDesktop = window.desktops[0];
-      } else {
-        unTile(window);
+      if (!window.deleted) {
+        const activity = getActivity(window);
+        if (activity) {
+          if (window.desktops.length === 1) {
+            activity.moved(window);
+            shared.workspace.currentDesktop = window.desktops[0];
+          } else {
+            unTile(window);
+          }
+          activity.render();
+        }
       }
-      activity.render();
     }, config.delay);
   });
 
   connect(window, 'outputChanged', () => {
     setTimeout(() => {
-      if (window.deleted) return;
-      const desktop = getDesktop(window);
-      if (!desktop) return;
-      desktop.moved(window);
-      desktop.render(window.desktops[0]);
+      if (!window.deleted) {
+        const desktop = getDesktop(window);
+        if (desktop) {
+          desktop.moved(window);
+          desktop.render(window.desktops[0]);
+        }
+      }
     }, config.delay);
   });
 
@@ -115,21 +120,23 @@ function addSignals(window) {
 }
 
 export function add(window) {
-  if (
-    window &&
-    window.activities.length &&
-    window.desktops.length &&
-    !floating.hasOwnProperty(window.internalId) &&
-    !tiled.hasOwnProperty(window.internalId) &&
-    !ignored(window)
-  ) {
+  if (window) {
     setTimeout(() => {
-      addProps(window);
-      if (config.tile && tile(window)) {
-        layout.render();
-        shared.workspace.currentDesktop = window.desktops[0];
+      if (
+        !window.deleted &&
+        window.activities.length &&
+        window.desktops.length &&
+        !floating.hasOwnProperty(window.internalId) &&
+        !tiled.hasOwnProperty(window.internalId) &&
+        !ignored(window)
+      ) {
+        addProps(window);
+        if (config.tile && tile(window)) {
+          layout.render();
+          shared.workspace.currentDesktop = window.desktops[0];
+        }
+        floating[window.internalId] = window;
       }
-      floating[window.internalId] = window;
     }, config.delay);
   }
 }
