@@ -87,29 +87,28 @@ function addSignals(window) {
   });
 
   connect(window, 'desktopsChanged', () => {
-    const activity = getActivity(window);
-    if (activity) {
+    setTimeout(() => {
+      if (window.deleted) return;
+      const activity = getActivity(window);
+      if (!activity) return;
       if (window.desktops.length === 1) {
-        setTimeout(() => {
-          activity.moved(window);
-          activity.render();
-          shared.workspace.currentDesktop = window.desktops[0];
-        }, config.delay);
+        activity.moved(window);
+        shared.workspace.currentDesktop = window.desktops[0];
       } else {
         unTile(window);
-        activity.render();
       }
-    }
+      activity.render();
+    }, config.delay);
   });
 
   connect(window, 'outputChanged', () => {
-    const desktop = getDesktop(window);
-    if (desktop) {
-      setTimeout(() => {
-        desktop.moved(window);
-        desktop.render(window.desktops[0]);
-      }, config.delay);
-    }
+    setTimeout(() => {
+      if (window.deleted) return;
+      const desktop = getDesktop(window);
+      if (!desktop) return;
+      desktop.moved(window);
+      desktop.render(window.desktops[0]);
+    }, config.delay);
   });
 
   return window;
