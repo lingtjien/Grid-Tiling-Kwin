@@ -73,14 +73,16 @@ ln -s <path>/metadata.json
 
 ## Additional Info & Tips
 
+- screen edges can be configured to move windows between virtual desktops when dragged
+- focus policy can be configured to follow the cursor
 - this version of the script uses the latest KWin API methods. If you're using an older version of KWin, choose the appropriate branch
 - after installing a KWin script you can activate it in the system settings, here you'll also find the configuration button
 - when you adjust the settings in the menu, this script needs to be restarted before the settings are applied. You can do this by turning the script off, apply, turn it back on and apply again or a complete KWin restart (re-log/reboot)
 - after updates, some of the shortcuts may have been renamed, but KWin still keeps the old ones registered. To remove the no longer used shortcuts, first disable this script, then go to the shortcuts settings window and use the delete button on the `KWin` application that contains the shortcuts to this script. Restart KWin and then activate the script again and the old unused shortcuts should now all be gone
 - script assumes that the amount of desktops does not change. For the best result make sure you have more virtual desktops than you have windows normally. The script can handle more windows but once all desktops and screens are full, all new windows will start as floating instead of tiling until there is space again to tile new windows
 - name matching is performed using the javascript `RegExp` class which is build using the string that the user provides and then the `test` method is used on the window class (application) property (equivalent JS code `RegExp(config).test(window.resourceName)`). You can find the value for these properties on a window by opening the Windows Operations Menu (there is a global shortcut for this). For some examples check out the min space section of the configuration interface
-- If you never plan on using multiple screens you could also consider repurposing the KWin shortcuts for moving windows between screens to desktops instead. So you have more flexibility to move windows between the grid of desktops, while sacrificing the shortcuts that allow you to move them between screens
-- Logging can be obtained from your system log, for example in wayland using `journalctl _COMM=kwin_wayland`
+- if you never plan on using multiple screens you could also consider repurposing the KWin shortcuts for moving windows between screens to desktops instead. So you have more flexibility to move windows between the grid of desktops, while sacrificing the shortcuts that allow you to move them between screens
+- logging can be obtained from your system log, for example in wayland using `journalctl _COMM=kwin_wayland`
 
 ---
 
