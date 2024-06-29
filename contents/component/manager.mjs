@@ -66,6 +66,12 @@ function unTile(window) {
 }
 
 function addSignals(window) {
+  connect(window, 'frameGeometryChanged', () => {
+    // not user action
+    if (!window.move && !window.resize && window.frameGeometry !== window.renderGeometry)
+      window.frameGeometry = window.renderGeometry;
+  });
+
   connect(window, 'moveResizedChanged', () => {
     const output = getOutput(window);
     const a = area(window.desktops[0], window.output);
