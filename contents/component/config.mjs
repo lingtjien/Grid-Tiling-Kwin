@@ -1,5 +1,11 @@
 import { shared } from 'shared.mjs';
 
+const epsilon = 0.001;
+
+export function isZero(value) {
+  return Math.abs(value) < epsilon;
+}
+
 export const config = {};
 
 function regex(data) {
@@ -30,7 +36,7 @@ function parseDesktopGrid(read) {
         if (name.test(desktop.name)) {
           const g = parseScreenGrid(
             splitTrim(read(`desktopRows${i}`, '2')),
-            splitTrim(read(`desktopColumns${i}`, '2'))
+            splitTrim(read(`desktopColumns${i}`, '2')),
           );
           if (Object.keys(g).length) {
             grid[desktop.id] = g;
@@ -68,7 +74,7 @@ export function load(read) {
   };
   config.smallestSpace = Object.values(config.grid.desktop).reduce(
     (s, d) => Math.min(s, smallest(d)),
-    smallest(config.grid.screen)
+    smallest(config.grid.screen),
   );
 
   config.gapShow = read('gapShow', true);
