@@ -49,7 +49,7 @@ function tile(window) {
   }
 }
 
-function unTile(window) {
+function float(window) {
   if (tiled.hasOwnProperty(window.internalId)) {
     if (window.hasOwnProperty('init')) {
       for (const [prop, value] of Object.entries(window.init)) window[prop] = value;
@@ -88,7 +88,7 @@ function addSignals(window) {
   connect(window, 'activitiesChanged', () => {
     setTimeout(() => {
       if (!window.deleted) {
-        if (window.activities.length !== 1 || !layout.moved(window)) unTile(window);
+        if (window.activities.length !== 1 || !layout.moved(window)) float(window);
         layout.render();
       }
     }, config.delay);
@@ -103,7 +103,7 @@ function addSignals(window) {
             activity.moved(window);
             shared.workspace.currentDesktop = window.desktops[0];
           } else {
-            unTile(window);
+            float(window);
           }
           activity.render();
         }
@@ -141,8 +141,9 @@ export function add(window) {
         if (config.tile && tile(window)) {
           layout.render();
           shared.workspace.currentDesktop = window.desktops[0];
+        } else {
+          floating[window.internalId] = window;
         }
-        floating[window.internalId] = window;
       }
     }, config.delay);
   }
@@ -172,7 +173,7 @@ export function toggle() {
   if (window) {
     if (
       (floating.hasOwnProperty(window.internalId) && tile(window)) ||
-      (tiled.hasOwnProperty(window.internalId) && unTile(window))
+      (tiled.hasOwnProperty(window.internalId) && float(window))
     ) {
       layout.render();
       return window;
@@ -196,8 +197,34 @@ export function getOutput(window) {
   if (desktop) return desktop.outputs[window ? window.outputName : shared.workspace.activeScreen.name];
 }
 
-export function render() {
-  layout.render();
+export function pruneActivities() {
+  const activities = new Set(shared.workspace.activities);
+  for (const window of Object.values(tiled)) {
+    if (!activities.has(window.activityId)) {
+      remove(window);
+      add(window);
+    }
+  }
+}
+
+export function pruneDesktops() {
+  const desktops = new Set(shared.workspace.desktops.map((o) => o.id));
+  for (const window of Object.values(tiled)) {
+    if (!desktops.has(window.desktopId)) {
+      remove(window);
+      add(window);
+    }
+  }
+}
+
+export function pruneOutputs() {
+  const outputs = new Set(shared.workspace.screens.map((o) => o.name));
+  for (const window of Object.values(tiled)) {
+    if (!outputs.has(window.outputName)) {
+      remove(window);
+      add(window);
+    }
+  }
 }
 
 export function stop() {
@@ -209,5 +236,9 @@ export function stop() {
 
 export function start() {
   for (const window of shared.workspace.windows) add(window);
+  layout.render();
+}
+
+export function render() {
   layout.render();
 }

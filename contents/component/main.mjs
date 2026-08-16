@@ -1,6 +1,6 @@
 import { shared } from 'shared.mjs';
 import { config, load } from 'config.mjs';
-import { activated, add, remove, start, stop } from 'manager.mjs';
+import { activated, add, pruneActivities, pruneDesktops, pruneOutputs, remove, start, stop } from 'manager.mjs';
 
 let signals = [];
 
@@ -21,6 +21,18 @@ export function init(workspace, kwin, timer) {
   connect('windowRemoved', remove);
   connect('windowAdded', add);
   if (config.borderActive) connect('windowActivated', activated);
+
+  connect('activitiesChanged', pruneActivities);
+
+  connect('desktopsChanged', () => {
+    load(kwin.readConfig);
+    pruneDesktops();
+  });
+
+  connect('screensChanged', () => {
+    load(kwin.readConfig);
+    pruneOutputs();
+  });
 }
 
 export function destroy() {
