@@ -205,6 +205,7 @@ export function pruneActivities() {
       add(window);
     }
   }
+  layout.render();
 }
 
 export function pruneDesktops() {
@@ -215,6 +216,7 @@ export function pruneDesktops() {
       add(window);
     }
   }
+  layout.render();
 }
 
 export function pruneOutputs() {
@@ -225,6 +227,7 @@ export function pruneOutputs() {
       add(window);
     }
   }
+  layout.render();
 }
 
 export function stop() {
