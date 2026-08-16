@@ -58,7 +58,7 @@
     </entry>
     <entry name="blacklist" type="String">
       <label>blacklist window name regex</label>
-      <default>plasmashell</default>
+      <default>plasmashell|spectacle</default>
     </entry>
     <entry name="whitelist" type="String">
       <label>whitelist window name regex</label>
@@ -152,7 +152,7 @@
       <default>2</default>
     </entry>
     <entry name="minSpaceName2" type="String">
-      <default>code|chrome</default>
+      <default>codium|firefox|chrome</default>
     </entry>
     <entry name="minSpace3" type="Int">
       <default>3</default>

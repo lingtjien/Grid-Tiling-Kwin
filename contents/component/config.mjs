@@ -103,7 +103,7 @@ export function load(read) {
 
   config.minSpace = minSpace(read, [
     [1, 'inkscape|krita|gimp|kdenlive|Godot|vlc'],
-    [2, 'code|chrome'],
+    [2, 'codium|firefox|chrome'],
     [3, ''],
     [4, ''],
     [5, ''],
@@ -114,7 +114,7 @@ export function load(read) {
     [10, ''],
   ]);
 
-  config.blacklist = regex(read('blacklist', 'plasmashell'));
+  config.blacklist = regex(read('blacklist', 'plasmashell|spectacle'));
   config.whitelist = regex(read('whitelist', ''));
 }
 
