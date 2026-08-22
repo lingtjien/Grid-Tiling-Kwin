@@ -143,7 +143,7 @@ export function Output() {
   function resized(window, area) {
     let diff = {};
     for (const [key, value] of Object.entries(window.frameGeometry))
-      diff[key] = Math.floor(value - window.renderGeometry[key]);
+      diff[key] = Math.trunc(value - window.renderGeometry[key]);
     if (diff.width === 0 && diff.height === 0) return;
 
     const width = calc.width(area.width, lists.length - minimized());

@@ -88,7 +88,7 @@ export function List() {
 
       current = height * divider;
       const h = height + current - previous;
-      const geometry = Qt.rect(Math.floor(x), Math.floor(y), Math.floor(width), Math.floor(h));
+      const geometry = Qt.rect(Math.trunc(x), Math.trunc(y), Math.trunc(width), Math.trunc(h));
 
       window.renderGeometry = geometry;
 
