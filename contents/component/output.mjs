@@ -1,4 +1,4 @@
-import { calc, clampDivider, config, isZero } from 'config.mjs';
+import { calc, clampDivider, config } from 'config.mjs';
 import { List } from 'list.mjs';
 
 export function Output() {
@@ -142,12 +142,13 @@ export function Output() {
 
   function resized(window, area) {
     let diff = {};
-    for (const [key, value] of Object.entries(window.frameGeometry)) diff[key] = value - window.renderGeometry[key];
-    if (isZero(diff.width) && isZero(diff.height)) return;
+    for (const [key, value] of Object.entries(window.frameGeometry))
+      diff[key] = Math.floor(value - window.renderGeometry[key]);
+    if (diff.width === 0 && diff.height === 0) return;
 
     const width = calc.width(area.width, lists.length - minimized());
-    if (!isZero(diff.width)) {
-      if (isZero(diff.x)) dividerPost(window.listIndex, diff.width / width);
+    if (diff.width !== 0) {
+      if (diff.x === 0) dividerPost(window.listIndex, diff.width / width);
       else dividerPre(window.listIndex, diff.width / width);
     }
 
@@ -155,8 +156,8 @@ export function Output() {
       area.height,
       lists[window.listIndex].windows.length - lists[window.listIndex].minimized(),
     );
-    if (!isZero(diff.height)) {
-      if (isZero(diff.y)) lists[window.listIndex].dividerPost(window.windowIndex, diff.height / height);
+    if (diff.height !== 0) {
+      if (diff.y === 0) lists[window.listIndex].dividerPost(window.windowIndex, diff.height / height);
       else lists[window.listIndex].dividerPre(window.windowIndex, diff.height / height);
     }
     return window;

@@ -1,11 +1,5 @@
 import { shared } from 'shared.mjs';
 
-const epsilon = 0.001;
-
-export function isZero(value) {
-  return Math.abs(value) < epsilon;
-}
-
 export const config = {};
 
 function regex(data) {
